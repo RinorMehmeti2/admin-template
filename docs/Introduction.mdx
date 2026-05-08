@@ -1,0 +1,147 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# Admin UI Template
+
+A fully owned component library for internal admin tools. Built from scratch on
+**React 19**, **TypeScript**, **Tailwind v4**, and our own behavioral hooks.
+
+> This template ships **zero UI or headless component libraries** — no MUI,
+> Chakra, Mantine, shadcn, Radix, Headless UI, NextUI, React Aria Components,
+> or similar. Every focus trap, popover, dialog, dropdown, and form control
+> is implemented in this repo. The behavioral foundation lives in
+> [`src/hooks/`](?path=/docs/introduction--docs#behavioral-foundation).
+
+## What's in here
+
+| Category    | Components |
+|-------------|-----------|
+| Primitives  | Button, IconButton, Badge, Avatar, Spinner, Skeleton, Kbd, Separator |
+| Layout      | Container, PageShell, PageHeader, Sidebar, Topbar, AppLayout, ThemeToggle |
+| Feedback    | Alert, Toast, Tooltip, Dialog, Drawer, ConfirmDialog, Progress |
+| Navigation  | Tabs, Breadcrumbs, Pagination, Stepper, Menu, DropdownMenu, ContextMenu |
+| Data display| Card, Stat, List, EmptyState, Table, DataTable |
+| Forms       | Label, Input, Textarea, Select, Checkbox, Radio, RadioGroup, Switch, FormField, Form |
+| Overlays    | Portal, CommandPalette |
+
+## Design tokens
+
+Every visual decision goes through the **semantic token layer** in
+`src/styles/tokens.css`. Components reference these via Tailwind utilities
+(`bg-surface`, `text-foreground-muted`, `border-border`, `bg-primary`, etc.) —
+**never** raw palette values or hex codes.
+
+```css
+:root {
+  --color-background:    /* page background        */
+  --color-surface:       /* card / panel surface   */
+  --color-surface-muted: /* subtle background      */
+  --color-foreground:    /* primary text           */
+  --color-border:        /* default border         */
+  --color-ring:          /* focus ring             */
+  --color-primary:       /* brand accent           */
+  --color-success / --color-warning / --color-danger / --color-info
+  --radius-sm / --radius-md / --radius-lg / --radius-xl
+  --shadow-sm / --shadow-md / --shadow-lg
+  --duration-fast / --duration-normal / --duration-slow
+}
+```
+
+Dark mode is the **`class`** strategy on `<html>`. Each token has a light value
+on `:root` and a dark override on `html.dark`, so component code does **not**
+need `dark:` variants when it consumes semantic tokens correctly.
+
+Toggle the theme using the toolbar in the top bar — the addon flips
+`html.dark` and our `ThemeProvider` follows along.
+
+## Consuming a component
+
+```tsx
+import { Button } from '@/components/primitives/Button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/data-display';
+import { Plus } from 'lucide-react';
+
+export function Example() {
+  return (
+    <Card variant="outlined">
+      <CardHeader>
+        <CardTitle>New project</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Button leftIcon={<Plus className="h-4 w-4" />}>Create</Button>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+- **Named exports only.** No default exports anywhere.
+- **`ref` is a regular prop.** React 19 pattern — never use `forwardRef`.
+- Every component **spreads `...rest`** to its root element and merges
+  `className` through `cn()`.
+- Variants are defined with **`cva`** — every `variant` and `size` you see
+  comes from the same source of truth as the component's TypeScript props.
+
+## The `cn()` helper
+
+`cn(...inputs)` lives at `src/lib/cn.ts` and is the only way component code
+should compose class strings. It's `clsx` piped through `tailwind-merge`, so:
+
+```tsx
+cn('px-4 py-2', condition && 'bg-primary', extraClassName, 'px-6')
+// Resolves conflicting padding utilities to the last winner ('px-6').
+```
+
+Never concatenate class strings manually, and never inline `style={{}}` for
+anything that can be expressed as classes — the only exceptions are dynamic
+numeric values (positioning coordinates, percentage widths).
+
+## Behavioral foundation
+
+Because we don't reach for Radix or any headless library, the behavioral
+contracts every interactive component depends on live in
+[`src/hooks/`](https://github.com/) as small, single-purpose primitives:
+
+| Hook | Used by |
+|------|---------|
+| `useDisclosure` | Drawer, Dialog, Popover |
+| `useControllableState` | every controlled-or-uncontrolled component |
+| `useFocusTrap` | Dialog, Drawer, DropdownMenu, CommandPalette |
+| `useFocusReturn` | every overlay |
+| `useClickOutside` | every dismissable surface |
+| `useEscapeKey` | every dismissable surface |
+| `useScrollLock` | Dialog, Drawer, CommandPalette |
+| `useMergedRefs` | any component that forwards a ref AND keeps an internal one |
+| `useRovingFocus` | Tabs, RadioGroup, Menu, DropdownMenu |
+| `useId` | every component that wires `aria-labelledby` / `aria-describedby` |
+| `useMediaQuery` | Sidebar (mobile/desktop), ThemeProvider (system theme) |
+| `usePosition` | Tooltip, Popover, DropdownMenu, ContextMenu |
+| `useDebouncedValue` | search inputs, expensive filters |
+
+When we need a new interaction (e.g. a Combobox), we **extend the hooks** —
+we do not pull in a library.
+
+## Conventions checklist
+
+When you build a new component:
+
+1. Pick the right **category folder** (primitives / layout / feedback / navigation / data-display / forms / overlays).
+2. Reuse an existing hook before writing one. If you need a new behavior, build the hook first with its own tests.
+3. Five files per component: `Component.tsx`, `Component.types.ts` (only if non-trivial), `Component.test.tsx`, `Component.stories.tsx`, `index.ts`.
+4. **No `dark:` variants.** If your component looks wrong in dark mode, it's consuming the wrong token.
+5. **No `any`, no `as unknown as`, no `@ts-ignore`** without an explicit comment.
+6. Visible focus indicator: `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`.
+7. WCAG AA contrast (4.5:1 for normal text, 3:1 for large text and UI).
+8. Tests cover: default render, every variant, interactions, ARIA, edge states. For overlays — focus trap, Escape, click-outside, focus return.
+
+## Anti-patterns
+
+- ❌ Installing any UI / headless / animation / icon-set library beyond `lucide-react`.
+- ❌ Copy-pasting from shadcn, Radix, NextUI, etc. Build from scratch following this guide.
+- ❌ Inline focus-trap, click-outside, scroll-lock, or keyboard-nav logic in a component file — extract or reuse a hook.
+- ❌ `useEffect` to derive state from props — derive during render.
+- ❌ Default exports.
+- ❌ Hardcoded colors, hex, rgb. Use tokens.
+
+See `CLAUDE.md` at the repo root for the full contract.

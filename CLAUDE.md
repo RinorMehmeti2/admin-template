@@ -19,7 +19,7 @@ This repository is an in-house admin UI template built with React, TypeScript, a
 - **@tanstack/react-table v8** for the DataTable (state/headless behavior only — we provide all visuals)
 - **date-fns** for date utilities (no Moment, no Day.js)
 - **Vitest 4 + @testing-library/react** for tests
-- **Storybook 8** for component documentation
+- **Storybook 10** for component documentation (the Vite 8 builder requires Storybook 10+; lower versions peer Vite ≤ 6)
 - **pnpm** as package manager
 
 These are all behavior / utility / state libraries — none of them ship visual components. Do not install any UI library, headless component library, CSS framework, animation library, or icon set without checking first.

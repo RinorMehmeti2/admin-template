@@ -1,48 +1,42 @@
-import { useEffect, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { Moon, Sun } from 'lucide-react';
+import {
+  Compass,
+  FormInput,
+  LayoutDashboard,
+  MessageSquareWarning,
+  PanelsTopLeft,
+  Search,
+  Sparkles,
+  Table,
+} from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { IconButton } from '@/components/primitives/IconButton';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { Kbd } from '@/components/primitives/Kbd';
+import { useCommandRegistry } from '@/components/overlays/CommandPalette';
 
-type Theme = 'light' | 'dark';
+interface NavItem {
+  to: string;
+  label: string;
+  icon: React.ReactNode;
+}
 
-const NAV_ITEMS: ReadonlyArray<{ to: string; label: string }> = [
-  { to: '/primitives', label: 'Primitives' },
-  { to: '/forms', label: 'Forms' },
-  { to: '/feedback', label: 'Feedback' },
-  { to: '/layout', label: 'Layout' },
+const NAV_ITEMS: ReadonlyArray<NavItem> = [
+  { to: '/showcase', label: 'Overview', icon: <Compass className="h-4 w-4" /> },
+  { to: '/primitives', label: 'Primitives', icon: <Sparkles className="h-4 w-4" /> },
+  { to: '/forms', label: 'Forms', icon: <FormInput className="h-4 w-4" /> },
+  {
+    to: '/feedback',
+    label: 'Feedback',
+    icon: <MessageSquareWarning className="h-4 w-4" />,
+  },
+  { to: '/data', label: 'Data display', icon: <LayoutDashboard className="h-4 w-4" /> },
+  { to: '/tables', label: 'Tables', icon: <Table className="h-4 w-4" /> },
+  { to: '/layout', label: 'Layout', icon: <PanelsTopLeft className="h-4 w-4" /> },
 ];
 
-function getInitialTheme(): Theme {
-  if (typeof window === 'undefined') return 'light';
-  const stored = window.localStorage.getItem('theme');
-  if (stored === 'light' || stored === 'dark') return stored;
-  if (typeof window.matchMedia !== 'function') return 'light';
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
-function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-    window.localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const isDark = theme === 'dark';
-  return (
-    <IconButton
-      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      variant="ghost"
-      size="md"
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
-    >
-      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </IconButton>
-  );
-}
-
 export function AppLayout() {
+  const { openPalette } = useCommandRegistry();
+
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       <aside className="w-60 shrink-0 border-r border-border bg-surface">
@@ -51,21 +45,22 @@ export function AppLayout() {
           <p className="mt-0.5 text-xs text-foreground-subtle">Component library</p>
         </div>
         <nav className="p-3" aria-label="Primary">
-          <ul className="space-y-1">
+          <ul className="space-y-0.5">
             {NAV_ITEMS.map((item) => (
               <li key={item.to}>
                 <NavLink
                   to={item.to}
                   className={({ isActive }) =>
                     cn(
-                      'block rounded-md px-3 py-2 text-sm transition-colors',
+                      'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors',
                       isActive
                         ? 'bg-surface-muted font-medium text-foreground'
                         : 'text-foreground-muted hover:bg-surface-muted hover:text-foreground',
                     )
                   }
                 >
-                  {item.label}
+                  <span className="text-foreground-subtle">{item.icon}</span>
+                  <span>{item.label}</span>
                 </NavLink>
               </li>
             ))}
@@ -74,8 +69,24 @@ export function AppLayout() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center justify-end gap-2 border-b border-border bg-surface px-6">
-          <ThemeToggle />
+        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface px-6">
+          <button
+            type="button"
+            onClick={openPalette}
+            aria-label="Open command palette"
+            aria-haspopup="dialog"
+            className="group flex h-9 w-full max-w-md items-center gap-2 rounded-md border border-border bg-surface-muted/50 px-3 text-sm text-foreground-subtle transition-colors hover:bg-surface-muted hover:text-foreground-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <Search className="h-4 w-4" aria-hidden="true" />
+            <span className="flex-1 text-left">Search commands…</span>
+            <span className="ml-auto flex shrink-0 items-center gap-1">
+              <Kbd>⌘</Kbd>
+              <Kbd>K</Kbd>
+            </span>
+          </button>
+          <div className="ml-auto flex items-center gap-1">
+            <ThemeToggle />
+          </div>
         </header>
         <main className="flex-1 overflow-auto p-8">
           <Outlet />

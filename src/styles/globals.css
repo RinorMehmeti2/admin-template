@@ -46,6 +46,11 @@
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
 
+  /* Motion duration aliases — exposed as Tailwind utilities (duration-fast, etc.). */
+  --duration-fast: var(--duration-fast);
+  --duration-normal: var(--duration-normal);
+  --duration-slow: var(--duration-slow);
+
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
@@ -137,5 +142,22 @@
   ::selection {
     background-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
     color: var(--color-foreground);
+  }
+
+  /*
+   * Respect prefers-reduced-motion globally — disable non-essential animations
+   * and transitions while leaving instantaneous state changes intact. Components
+   * use the `motion-safe:` Tailwind variant on entrance animations so this
+   * rule is mostly a safety net for any utility classes used elsewhere.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
