@@ -1,0 +1,92 @@
+/*
+ * Semantic design tokens.
+ * Light values live on :root, dark overrides live on html.dark.
+ * Components MUST consume semantic tokens (bg-surface, text-foreground, etc.)
+ * — never raw palette values.
+ *
+ * Palette: slate neutrals + indigo primary.
+ */
+
+:root {
+  /* Backgrounds & surfaces */
+  --color-background: hsl(210 20% 98%);          /* slate-50 */
+  --color-surface: hsl(0 0% 100%);               /* white */
+  --color-surface-muted: hsl(210 16% 95%);       /* slate-100 */
+  --color-surface-elevated: hsl(0 0% 100%);      /* white, with shadow */
+
+  /* Foregrounds */
+  --color-foreground: hsl(222 47% 11%);          /* slate-900 */
+  --color-foreground-muted: hsl(215 16% 35%);    /* slate-600 */
+  --color-foreground-subtle: hsl(215 14% 50%);   /* slate-500 */
+
+  /* Borders */
+  --color-border: hsl(214 20% 88%);              /* slate-200 */
+  --color-border-strong: hsl(214 16% 76%);       /* slate-300 */
+
+  /* Focus ring */
+  --color-ring: hsl(238 75% 60%);                /* indigo-500 */
+
+  /* Accents (each with -foreground pair for text/icon on accent) */
+  --color-primary: hsl(238 75% 58%);             /* indigo-600 */
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-secondary: hsl(215 16% 35%);           /* slate-600 */
+  --color-secondary-foreground: hsl(0 0% 100%);
+  --color-success: hsl(152 65% 38%);             /* emerald-600 */
+  --color-success-foreground: hsl(0 0% 100%);
+  --color-warning: hsl(35 92% 48%);              /* amber-500 */
+  --color-warning-foreground: hsl(40 100% 10%);
+  --color-danger: hsl(0 72% 50%);                /* red-600 */
+  --color-danger-foreground: hsl(0 0% 100%);
+  --color-info: hsl(199 89% 48%);                /* sky-500 */
+  --color-info-foreground: hsl(0 0% 100%);
+
+  /* Radii */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(15 23 42 / 0.10), 0 4px 6px -4px rgb(15 23 42 / 0.08);
+}
+
+html.dark {
+  /* Backgrounds & surfaces */
+  --color-background: hsl(222 47% 7%);           /* slate-950-ish */
+  --color-surface: hsl(222 41% 11%);             /* slate-900 */
+  --color-surface-muted: hsl(217 33% 17%);       /* slate-800 */
+  --color-surface-elevated: hsl(215 28% 22%);    /* slate-700 */
+
+  /* Foregrounds */
+  --color-foreground: hsl(210 20% 98%);          /* slate-50 */
+  --color-foreground-muted: hsl(217 11% 70%);    /* slate-400 */
+  --color-foreground-subtle: hsl(215 14% 55%);   /* slate-500 */
+
+  /* Borders */
+  --color-border: hsl(215 25% 25%);              /* slate-700/800 */
+  --color-border-strong: hsl(215 20% 35%);       /* slate-600 */
+
+  /* Focus ring */
+  --color-ring: hsl(238 90% 70%);                /* indigo-400 */
+
+  /* Accents */
+  --color-primary: hsl(238 85% 66%);             /* indigo-500 */
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-secondary: hsl(217 11% 70%);
+  --color-secondary-foreground: hsl(222 47% 11%);
+  --color-success: hsl(152 60% 45%);
+  --color-success-foreground: hsl(0 0% 100%);
+  --color-warning: hsl(35 92% 55%);
+  --color-warning-foreground: hsl(40 100% 10%);
+  --color-danger: hsl(0 72% 58%);
+  --color-danger-foreground: hsl(0 0% 100%);
+  --color-info: hsl(199 89% 55%);
+  --color-info-foreground: hsl(0 0% 100%);
+
+  /* Shadows — deeper in dark */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.6), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+}

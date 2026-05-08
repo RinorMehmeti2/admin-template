@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Force -Path \"C:\\\\Users\\\\Ermira\\\\Desktop\\\\admin-template\\\\src\" -Recurse -File | ForEach-Object { $_.FullName })",
+      "PowerShell(Join-Path *)",
+      "PowerShell(pnpm typecheck *)",
+      "PowerShell(pnpm build *)",
+      "PowerShell(pnpm test *)",
+      "PowerShell(pnpm list *)",
+      "PowerShell(pnpm vitest *)",
+      "Bash(pnpm vitest *)",
+      "PowerShell(gh auth *)",
+      "PowerShell(git config *)",
+      "Bash(git init *)",
+      "Bash(git add *)"
+    ]
+  }
+}
