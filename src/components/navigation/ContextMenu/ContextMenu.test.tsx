@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   ContextMenu,
@@ -32,12 +32,14 @@ describe('ContextMenu', () => {
     expect(screen.getByRole('menu')).toBeInTheDocument();
   });
 
-  it('positions at the cursor coordinates', () => {
+  it('positions at the cursor coordinates', async () => {
     render(<Demo />);
     fireEvent.contextMenu(screen.getByTestId('target'), { clientX: 120, clientY: 80 });
     const menu = screen.getByRole('menu');
-    expect(menu.style.left).toBe('120px');
-    expect(menu.style.top).toBe('80px');
+    await waitFor(() => {
+      expect(menu.style.left).toBe('120px');
+      expect(menu.style.top).toBe('80px');
+    });
   });
 
   it('Escape closes', async () => {

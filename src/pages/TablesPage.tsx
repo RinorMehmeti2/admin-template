@@ -1,12 +1,5 @@
 import { format } from 'date-fns';
-import {
-  Copy,
-  Eye,
-  MoreHorizontal,
-  Plus,
-  Receipt,
-  Trash2,
-} from 'lucide-react';
+import { Copy, Eye, MoreHorizontal, Plus, Receipt, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import {
@@ -55,8 +48,30 @@ const ROLES: User['role'][] = ['Admin', 'Member', 'Viewer'];
 const STATUSES: User['status'][] = ['Active', 'Invited', 'Suspended'];
 
 function makeUsers(n: number): User[] {
-  const first = ['Ada', 'Grace', 'Linus', 'Margaret', 'Alan', 'Edsger', 'Donald', 'Barbara', 'Niklaus', 'Bjarne'];
-  const last = ['Lovelace', 'Hopper', 'Torvalds', 'Hamilton', 'Turing', 'Dijkstra', 'Knuth', 'Liskov', 'Wirth', 'Stroustrup'];
+  const first = [
+    'Ada',
+    'Grace',
+    'Linus',
+    'Margaret',
+    'Alan',
+    'Edsger',
+    'Donald',
+    'Barbara',
+    'Niklaus',
+    'Bjarne',
+  ];
+  const last = [
+    'Lovelace',
+    'Hopper',
+    'Torvalds',
+    'Hamilton',
+    'Turing',
+    'Dijkstra',
+    'Knuth',
+    'Liskov',
+    'Wirth',
+    'Stroustrup',
+  ];
   return Array.from({ length: n }).map((_, i) => {
     const f = first[i % first.length]!;
     const l = last[(i * 7) % last.length]!;
@@ -81,7 +96,15 @@ interface Order {
 }
 
 function makeOrders(n: number): Order[] {
-  const customers = ['Acme Inc.', 'Globex', 'Initech', 'Umbrella', 'Soylent', 'Hooli', 'Pied Piper'];
+  const customers = [
+    'Acme Inc.',
+    'Globex',
+    'Initech',
+    'Umbrella',
+    'Soylent',
+    'Hooli',
+    'Pied Piper',
+  ];
   return Array.from({ length: n }).map((_, i) => {
     const days = i * 2;
     const d = new Date();
@@ -110,7 +133,8 @@ export function TablesPage() {
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">Tables</h1>
         <p className="mt-1 text-foreground-muted">
-          The Table primitive plus the generic DataTable composition with sort, filter, paginate, select.
+          The Table primitive plus the generic DataTable composition with sort, filter, paginate,
+          select.
         </p>
       </header>
 
@@ -204,9 +228,7 @@ const userColumns: ColumnDef<User, unknown>[] = [
     accessorKey: 'lastSeenDays',
     header: 'Last seen',
     cell: ({ row }) =>
-      row.original.lastSeenDays === 0
-        ? 'Today'
-        : `${row.original.lastSeenDays}d ago`,
+      row.original.lastSeenDays === 0 ? 'Today' : `${row.original.lastSeenDays}d ago`,
   },
 ];
 
@@ -219,7 +241,9 @@ function UsersTableSection() {
       <CardHeader className="flex-row items-start justify-between gap-4">
         <div className="space-y-1">
           <CardTitle>Users</CardTitle>
-          <CardDescription>50 mock users — sortable, searchable, paginated, selectable.</CardDescription>
+          <CardDescription>
+            50 mock users — sortable, searchable, paginated, selectable.
+          </CardDescription>
         </div>
         <Button leftIcon={<Plus className="h-4 w-4" />}>Invite user</Button>
       </CardHeader>
@@ -286,9 +310,7 @@ function OrderActionMenu({ order }: { order: Order }) {
           <Eye className="h-4 w-4" />
           View invoice
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={() => navigator.clipboard?.writeText(order.id)}
-        >
+        <DropdownMenuItem onSelect={() => navigator.clipboard?.writeText(order.id)}>
           <Copy className="h-4 w-4" />
           Copy ID
         </DropdownMenuItem>
@@ -315,8 +337,7 @@ function OrdersTableSection() {
             {format(row.original.placedAt, 'MMM d, yyyy')}
           </span>
         ),
-        sortingFn: (a, b) =>
-          a.original.placedAt.getTime() - b.original.placedAt.getTime(),
+        sortingFn: (a, b) => a.original.placedAt.getTime() - b.original.placedAt.getTime(),
       },
       {
         accessorKey: 'amount',
@@ -344,6 +365,8 @@ function OrdersTableSection() {
         enableSorting: false,
         enableHiding: false,
         cell: ({ row }) => (
+          // Wrapper stops row-click bubbling so the menu trigger doesn't open the row.
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
           <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
             <OrderActionMenu order={row.original} />
           </div>

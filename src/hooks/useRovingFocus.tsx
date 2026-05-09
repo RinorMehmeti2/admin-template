@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type JSX,
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
   type RefObject,
@@ -34,7 +35,7 @@ export function RovingFocusGroup({
   loop = true,
   defaultIndex = 0,
   children,
-}: RovingFocusGroupProps) {
+}: RovingFocusGroupProps): JSX.Element {
   const [activeIndex, setActiveIndex] = useState(defaultIndex);
   const itemsRef = useRef<Map<number, () => HTMLElement | null>>(new Map());
 

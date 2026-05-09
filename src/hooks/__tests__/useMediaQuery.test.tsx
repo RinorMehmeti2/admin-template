@@ -39,6 +39,8 @@ describe('useMediaQuery', () => {
     const { result } = renderHook(() => useMediaQuery('(min-width: 1px)'));
     expect(result.current).toBe(false);
     act(() => {
+      // Real browser: matches flips before change event fires.
+      currentMatches = true;
       listeners.forEach((l) => l({ matches: true } as MediaQueryListEvent));
     });
     expect(result.current).toBe(true);

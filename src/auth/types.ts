@@ -20,22 +20,14 @@ export interface User {
   avatarUrl?: string;
 }
 
-export type AuthState =
-  | 'idle'
-  | 'authenticating'
-  | 'authenticated'
-  | 'unauthenticated';
+export type AuthState = 'idle' | 'authenticating' | 'authenticated' | 'unauthenticated';
 
 export interface LoginCredentials {
   email: string;
   password: string;
 }
 
-export type AuthErrorCode =
-  | 'invalid_credentials'
-  | 'network'
-  | 'session_expired'
-  | 'unknown';
+export type AuthErrorCode = 'invalid_credentials' | 'network' | 'session_expired' | 'unknown';
 
 export interface AuthError {
   code: AuthErrorCode;
@@ -43,10 +35,5 @@ export interface AuthError {
 }
 
 export function isAuthError(value: unknown): value is AuthError {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'code' in value &&
-    'message' in value
-  );
+  return typeof value === 'object' && value !== null && 'code' in value && 'message' in value;
 }

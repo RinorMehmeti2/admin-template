@@ -19,9 +19,8 @@ export function AdminPage() {
 
       {user !== null ? (
         <div className="rounded-md border border-border bg-surface p-4 text-sm text-foreground-muted">
-          Signed in as <strong className="text-foreground">{user.name}</strong> (
-          {user.email}) with roles{' '}
-          <code className="font-mono">{user.roles.join(', ')}</code>.
+          Signed in as <strong className="text-foreground">{user.name}</strong> ({user.email}) with
+          roles <code className="font-mono">{user.roles.join(', ')}</code>.
         </div>
       ) : null}
     </div>

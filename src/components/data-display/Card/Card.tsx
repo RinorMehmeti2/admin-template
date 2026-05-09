@@ -13,16 +13,12 @@ const cardStyles = cva('rounded-lg bg-surface text-foreground', {
   defaultVariants: { variant: 'default' },
 });
 
-export interface CardProps
-  extends HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardStyles> {
+export interface CardProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardStyles> {
   ref?: Ref<HTMLDivElement>;
 }
 
 export function Card({ ref, className, variant, ...rest }: CardProps) {
-  return (
-    <div ref={ref} className={cn(cardStyles({ variant }), className)} {...rest} />
-  );
+  return <div ref={ref} className={cn(cardStyles({ variant }), className)} {...rest} />;
 }
 
 export interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {
@@ -30,26 +26,22 @@ export interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export function CardHeader({ ref, className, ...rest }: CardHeaderProps) {
-  return (
-    <div
-      ref={ref}
-      className={cn('flex flex-col gap-1 px-6 pt-6', className)}
-      {...rest}
-    />
-  );
+  return <div ref={ref} className={cn('flex flex-col gap-1 px-6 pt-6', className)} {...rest} />;
 }
 
 export interface CardTitleProps extends HTMLAttributes<HTMLHeadingElement> {
   ref?: Ref<HTMLHeadingElement>;
 }
 
-export function CardTitle({ ref, className, ...rest }: CardTitleProps) {
+export function CardTitle({ ref, className, children, ...rest }: CardTitleProps) {
   return (
     <h3
       ref={ref}
       className={cn('text-base font-semibold leading-tight text-foreground', className)}
       {...rest}
-    />
+    >
+      {children}
+    </h3>
   );
 }
 
@@ -58,13 +50,7 @@ export interface CardDescriptionProps extends HTMLAttributes<HTMLParagraphElemen
 }
 
 export function CardDescription({ ref, className, ...rest }: CardDescriptionProps) {
-  return (
-    <p
-      ref={ref}
-      className={cn('text-sm text-foreground-muted', className)}
-      {...rest}
-    />
-  );
+  return <p ref={ref} className={cn('text-sm text-foreground-muted', className)} {...rest} />;
 }
 
 export interface CardContentProps extends HTMLAttributes<HTMLDivElement> {
@@ -83,10 +69,7 @@ export function CardFooter({ ref, className, ...rest }: CardFooterProps) {
   return (
     <div
       ref={ref}
-      className={cn(
-        'flex items-center gap-2 border-t border-border px-6 py-4',
-        className,
-      )}
+      className={cn('flex items-center gap-2 border-t border-border px-6 py-4', className)}
       {...rest}
     />
   );

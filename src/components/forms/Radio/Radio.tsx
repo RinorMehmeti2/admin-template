@@ -3,8 +3,10 @@ import { cn } from '@/lib/cn';
 import { useRadioGroup } from '@/components/forms/RadioGroup';
 import { useFieldAriaProps } from '@/components/forms/FormField/FormFieldContext';
 
-export interface RadioProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size' | 'value'> {
+export interface RadioProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'type' | 'size' | 'value'
+> {
   ref?: Ref<HTMLInputElement>;
   value: string;
   /** Optional inline label rendered next to the control. */
@@ -37,10 +39,7 @@ export function Radio({
   const isDisabled = disabled === true || groupDisabled;
   const resolvedName = inGroup ? group.name : name;
 
-  const handleChange =
-    inGroup
-      ? () => group.onValueChange(value)
-      : onChange;
+  const handleChange = inGroup ? () => group.onValueChange(value) : onChange;
 
   return (
     <label
@@ -51,6 +50,8 @@ export function Radio({
       )}
     >
       <span className="relative inline-flex h-4 w-4 shrink-0">
+        {/* aria-invalid is valid on radio per ARIA 1.2; jsx-a11y has outdated mapping. */}
+        {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props */}
         <input
           ref={ref}
           type="radio"

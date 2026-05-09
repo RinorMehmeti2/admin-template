@@ -21,12 +21,14 @@ export interface ToastProps {
 export function Toast({ toast, onDismiss }: ToastProps) {
   const [paused, setPaused] = useState(false);
   const remaining = useRef(toast.duration);
-  const startTime = useRef<number>(Date.now());
+  const startTime = useRef<number>(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Keep onDismiss in a ref so the timer effect doesn't re-fire on parent re-render.
   const onDismissRef = useRef(onDismiss);
-  onDismissRef.current = onDismiss;
+  useEffect(() => {
+    onDismissRef.current = onDismiss;
+  });
 
   useEffect(() => {
     if (toast.duration === 0 || !Number.isFinite(toast.duration)) return; // sticky
@@ -65,12 +67,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
           <p className="text-sm font-medium text-foreground">{toast.title}</p>
         ) : null}
         {toast.description !== undefined ? (
-          <p
-            className={cn(
-              'text-sm text-foreground-muted',
-              toast.title !== undefined && 'mt-0.5',
-            )}
-          >
+          <p className={cn('text-sm text-foreground-muted', toast.title !== undefined && 'mt-0.5')}>
             {toast.description}
           </p>
         ) : null}

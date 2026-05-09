@@ -77,10 +77,13 @@ export function CommandPalette({
   useEscapeKey(() => closePalette(), { enabled: open });
   useClickOutside(panelRef, () => closePalette(), { enabled: open });
 
-  // Reset on open.
+  // Reset on open. Intentional setState-in-effect: clearing query/active-index in
+  // response to the `open` transition.
   useEffect(() => {
     if (!open) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setQuery('');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveIndex(0);
     const id = window.setTimeout(() => inputRef.current?.focus(), 0);
     return () => window.clearTimeout(id);
@@ -110,9 +113,7 @@ export function CommandPalette({
   // Scroll active option into view.
   useEffect(() => {
     if (safeActive < 0) return;
-    const el = listboxRef.current?.querySelector<HTMLElement>(
-      `[data-cmd-index="${safeActive}"]`,
-    );
+    const el = listboxRef.current?.querySelector<HTMLElement>(`[data-cmd-index="${safeActive}"]`);
     if (el !== null && el !== undefined && typeof el.scrollIntoView === 'function') {
       el.scrollIntoView({ block: 'nearest' });
     }
@@ -230,10 +231,17 @@ export function CommandPalette({
                     id={`${listboxId}-${idx}`}
                     data-cmd-index={idx}
                     aria-selected={isActive}
+                    tabIndex={-1}
                     onMouseMove={() => {
                       if (idx !== activeIndex) setActiveIndex(idx);
                     }}
                     onClick={() => performAt(idx)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        performAt(idx);
+                      }
+                    }}
                     className={cn(
                       'flex cursor-default select-none items-center gap-3 rounded-md px-2 py-2 text-sm',
                       isActive ? 'bg-surface-muted text-foreground' : 'text-foreground',

@@ -79,8 +79,11 @@ export function SidebarProvider({ children, defaultCollapsed }: SidebarProviderP
     }
   }, []);
 
-  // Auto-close mobile drawer on viewport switch back to desktop
+  // Auto-close mobile drawer on viewport switch back to desktop. Intentional
+  // setState-in-effect: clearing transient UI state in response to an external
+  // (matchMedia) signal is the documented pattern.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!isMobile && mobileOpen) setMobileOpen(false);
   }, [isMobile, mobileOpen]);
 
@@ -155,9 +158,7 @@ export function Sidebar({
         <div className="border-b border-border px-3 py-3">{header}</div>
       ) : null}
       <div className="min-h-0 flex-1 overflow-y-auto p-2">{children}</div>
-      {footer !== undefined ? (
-        <div className="border-t border-border p-2">{footer}</div>
-      ) : null}
+      {footer !== undefined ? <div className="border-t border-border p-2">{footer}</div> : null}
     </aside>
   );
 }

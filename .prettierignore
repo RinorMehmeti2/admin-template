@@ -1,0 +1,11 @@
+node_modules
+dist
+storybook-static
+coverage
+build
+.next
+out
+*.lock
+*.log
+.husky/_
+pnpm-lock.yaml

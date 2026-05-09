@@ -13,6 +13,8 @@ dist-ssr
 storybook-static
 *.local
 
+.playwright-mcp/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -20,11 +20,7 @@ interface FromState {
   from?: string;
 }
 
-export function PublicOnlyRoute({
-  children,
-  redirectTo = '/',
-  fallback,
-}: PublicOnlyRouteProps) {
+export function PublicOnlyRoute({ children, redirectTo = '/', fallback }: PublicOnlyRouteProps) {
   const { state } = useAuth();
   const location = useLocation();
   const from = (location.state as FromState | null)?.from;

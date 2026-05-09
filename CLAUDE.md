@@ -120,12 +120,11 @@ const buttonStyles = cva(
       },
     },
     defaultVariants: { variant: 'primary', size: 'md' },
-  }
+  },
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonStyles> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonStyles> {
   ref?: React.Ref<HTMLButtonElement>;
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
@@ -286,3 +285,19 @@ A component is complete only when ALL of these are true:
 - If a request would violate a rule in this file, say so before writing the code.
 - If a task would be drastically simpler with a library we've banned, mention it as info — but build from scratch anyway unless I explicitly approve the dep.
 - Keep PR-style summaries terse — what changed, why, what to verify.
+
+## Positioning — known limitations
+
+`usePosition` (and `usePositionAtPoint`) handle viewport flip + perpendicular
+shift, but explicitly do NOT handle:
+
+- Transformed ancestors of the portal container (we portal to document.body —
+  if a future change moves portals into a transformed subtree, coordinates
+  will be wrong).
+- Element-level scrollers without window resize (no ResizeObserver on
+  trigger/content — add one if a real case appears).
+- Arrow-glyph offset (`data-side` is exposed; no arrow component exists yet).
+- Split placement (we flip OR shift, not partial-place).
+
+@floating-ui/react-dom was evaluated and deferred. Revisit when building
+Popover with arrows, virtual-trigger overlays, or if portaling targets change.

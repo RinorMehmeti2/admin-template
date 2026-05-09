@@ -77,9 +77,7 @@ function AuthMenu() {
           <DropdownMenuLabel>
             <div className="flex flex-col">
               <span className="font-medium text-foreground">{user.name}</span>
-              <span className="text-xs font-normal text-foreground-subtle">
-                {user.email}
-              </span>
+              <span className="text-xs font-normal text-foreground-subtle">{user.email}</span>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

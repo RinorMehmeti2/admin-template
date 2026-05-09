@@ -16,6 +16,7 @@ import {
 } from 'react';
 import { cn } from '@/lib/cn';
 import { useMergedRefs } from '@/hooks/useMergedRefs';
+import { usePositionAtPoint } from '@/hooks/usePosition';
 import { MenuPanel } from '@/components/navigation/DropdownMenu';
 
 /*
@@ -51,12 +52,13 @@ export function ContextMenu({ children }: ContextMenuProps) {
     () => ({ open, setOpen, position, setPosition }),
     [open, position],
   );
-  return (
-    <ContextMenuContext.Provider value={value}>{children}</ContextMenuContext.Provider>
-  );
+  return <ContextMenuContext.Provider value={value}>{children}</ContextMenuContext.Provider>;
 }
 
-export interface ContextMenuTriggerProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onContextMenu'> {
+export interface ContextMenuTriggerProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  'onContextMenu'
+> {
   ref?: Ref<HTMLDivElement>;
   disabled?: boolean;
 }
@@ -86,12 +88,7 @@ export function ContextMenuTrigger({
   );
 
   return (
-    <div
-      ref={merged}
-      onContextMenu={handleContextMenu}
-      className={cn(className)}
-      {...rest}
-    >
+    <div ref={merged} onContextMenu={handleContextMenu} className={cn(className)} {...rest}>
       {children}
     </div>
   );
@@ -103,18 +100,30 @@ export interface ContextMenuContentProps extends Omit<HTMLAttributes<HTMLDivElem
 
 export function ContextMenuContent({ ref, className, children, ...rest }: ContextMenuContentProps) {
   const ctx = useContextMenu('ContextMenuContent');
+  const internal = useRef<HTMLDivElement>(null);
+  const merged = useMergedRefs<HTMLDivElement>(internal, ref);
+  const pos = usePositionAtPoint(internal, {
+    point: ctx.position,
+    enabled: ctx.open,
+    placement: 'bottom-start',
+    offset: 0,
+  });
+
   return (
     <MenuPanel
-      ref={ref}
+      ref={merged}
       open={ctx.open}
       onClose={() => ctx.setOpen(false)}
-      positionStyle={{ position: 'absolute', left: ctx.position.x, top: ctx.position.y }}
+      positionStyle={{ position: 'absolute', left: pos.x, top: pos.y }}
+      dataSide={pos.placement}
       className={className}
       {...rest}
     >
-      {Children.toArray(children).filter(isValidElement).map((c, i) =>
-        cloneElement(c as ReactElement<{ __rovingIndex?: number }>, { __rovingIndex: i }),
-      )}
+      {Children.toArray(children)
+        .filter(isValidElement)
+        .map((c, i) =>
+          cloneElement(c as ReactElement<{ __rovingIndex?: number }>, { __rovingIndex: i }),
+        )}
     </MenuPanel>
   );
 }

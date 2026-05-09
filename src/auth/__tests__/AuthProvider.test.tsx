@@ -99,9 +99,7 @@ describe('AuthProvider', () => {
         <Probe />
       </AuthProvider>,
     );
-    await waitFor(() =>
-      expect(screen.getByTestId('state').textContent).toBe('unauthenticated'),
-    );
+    await waitFor(() => expect(screen.getByTestId('state').textContent).toBe('unauthenticated'));
     expect(screen.getByTestId('user').textContent).toBe('none');
   });
 
@@ -112,9 +110,7 @@ describe('AuthProvider', () => {
         <Probe />
       </AuthProvider>,
     );
-    await waitFor(() =>
-      expect(screen.getByTestId('state').textContent).toBe('authenticated'),
-    );
+    await waitFor(() => expect(screen.getByTestId('state').textContent).toBe('authenticated'));
     expect(screen.getByTestId('user').textContent).toBe('admin@example.com');
     expect(screen.getByTestId('is-admin').textContent).toBe('true');
   });
@@ -126,16 +122,12 @@ describe('AuthProvider', () => {
         <Probe />
       </AuthProvider>,
     );
-    await waitFor(() =>
-      expect(screen.getByTestId('state').textContent).toBe('unauthenticated'),
-    );
+    await waitFor(() => expect(screen.getByTestId('state').textContent).toBe('unauthenticated'));
 
     await act(async () => {
       screen.getByText('login').click();
     });
-    await waitFor(() =>
-      expect(screen.getByTestId('state').textContent).toBe('authenticated'),
-    );
+    await waitFor(() => expect(screen.getByTestId('state').textContent).toBe('authenticated'));
     expect(screen.getByTestId('user').textContent).toBe('editor@example.com');
     expect(screen.getByTestId('is-admin').textContent).toBe('false');
     expect(screen.getByTestId('any-staff').textContent).toBe('true');
@@ -156,9 +148,7 @@ describe('AuthProvider', () => {
         <Probe />
       </AuthProvider>,
     );
-    await waitFor(() =>
-      expect(screen.getByTestId('state').textContent).toBe('unauthenticated'),
-    );
+    await waitFor(() => expect(screen.getByTestId('state').textContent).toBe('unauthenticated'));
 
     await act(async () => {
       screen.getByText('login').click();
@@ -177,16 +167,12 @@ describe('AuthProvider', () => {
         <Probe />
       </AuthProvider>,
     );
-    await waitFor(() =>
-      expect(screen.getByTestId('state').textContent).toBe('authenticated'),
-    );
+    await waitFor(() => expect(screen.getByTestId('state').textContent).toBe('authenticated'));
 
     await act(async () => {
       screen.getByText('logout').click();
     });
-    await waitFor(() =>
-      expect(screen.getByTestId('state').textContent).toBe('unauthenticated'),
-    );
+    await waitFor(() => expect(screen.getByTestId('state').textContent).toBe('unauthenticated'));
     expect(screen.getByTestId('user').textContent).toBe('none');
     expect(client.logoutCalls).toBe(1);
   });
@@ -198,9 +184,7 @@ describe('AuthProvider', () => {
         <Probe />
       </AuthProvider>,
     );
-    await waitFor(() =>
-      expect(screen.getByTestId('state').textContent).toBe('unauthenticated'),
-    );
+    await waitFor(() => expect(screen.getByTestId('state').textContent).toBe('unauthenticated'));
     expect(screen.getByTestId('error').textContent).toBe('boom');
   });
 
@@ -212,9 +196,7 @@ describe('AuthProvider', () => {
         <Probe />
       </AuthProvider>,
     );
-    await waitFor(() =>
-      expect(screen.getByTestId('state').textContent).toBe('unauthenticated'),
-    );
+    await waitFor(() => expect(screen.getByTestId('state').textContent).toBe('unauthenticated'));
     expect(refreshSpy).not.toHaveBeenCalled();
   });
 
@@ -225,9 +207,7 @@ describe('AuthProvider', () => {
         <Probe />
       </AuthProvider>,
     );
-    await waitFor(() =>
-      expect(screen.getByTestId('state').textContent).toBe('authenticated'),
-    );
+    await waitFor(() => expect(screen.getByTestId('state').textContent).toBe('authenticated'));
     expect(screen.getByTestId('is-admin').textContent).toBe('false');
     expect(screen.getByTestId('any-staff').textContent).toBe('true');
   });

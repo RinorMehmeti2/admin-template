@@ -33,11 +33,7 @@ function DefaultLoading(): ReactElement {
   );
 }
 
-export function ProtectedRoute({
-  children,
-  redirectTo = '/login',
-  fallback,
-}: ProtectedRouteProps) {
+export function ProtectedRoute({ children, redirectTo = '/login', fallback }: ProtectedRouteProps) {
   const { state } = useAuth();
   const location = useLocation();
 

@@ -25,7 +25,7 @@ import { useFocusReturn } from '@/hooks/useFocusReturn';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { useMergedRefs } from '@/hooks/useMergedRefs';
-import { usePosition, type Placement } from '@/hooks/usePosition';
+import { usePosition, type Boundary, type Placement } from '@/hooks/usePosition';
 import { RovingFocusGroup, useRovingFocusItem } from '@/hooks/useRovingFocus';
 import { Portal } from '@/components/overlays/Portal';
 import { Kbd } from '@/components/primitives/Kbd';
@@ -164,6 +164,8 @@ interface MenuPanelProps extends Omit<HTMLAttributes<HTMLDivElement>, 'role' | '
   positionStyle: React.CSSProperties;
   /** Element id for ARIA wiring. */
   id?: string | undefined;
+  /** Resolved placement (post-flip) — exposed as data-side for styling. */
+  dataSide?: Placement | undefined;
 }
 
 interface ItemEntry {
@@ -178,6 +180,7 @@ export function MenuPanel({
   onClose,
   positionStyle,
   id,
+  dataSide,
   className,
   children,
   ...rest
@@ -220,7 +223,11 @@ export function MenuPanel({
       if (items.length === 0) return;
       const safe = ((i % items.length) + items.length) % items.length;
       const target = items[safe]?.getEl();
-      target?.focus();
+      // `preventScroll: true` is required because this is called on menu
+      // open (via the useEffect below), at which point the menu's portal is
+      // still at (0,0) waiting on usePosition — a plain .focus() would
+      // scroll the page to the top of the document.
+      target?.focus({ preventScroll: true });
     },
     [orderedItems],
   );
@@ -292,6 +299,7 @@ export function MenuPanel({
           ref={merged}
           role="menu"
           id={id}
+          data-side={dataSide}
           tabIndex={-1}
           style={positionStyle}
           onKeyDown={onKeyDownPanel}
@@ -319,12 +327,20 @@ export interface DropdownMenuContentProps extends Omit<HTMLAttributes<HTMLDivEle
   ref?: Ref<HTMLDivElement>;
   side?: Placement;
   sideOffset?: number;
+  flip?: boolean;
+  shift?: boolean;
+  padding?: number;
+  boundary?: Boundary;
 }
 
 export function DropdownMenuContent({
   ref,
   side = 'bottom-start',
   sideOffset = 4,
+  flip,
+  shift,
+  padding,
+  boundary,
   className,
   children,
   ...rest
@@ -332,11 +348,16 @@ export function DropdownMenuContent({
   const ctx = useDropdownMenu('DropdownMenuContent');
   const contentRef = useRef<HTMLDivElement>(null);
   const merged = useMergedRefs<HTMLDivElement>(contentRef, ref);
-  const pos = usePosition(ctx.triggerRef, contentRef, {
+  const positionOptions: Parameters<typeof usePosition>[2] = {
     placement: side,
     offset: sideOffset,
     enabled: ctx.open,
-  });
+  };
+  if (flip !== undefined) positionOptions.flip = flip;
+  if (shift !== undefined) positionOptions.shift = shift;
+  if (padding !== undefined) positionOptions.padding = padding;
+  if (boundary !== undefined) positionOptions.boundary = boundary;
+  const pos = usePosition(ctx.triggerRef, contentRef, positionOptions);
 
   return (
     <MenuPanel
@@ -345,12 +366,15 @@ export function DropdownMenuContent({
       onClose={() => ctx.setOpen(false)}
       id={ctx.contentId}
       positionStyle={{ position: 'absolute', left: pos.x, top: pos.y }}
+      dataSide={pos.placement}
       className={className}
       {...rest}
     >
-      {Children.toArray(children).filter(isValidElement).map((c, i) =>
-        cloneElement(c as ReactElement<{ __rovingIndex?: number }>, { __rovingIndex: i }),
-      )}
+      {Children.toArray(children)
+        .filter(isValidElement)
+        .map((c, i) =>
+          cloneElement(c as ReactElement<{ __rovingIndex?: number }>, { __rovingIndex: i }),
+        )}
     </MenuPanel>
   );
 }
@@ -389,10 +413,7 @@ function useMenuItemKeyboard({
 }) {
   const panel = useMenuPanel('MenuItem');
   const itemId = useId('menu-item');
-  const { tabIndex, onKeyDown: rovingOnKeyDown, onFocus } = useRovingFocusItem(
-    rovingIndex,
-    ref,
-  );
+  const { tabIndex, onKeyDown: rovingOnKeyDown, onFocus } = useRovingFocusItem(rovingIndex, ref);
 
   useEffect(
     () => panel.registerItem(itemId, () => ref.current, textGetter),
@@ -533,7 +554,10 @@ export function DropdownMenuCheckboxItem({
       onClick={(e) => activate(e)}
       className={cn(itemBase, 'pl-7', className)}
     >
-      <span className="absolute left-2 inline-flex h-3.5 w-3.5 items-center justify-center" aria-hidden="true">
+      <span
+        className="absolute left-2 inline-flex h-3.5 w-3.5 items-center justify-center"
+        aria-hidden="true"
+      >
         {checked ? <Check className="h-3.5 w-3.5" /> : null}
       </span>
       {children}
@@ -583,7 +607,8 @@ export function DropdownMenuRadioItem({
   const internal = useRef<HTMLDivElement>(null);
   const merged = useMergedRefs<HTMLDivElement>(internal, ref);
   const group = useContext(DropdownRadioGroupContext);
-  if (group === null) throw new Error('DropdownMenuRadioItem must be inside DropdownMenuRadioGroup');
+  if (group === null)
+    throw new Error('DropdownMenuRadioItem must be inside DropdownMenuRadioGroup');
   const panel = useMenuPanel('DropdownMenuRadioItem');
   const isDisabled = disabled === true;
   const checked = group.value === value;
@@ -614,7 +639,10 @@ export function DropdownMenuRadioItem({
       onClick={(e) => activate(e)}
       className={cn(itemBase, 'pl-7', className)}
     >
-      <span className="absolute left-2 inline-flex h-3.5 w-3.5 items-center justify-center" aria-hidden="true">
+      <span
+        className="absolute left-2 inline-flex h-3.5 w-3.5 items-center justify-center"
+        aria-hidden="true"
+      >
         {checked ? <Circle className="h-2 w-2 fill-current" /> : null}
       </span>
       {children}
@@ -684,10 +712,13 @@ export function DropdownMenuSubTrigger({
   const internal = useRef<HTMLDivElement>(null);
   const merged = useMergedRefs<HTMLDivElement>(internal, ref);
   const sub = useSubContext('DropdownMenuSubTrigger');
-  // attach trigger to sub's triggerRef so usePosition can anchor
+  // Attach trigger to sub's triggerRef so usePosition can anchor.
+  // The sub.triggerRef is a mutable RefObject by design.
+  /* eslint-disable react-hooks/immutability */
   useEffect(() => {
     sub.triggerRef.current = internal.current;
   });
+  /* eslint-enable react-hooks/immutability */
   const isDisabled = disabled === true;
 
   const activate = () => {
@@ -738,16 +769,25 @@ export function DropdownMenuSubContent({
   children,
   side = 'right',
   sideOffset = 4,
+  flip,
+  shift,
+  padding,
+  boundary,
   ...rest
 }: DropdownMenuContentProps) {
   const sub = useSubContext('DropdownMenuSubContent');
   const contentRef = useRef<HTMLDivElement>(null);
   const merged = useMergedRefs<HTMLDivElement>(contentRef, ref);
-  const pos = usePosition(sub.triggerRef, contentRef, {
+  const positionOptions: Parameters<typeof usePosition>[2] = {
     placement: side,
     offset: sideOffset,
     enabled: sub.open,
-  });
+  };
+  if (flip !== undefined) positionOptions.flip = flip;
+  if (shift !== undefined) positionOptions.shift = shift;
+  if (padding !== undefined) positionOptions.padding = padding;
+  if (boundary !== undefined) positionOptions.boundary = boundary;
+  const pos = usePosition(sub.triggerRef, contentRef, positionOptions);
 
   return (
     <MenuPanel
@@ -756,12 +796,15 @@ export function DropdownMenuSubContent({
       onClose={() => sub.setOpen(false)}
       id={sub.contentId}
       positionStyle={{ position: 'absolute', left: pos.x, top: pos.y }}
+      dataSide={pos.placement}
       className={className}
       {...rest}
     >
-      {Children.toArray(children).filter(isValidElement).map((c, i) =>
-        cloneElement(c as ReactElement<{ __rovingIndex?: number }>, { __rovingIndex: i }),
-      )}
+      {Children.toArray(children)
+        .filter(isValidElement)
+        .map((c, i) =>
+          cloneElement(c as ReactElement<{ __rovingIndex?: number }>, { __rovingIndex: i }),
+        )}
     </MenuPanel>
   );
 }

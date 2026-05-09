@@ -16,9 +16,11 @@ export function useClickOutside<T extends HTMLElement>(
   const { enabled = true } = options;
 
   const refsRef = useRef(refs);
-  refsRef.current = refs;
   const handlerRef = useRef(handler);
-  handlerRef.current = handler;
+  useEffect(() => {
+    refsRef.current = refs;
+    handlerRef.current = handler;
+  });
 
   useEffect(() => {
     if (!enabled) return;

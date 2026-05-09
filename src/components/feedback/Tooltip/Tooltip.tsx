@@ -20,7 +20,7 @@ import { useId } from '@/hooks/useId';
 import { useControllableState } from '@/hooks/useControllableState';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useMergedRefs } from '@/hooks/useMergedRefs';
-import { usePosition, type Placement } from '@/hooks/usePosition';
+import { usePosition, type Boundary, type Placement } from '@/hooks/usePosition';
 import { Portal } from '@/components/overlays/Portal';
 
 /* -------------------------------------------------------------------------- */
@@ -40,9 +40,7 @@ export interface TooltipProviderProps {
 
 export function TooltipProvider({ delayDuration = 300, children }: TooltipProviderProps) {
   const value = useMemo<TooltipConfig>(() => ({ delayDuration }), [delayDuration]);
-  return (
-    <TooltipConfigContext.Provider value={value}>{children}</TooltipConfigContext.Provider>
-  );
+  return <TooltipConfigContext.Provider value={value}>{children}</TooltipConfigContext.Provider>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -204,6 +202,10 @@ export interface TooltipContentProps extends Omit<HTMLAttributes<HTMLDivElement>
   ref?: Ref<HTMLDivElement>;
   side?: Placement;
   sideOffset?: number;
+  flip?: boolean;
+  shift?: boolean;
+  padding?: number;
+  boundary?: Boundary;
 }
 
 export function TooltipContent({
@@ -212,6 +214,10 @@ export function TooltipContent({
   children,
   side = 'top',
   sideOffset = 6,
+  flip,
+  shift,
+  padding,
+  boundary,
   ...rest
 }: TooltipContentProps) {
   const ctx = useTooltipContext('TooltipContent');
@@ -228,11 +234,16 @@ export function TooltipContent({
     return () => window.removeEventListener('scroll', onScroll, true);
   }, [ctx.open, ctx.setOpen]);
 
-  const pos = usePosition(ctx.triggerRef, internal, {
+  const positionOptions: Parameters<typeof usePosition>[2] = {
     placement: side,
     offset: sideOffset,
     enabled: ctx.open,
-  });
+  };
+  if (flip !== undefined) positionOptions.flip = flip;
+  if (shift !== undefined) positionOptions.shift = shift;
+  if (padding !== undefined) positionOptions.padding = padding;
+  if (boundary !== undefined) positionOptions.boundary = boundary;
+  const pos = usePosition(ctx.triggerRef, internal, positionOptions);
 
   if (!ctx.open) return null;
 
@@ -242,6 +253,7 @@ export function TooltipContent({
         ref={merged}
         role="tooltip"
         id={ctx.contentId}
+        data-side={pos.placement}
         // We render at (0,0) before first rAF measurement instead of hiding.
         // In a real browser the measurement happens within one frame so the
         // flash is imperceptible; in tests (faked timers) it lets queries

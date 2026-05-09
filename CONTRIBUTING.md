@@ -117,7 +117,7 @@ Pick the right folder under `src/components/`:
 - `layout/` — Container, PageShell, PageHeader, Sidebar, Topbar
 - `overlays/` — Popover, ContextMenu, Sheet, CommandPalette, Portal
 
-### 2. Check `src/hooks/` *before* writing any UI code
+### 2. Check `src/hooks/` _before_ writing any UI code
 
 Open `src/hooks/` and look for behavioral primitives that match your needs.
 Examples of things you should compose, not reinvent:
@@ -136,7 +136,7 @@ Examples of things you should compose, not reinvent:
 - Stable IDs → `useId`
 - Debounced values → `useDebouncedValue`
 
-### 3. If a hook you need does not exist, build the hook *first*
+### 3. If a hook you need does not exist, build the hook _first_
 
 Add the hook to `src/hooks/` with its own test file under
 `src/hooks/__tests__/`. Cover every documented behavior — call counts,
@@ -227,7 +227,7 @@ automatically.
 ## Banned dependencies
 
 The following imports are blocked by ESLint and will fail CI. They are
-listed here so it is obvious what we will *not* take a PR for:
+listed here so it is obvious what we will _not_ take a PR for:
 
 - `@radix-ui/*`
 - `@mui/*`
@@ -293,9 +293,7 @@ export const myBackendClient: AuthClient = {
 Then in `App.tsx`:
 
 ```tsx
-<AuthProvider client={myBackendClient}>
-  …
-</AuthProvider>
+<AuthProvider client={myBackendClient}>…</AuthProvider>
 ```
 
 That's the entire integration surface. Component code that calls `useAuth()`

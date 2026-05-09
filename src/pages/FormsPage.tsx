@@ -5,7 +5,13 @@ import { Button } from '@/components/primitives/Button';
 import { Separator } from '@/components/primitives/Separator';
 import {
   Checkbox,
+  Combobox,
+  ComboboxContent,
+  ComboboxTrigger,
   Controller,
+  DatePicker,
+  DateRangePicker,
+  type DateRange,
   Form,
   FormField,
   Input,
@@ -14,9 +20,12 @@ import {
   Select,
   Switch,
   Textarea,
+  TimePicker,
+  DateTimePicker,
   useForm,
   zodResolver,
 } from '@/components/forms';
+import { addDays } from '@/lib/date';
 
 // ---------- LOGIN ----------
 
@@ -37,11 +46,7 @@ function LoginForm() {
   const { errors } = formState;
 
   return (
-    <Form
-      form={form}
-      onSubmit={(values) => setSubmitted(values)}
-      className="space-y-4"
-    >
+    <Form form={form} onSubmit={(values) => setSubmitted(values)} className="space-y-4">
       <FormField label="Email" required error={errors.email?.message}>
         <Input
           type="email"
@@ -86,7 +91,7 @@ function LoginForm() {
 
       {submitted !== null ? (
         <pre className="mt-3 rounded-md border border-border bg-surface-muted p-3 text-xs text-foreground-muted">
-{JSON.stringify(submitted, null, 2)}
+          {JSON.stringify(submitted, null, 2)}
         </pre>
       ) : null}
     </Form>
@@ -126,11 +131,7 @@ function SettingsForm() {
   const { errors } = formState;
 
   return (
-    <Form
-      form={form}
-      onSubmit={(values) => setSubmitted(values)}
-      className="space-y-5"
-    >
+    <Form form={form} onSubmit={(values) => setSubmitted(values)} className="space-y-5">
       <FormField label="Display name" required error={errors.name?.message}>
         <Input placeholder="Your name" {...register('name')} />
       </FormField>
@@ -219,10 +220,7 @@ function SettingsForm() {
         />
       </FormField>
 
-      <FormField
-        label="Account active"
-        description="Disabled accounts cannot sign in."
-      >
+      <FormField label="Account active" description="Disabled accounts cannot sign in.">
         <Controller
           control={control}
           name="active"
@@ -239,11 +237,7 @@ function SettingsForm() {
         />
       </FormField>
 
-      <FormField
-        label="Bio"
-        description="Up to 280 characters."
-        error={errors.bio?.message}
-      >
+      <FormField label="Bio" description="Up to 280 characters." error={errors.bio?.message}>
         <Textarea
           autoResize
           minRows={3}
@@ -264,10 +258,185 @@ function SettingsForm() {
 
       {submitted !== null ? (
         <pre className="mt-3 rounded-md border border-border bg-surface-muted p-3 text-xs text-foreground-muted">
-{JSON.stringify(submitted, null, 2)}
+          {JSON.stringify(submitted, null, 2)}
         </pre>
       ) : null}
     </Form>
+  );
+}
+
+// ---------- COMBOBOX DEMO ----------
+
+interface Country {
+  code: string;
+  name: string;
+}
+
+const COUNTRIES: ReadonlyArray<Country> = [
+  { code: 'us', name: 'United States' },
+  { code: 'ca', name: 'Canada' },
+  { code: 'gb', name: 'United Kingdom' },
+  { code: 'au', name: 'Australia' },
+  { code: 'de', name: 'Germany' },
+  { code: 'fr', name: 'France' },
+  { code: 'jp', name: 'Japan' },
+  { code: 'br', name: 'Brazil' },
+  { code: 'in', name: 'India' },
+  { code: 'mx', name: 'Mexico' },
+  { code: 'za', name: 'South Africa' },
+  { code: 'kr', name: 'South Korea' },
+];
+
+const TAG_SUGGESTIONS: ReadonlyArray<{ value: string; label: string }> = [
+  { value: 'frontend', label: 'frontend' },
+  { value: 'backend', label: 'backend' },
+  { value: 'design', label: 'design' },
+  { value: 'docs', label: 'docs' },
+  { value: 'a11y', label: 'a11y' },
+  { value: 'performance', label: 'performance' },
+  { value: 'testing', label: 'testing' },
+];
+
+function ComboboxDemo() {
+  const [country, setCountry] = useState<string | ReadonlyArray<string>>('');
+  const [tags, setTags] = useState<ReadonlyArray<string>>(['frontend', 'a11y']);
+  const [tagItems, setTagItems] = useState(TAG_SUGGESTIONS);
+
+  return (
+    <div className="grid gap-6 sm:grid-cols-2">
+      <FormField label="Country" description="Single-select with search.">
+        <Combobox<Country>
+          items={COUNTRIES}
+          getItemLabel={(c) => c.name}
+          getItemValue={(c) => c.code}
+          value={country}
+          onValueChange={setCountry}
+        >
+          <ComboboxTrigger placeholder="Pick a country…" />
+          <ComboboxContent />
+        </Combobox>
+      </FormField>
+
+      <FormField label="Tags" description="Multi-select. Type to create.">
+        <Combobox<{ value: string; label: string }>
+          items={tagItems}
+          getItemLabel={(t) => t.label}
+          getItemValue={(t) => t.value}
+          multiple
+          value={tags}
+          onValueChange={(next) => {
+            if (Array.isArray(next)) setTags(next);
+          }}
+          creatable
+          onCreate={(name) => {
+            const value = name.trim().toLowerCase().replace(/\s+/g, '-');
+            if (value === '') return;
+            setTagItems((cur) =>
+              cur.some((t) => t.value === value) ? cur : [...cur, { value, label: name.trim() }],
+            );
+            setTags((cur) => (cur.includes(value) ? cur : [...cur, value]));
+          }}
+        >
+          <ComboboxTrigger placeholder="Add tags…" />
+          <ComboboxContent />
+        </Combobox>
+      </FormField>
+    </div>
+  );
+}
+
+// ---------- DATE PICKER DEMO ----------
+
+function DatePickerDemo() {
+  const [date, setDate] = useState<Date | null>(null);
+  const [typedDate, setTypedDate] = useState<Date | null>(null);
+  const [range, setRange] = useState<DateRange>({ from: null, to: null });
+  const today = new Date();
+
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-6 sm:grid-cols-2">
+        <FormField label="Date" description="Click to open the calendar.">
+          <DatePicker value={date} onChange={setDate} placeholder="Pick a date" />
+        </FormField>
+
+        <FormField label="Date — typeable" description="allowTextInput, format YYYY-MM-DD.">
+          <DatePicker
+            value={typedDate}
+            onChange={setTypedDate}
+            allowTextInput
+            format="yyyy-MM-dd"
+            placeholder="2026-05-09"
+          />
+        </FormField>
+      </div>
+
+      <FormField label="Within next 30 days" description="With min/max bounds + weekend disabled.">
+        <DatePicker
+          minDate={today}
+          maxDate={addDays(today, 30)}
+          isDateDisabled={(d) => d.getDay() === 0 || d.getDay() === 6}
+          placeholder="Pick a weekday"
+        />
+      </FormField>
+
+      <FormField label="Date range" description="Two months + presets.">
+        <DateRangePicker value={range} onChange={setRange} />
+      </FormField>
+    </div>
+  );
+}
+
+// ---------- TIME PICKER DEMO ----------
+
+function TimePickerDemo() {
+  const [t24, setT24] = useState<string | null>('09:30');
+  const [t12, setT12] = useState<string | null>('14:30');
+  const [tStep, setTStep] = useState<string | null>('09:00');
+  const [tSec, setTSec] = useState<string | null>('10:15:30');
+
+  return (
+    <div className="grid gap-6 sm:grid-cols-2">
+      <FormField label="24-hour" description="Default format.">
+        <TimePicker value={t24} onChange={(n) => setT24(typeof n === 'string' ? n : null)} />
+      </FormField>
+
+      <FormField label="12-hour" description="With AM/PM column.">
+        <TimePicker
+          format="12h"
+          value={t12}
+          onChange={(n) => setT12(typeof n === 'string' ? n : null)}
+        />
+      </FormField>
+
+      <FormField label="15-min step" description="Quarter-hour increments.">
+        <TimePicker
+          step={15}
+          value={tStep}
+          onChange={(n) => setTStep(typeof n === 'string' ? n : null)}
+        />
+      </FormField>
+
+      <FormField label="With seconds" description="HH:MM:SS.">
+        <TimePicker
+          withSeconds
+          value={tSec}
+          onChange={(n) => setTSec(typeof n === 'string' ? n : null)}
+        />
+      </FormField>
+    </div>
+  );
+}
+
+// ---------- DATE TIME PICKER DEMO ----------
+
+function DateTimePickerDemo() {
+  const [v, setV] = useState<Date | null>(null);
+  return (
+    <FormField label="When" description="Composed DatePicker + TimePicker.">
+      <DateTimePicker value={v} onChange={setV} timeFormat="12h" step={15} />
+      {v !== null ? <p className="text-xs text-foreground-muted">{v.toString()}</p> : null}
+    </FormField>
   );
 }
 
@@ -300,6 +469,30 @@ export function FormsPage() {
 
       <Section title="User settings form">
         <SettingsForm />
+      </Section>
+
+      <Separator />
+
+      <Section title="Combobox / Autocomplete">
+        <ComboboxDemo />
+      </Section>
+
+      <Separator />
+
+      <Section title="Date pickers">
+        <DatePickerDemo />
+      </Section>
+
+      <Separator />
+
+      <Section title="Time picker">
+        <TimePickerDemo />
+      </Section>
+
+      <Separator />
+
+      <Section title="Date + time">
+        <DateTimePickerDemo />
       </Section>
     </div>
   );

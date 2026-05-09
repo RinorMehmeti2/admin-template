@@ -1,0 +1,17 @@
+# Normalize line endings — LF in repo and working tree.
+# Kills the autocrlf phantom-modified noise on Windows.
+* text=auto eol=lf
+
+# Binary files — never touch.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.pdf binary

@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { AuthClient } from './AuthClient';
 import { mockAuthClient } from './mockAuthClient';
 import { AuthContext, type AuthContextValue } from './useAuth';
@@ -62,11 +55,10 @@ export function AuthProvider({
   // while still honoring a swapped `client` prop. Mutation lives in an effect
   // to satisfy react-hooks/refs (no mutation during render).
   const clientRef = useRef(client);
-  /* eslint-disable react-hooks/refs */
+
   useEffect(() => {
     clientRef.current = client;
   });
-  /* eslint-enable react-hooks/refs */
 
   // Auto-refresh on mount.
   useEffect(() => {
@@ -128,8 +120,7 @@ export function AuthProvider({
   );
 
   const hasAnyRole = useCallback(
-    (roles: Role[]): boolean =>
-      user !== null && roles.some((r) => user.roles.includes(r)),
+    (roles: Role[]): boolean => user !== null && roles.some((r) => user.roles.includes(r)),
     [user],
   );
 

@@ -14,12 +14,7 @@ import { DataPage } from '@/pages/DataPage';
 import { TablesPage } from '@/pages/TablesPage';
 import { PositioningPage } from '@/pages/PositioningPage';
 import { ShowcasePage } from '@/pages/ShowcasePage';
-import {
-  DashboardPage,
-  LayoutDemo,
-  SettingsPage,
-  UsersPage,
-} from '@/pages/layout-demo';
+import { DashboardPage, LayoutDemo, SettingsPage, UsersPage } from '@/pages/layout-demo';
 import { ToastProvider } from '@/context/ToastProvider';
 import { ThemeProvider, useTheme } from '@/context/ThemeProvider';
 import { TooltipProvider } from '@/components/feedback/Tooltip';
@@ -29,12 +24,7 @@ import {
   useCommandRegistry,
   useRegisterCommands,
 } from '@/components/overlays/CommandPalette';
-import {
-  AuthProvider,
-  ProtectedRoute,
-  PublicOnlyRoute,
-  RoleGate,
-} from '@/auth';
+import { AuthProvider, ProtectedRoute, PublicOnlyRoute, RoleGate } from '@/auth';
 import { LoginPage } from '@/pages/auth/login';
 import { AdminPage } from '@/pages/admin';
 
@@ -66,11 +56,7 @@ function RootShell() {
       if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
         const target = e.target as HTMLElement | null;
         const tag = target?.tagName;
-        if (
-          tag === 'INPUT' ||
-          tag === 'TEXTAREA' ||
-          target?.isContentEditable === true
-        ) {
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || target?.isContentEditable === true) {
           return;
         }
         e.preventDefault();

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface UseControllableStateOptions<T> {
   value?: T | undefined;
@@ -16,7 +16,9 @@ export function useControllableState<T>(
   const [uncontrolled, setUncontrolled] = useState<T | undefined>(defaultValue);
 
   const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  });
 
   const state = isControlled ? value : uncontrolled;
 
