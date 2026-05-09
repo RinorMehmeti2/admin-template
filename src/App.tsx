@@ -12,6 +12,7 @@ import { FormsPage } from '@/pages/FormsPage';
 import { FeedbackPage } from '@/pages/FeedbackPage';
 import { DataPage } from '@/pages/DataPage';
 import { TablesPage } from '@/pages/TablesPage';
+import { PositioningPage } from '@/pages/PositioningPage';
 import { ShowcasePage } from '@/pages/ShowcasePage';
 import {
   DashboardPage,
@@ -28,6 +29,14 @@ import {
   useCommandRegistry,
   useRegisterCommands,
 } from '@/components/overlays/CommandPalette';
+import {
+  AuthProvider,
+  ProtectedRoute,
+  PublicOnlyRoute,
+  RoleGate,
+} from '@/auth';
+import { LoginPage } from '@/pages/auth/login';
+import { AdminPage } from '@/pages/admin';
 
 const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[] }> = [
   { to: '/showcase', label: 'Overview', keywords: ['home', 'index', 'showcase'] },
@@ -36,6 +45,7 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
   { to: '/feedback', label: 'Feedback', keywords: ['toast', 'alert', 'dialog'] },
   { to: '/data', label: 'Data display', keywords: ['card', 'stat', 'list'] },
   { to: '/tables', label: 'Tables', keywords: ['datatable', 'rows'] },
+  { to: '/positioning', label: 'Positioning', keywords: ['flip', 'shift', 'boundary', 'tooltip'] },
   { to: '/layout', label: 'Layout demo', keywords: ['sidebar', 'topbar', 'shell'] },
 ];
 
@@ -129,6 +139,14 @@ const router = createBrowserRouter([
     element: <RootShell />,
     children: [
       {
+        path: '/login',
+        element: (
+          <PublicOnlyRoute>
+            <LoginPage />
+          </PublicOnlyRoute>
+        ),
+      },
+      {
         path: '/',
         element: <AppLayout />,
         children: [
@@ -137,14 +155,50 @@ const router = createBrowserRouter([
           { path: 'primitives', element: <PrimitivesPage /> },
           { path: 'forms', element: <FormsPage /> },
           { path: 'feedback', element: <FeedbackPage /> },
-          { path: 'data', element: <DataPage /> },
-          { path: 'tables', element: <TablesPage /> },
+          {
+            path: 'data',
+            element: (
+              <ProtectedRoute>
+                <DataPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'tables',
+            element: (
+              <ProtectedRoute>
+                <TablesPage />
+              </ProtectedRoute>
+            ),
+          },
+          { path: 'positioning', element: <PositioningPage /> },
+          {
+            path: 'admin',
+            element: (
+              <ProtectedRoute>
+                <RoleGate
+                  roles={['admin']}
+                  fallback={
+                    <div className="rounded-md border border-danger/30 bg-danger/10 p-4 text-sm text-danger">
+                      You do not have permission to view this page.
+                    </div>
+                  }
+                >
+                  <AdminPage />
+                </RoleGate>
+              </ProtectedRoute>
+            ),
+          },
         ],
       },
       // /layout demo uses its own PageShell (replaces AppLayout chrome).
       {
         path: '/layout',
-        element: <LayoutDemo />,
+        element: (
+          <ProtectedRoute>
+            <LayoutDemo />
+          </ProtectedRoute>
+        ),
         children: [
           { index: true, element: <DashboardPage /> },
           { path: 'users', element: <UsersPage /> },
@@ -158,13 +212,15 @@ const router = createBrowserRouter([
 export function App() {
   return (
     <ThemeProvider>
-      <CommandRegistryProvider>
-        <ToastProvider position="top-right">
-          <TooltipProvider delayDuration={300}>
-            <RouterProvider router={router} />
-          </TooltipProvider>
-        </ToastProvider>
-      </CommandRegistryProvider>
+      <AuthProvider>
+        <CommandRegistryProvider>
+          <ToastProvider position="top-right">
+            <TooltipProvider delayDuration={300}>
+              <RouterProvider router={router} />
+            </TooltipProvider>
+          </ToastProvider>
+        </CommandRegistryProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

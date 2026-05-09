@@ -1,18 +1,34 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
+  ChevronDown,
   Compass,
   FormInput,
   LayoutDashboard,
+  LogIn,
+  LogOut,
   MessageSquareWarning,
+  Move,
   PanelsTopLeft,
   Search,
+  ShieldCheck,
   Sparkles,
   Table,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { Avatar } from '@/components/primitives/Avatar';
+import { Button } from '@/components/primitives/Button';
 import { Kbd } from '@/components/primitives/Kbd';
 import { useCommandRegistry } from '@/components/overlays/CommandPalette';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/navigation/DropdownMenu';
+import { useAuth } from '@/auth';
 
 interface NavItem {
   to: string;
@@ -31,8 +47,70 @@ const NAV_ITEMS: ReadonlyArray<NavItem> = [
   },
   { to: '/data', label: 'Data display', icon: <LayoutDashboard className="h-4 w-4" /> },
   { to: '/tables', label: 'Tables', icon: <Table className="h-4 w-4" /> },
+  { to: '/positioning', label: 'Positioning', icon: <Move className="h-4 w-4" /> },
   { to: '/layout', label: 'Layout', icon: <PanelsTopLeft className="h-4 w-4" /> },
+  { to: '/admin', label: 'Admin', icon: <ShieldCheck className="h-4 w-4" /> },
 ];
+
+function AuthMenu() {
+  const { user, state, logout, hasRole } = useAuth();
+  const navigate = useNavigate();
+
+  if (state === 'authenticated' && user !== null) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            aria-label={`Account menu for ${user.name}`}
+          >
+            <Avatar name={user.name} size="sm" />
+            <span className="hidden md:inline-block">{user.name}</span>
+            <ChevronDown
+              className="hidden h-3.5 w-3.5 text-foreground-subtle md:inline-block"
+              aria-hidden="true"
+            />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side="bottom-end">
+          <DropdownMenuLabel>
+            <div className="flex flex-col">
+              <span className="font-medium text-foreground">{user.name}</span>
+              <span className="text-xs font-normal text-foreground-subtle">
+                {user.email}
+              </span>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {hasRole('admin') ? (
+            <DropdownMenuItem onSelect={() => navigate('/admin')}>
+              <ShieldCheck className="mr-2 h-4 w-4" /> Admin area
+            </DropdownMenuItem>
+          ) : null}
+          <DropdownMenuItem
+            onSelect={() => {
+              void logout();
+            }}
+          >
+            <LogOut className="mr-2 h-4 w-4" /> Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      leftIcon={<LogIn className="h-4 w-4" />}
+      onClick={() => navigate('/login')}
+    >
+      Sign in
+    </Button>
+  );
+}
 
 export function AppLayout() {
   const { openPalette } = useCommandRegistry();
@@ -84,8 +162,9 @@ export function AppLayout() {
               <Kbd>K</Kbd>
             </span>
           </button>
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
+            <AuthMenu />
           </div>
         </header>
         <main className="flex-1 overflow-auto p-8">
