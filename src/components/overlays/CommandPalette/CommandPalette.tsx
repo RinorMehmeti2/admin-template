@@ -83,7 +83,7 @@ export function CommandPalette({
     if (!open) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setQuery('');
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+
     setActiveIndex(0);
     const id = window.setTimeout(() => inputRef.current?.focus(), 0);
     return () => window.clearTimeout(id);

@@ -208,9 +208,9 @@ export function MenuPanel({
       const eb = b.getEl();
       if (ea === null || eb === null) return 0;
       const pos = ea.compareDocumentPosition(eb);
-      // eslint-disable-next-line no-bitwise
+
       if (pos & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
-      // eslint-disable-next-line no-bitwise
+
       if (pos & Node.DOCUMENT_POSITION_PRECEDING) return 1;
       return 0;
     });

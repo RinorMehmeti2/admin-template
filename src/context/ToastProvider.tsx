@@ -115,7 +115,7 @@ export function ToastProvider({
 
   // Toast API is a callable with attached helpers. The lint plugin can't model
   // this idiomatic shape — disabling refs/immutability checks at this site.
-  /* eslint-disable react-hooks/refs, react-hooks/immutability */
+  /* eslint-disable react-hooks/immutability */
   const toast = useMemo<ToastFn>(() => {
     const fn = ((input: ToastInput, opts?: ToastOptions) => create(input, opts)) as ToastFn;
     fn.success = (msg, opts) => create(msg, { ...opts, type: 'success' });
@@ -125,7 +125,7 @@ export function ToastProvider({
     fn.neutral = (msg, opts) => create(msg, { ...opts, type: 'neutral' });
     return fn;
   }, [create]);
-  /* eslint-enable react-hooks/refs, react-hooks/immutability */
+  /* eslint-enable react-hooks/immutability */
 
   const value = useMemo<ToastContextValue>(
     () => ({ toasts, toast, dismiss, update }),
