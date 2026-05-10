@@ -175,6 +175,74 @@
     outline: none;
   }
 
+  /*
+   * RichTextEditor prose styles. Tokens-only; dark mode comes for free.
+   * `:where()` keeps specificity at zero so consumer overrides via className win.
+   * Empty-state placeholder is rendered by @tiptap/extension-placeholder via
+   * `data-placeholder` attribute on the first empty paragraph (`.is-empty`).
+   */
+  .rte-content :where(h1) {
+    @apply text-2xl font-semibold mt-4 mb-2 text-foreground;
+  }
+  .rte-content :where(h2) {
+    @apply text-xl font-semibold mt-4 mb-2 text-foreground;
+  }
+  .rte-content :where(h3) {
+    @apply text-lg font-semibold mt-3 mb-1 text-foreground;
+  }
+  .rte-content :where(p) {
+    @apply my-2 leading-6;
+  }
+  .rte-content :where(ul) {
+    @apply list-disc pl-6 my-2;
+  }
+  .rte-content :where(ol) {
+    @apply list-decimal pl-6 my-2;
+  }
+  .rte-content :where(li) {
+    @apply my-1;
+  }
+  .rte-content :where(blockquote) {
+    @apply border-l-2 border-border pl-3 my-2 text-foreground-muted italic;
+  }
+  .rte-content :where(code) {
+    @apply rounded bg-surface-muted px-1 py-0.5 text-[0.9em] font-mono;
+  }
+  .rte-content :where(pre) {
+    @apply rounded-md bg-surface-muted p-3 my-2 overflow-x-auto font-mono text-sm;
+  }
+  .rte-content :where(pre code) {
+    @apply bg-transparent p-0;
+  }
+  .rte-content :where(hr) {
+    @apply my-4 border-t border-border;
+  }
+  .rte-content :where(a) {
+    @apply text-primary underline-offset-2 hover:underline cursor-pointer;
+  }
+  .rte-content :where(strong) {
+    @apply font-semibold;
+  }
+  .rte-content :where(em) {
+    @apply italic;
+  }
+  .rte-content :where(s) {
+    @apply line-through;
+  }
+  .rte-content :where(u) {
+    @apply underline underline-offset-2;
+  }
+  .rte-content :where(.ProseMirror-focused) {
+    outline: none;
+  }
+  .rte-content .is-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: var(--color-foreground-subtle);
+    pointer-events: none;
+    float: left;
+    height: 0;
+  }
+
   ::selection {
     background-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
     color: var(--color-foreground);

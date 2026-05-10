@@ -8,6 +8,11 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import prettier from 'eslint-config-prettier';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
+// UI / headless component libraries are banned — every component is built
+// from scratch in this repo (CLAUDE.md). Behaviour-only libraries are NOT
+// listed here and remain importable: e.g. `@tiptap/*` (ProseMirror; no UI
+// ships from it — RichTextEditor wraps it), `@tanstack/react-table`,
+// `react-hook-form`, `date-fns`.
 const BANNED_UI_LIBS = [
   '@radix-ui/*',
   '@mui/*',

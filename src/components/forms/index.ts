@@ -10,6 +10,7 @@ export * from './Input';
 export * from './Label';
 export * from './Radio';
 export * from './RadioGroup';
+export * from './RichTextEditor';
 export * from './Select';
 export * from './Switch';
 export * from './Textarea';

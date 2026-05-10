@@ -17,6 +17,7 @@ import {
   Input,
   Radio,
   RadioGroup,
+  RichTextEditor,
   Select,
   Switch,
   Textarea,
@@ -111,6 +112,11 @@ const settingsSchema = z.object({
   theme: z.enum(['light', 'dark', 'system']),
   active: z.boolean(),
   bio: z.string().max(280, 'Max 280 characters').optional(),
+  description: z
+    .string()
+    .refine((html) => html.replace(/<[^>]*>/g, '').trim().length > 0, {
+      message: 'Description is required',
+    }),
 });
 type SettingsValues = z.infer<typeof settingsSchema>;
 
@@ -125,6 +131,8 @@ function SettingsForm() {
       theme: 'system',
       active: true,
       bio: '',
+      description:
+        '<p>Mathematician, writer, and the first computer programmer. Notes on the <strong>Analytical Engine</strong> include what is now recognised as the first algorithm intended to be processed by a machine.</p>',
     },
   });
   const { register, control, formState, reset } = form;
@@ -247,6 +255,30 @@ function SettingsForm() {
         />
       </FormField>
 
+      <FormField
+        label="Description"
+        description="Rich text — supports headings, lists, links, and inline formatting."
+        required
+        error={errors.description?.message}
+      >
+        <Controller
+          control={control}
+          name="description"
+          render={({ field, fieldState }) => (
+            <RichTextEditor
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              error={fieldState.invalid}
+              placeholder="Tell us about yourself…"
+              toolbar="minimal"
+              minHeight={140}
+              aria-label="Description"
+            />
+          )}
+        />
+      </FormField>
+
       <div className="flex items-center justify-end gap-2 pt-2">
         <Button type="button" variant="ghost" onClick={() => reset()}>
           Cancel
@@ -262,6 +294,38 @@ function SettingsForm() {
         </pre>
       ) : null}
     </Form>
+  );
+}
+
+// ---------- BIO EDITOR DEMO ----------
+
+function BioEditorDemo() {
+  const [html, setHtml] = useState<string>(
+    '<h2>About</h2><p>Software engineer with a soft spot for <strong>typed APIs</strong> and <em>well-named identifiers</em>.</p><ul><li>React + TypeScript</li><li>ProseMirror</li><li>Design systems</li></ul>',
+  );
+  return (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)]">
+      <FormField
+        label="Bio"
+        description="Full toolbar with bubble menu on selection. Try selecting some text."
+      >
+        <RichTextEditor
+          value={html}
+          onChange={setHtml}
+          placeholder="Write your bio…"
+          minHeight={220}
+          aria-label="Bio"
+        />
+      </FormField>
+      <div className="space-y-2 lg:pt-7">
+        <p className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
+          Output HTML
+        </p>
+        <pre className="max-h-[260px] overflow-auto rounded-md border border-border bg-surface-muted p-3 text-xs text-foreground-muted">
+          {html}
+        </pre>
+      </div>
+    </div>
   );
 }
 
@@ -469,6 +533,12 @@ export function FormsPage() {
 
       <Section title="User settings form">
         <SettingsForm />
+      </Section>
+
+      <Separator />
+
+      <Section title="Bio editor (RichTextEditor)">
+        <BioEditorDemo />
       </Section>
 
       <Separator />
