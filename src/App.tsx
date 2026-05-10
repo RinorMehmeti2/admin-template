@@ -32,6 +32,7 @@ import { RootRouterErrorElement, RouterErrorElement } from '@/components/feedbac
 import { ErrorsDemoPage } from '@/pages/errors';
 import { LoginPage } from '@/pages/auth/login';
 import { PrintPreviewPage } from '@/pages/PrintPreviewPage';
+import { TreePage } from '@/pages/TreePage';
 
 /*
  * Code splitting strategy.
@@ -62,6 +63,7 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
   { to: '/feedback', label: 'Feedback', keywords: ['toast', 'alert', 'dialog'] },
   { to: '/data', label: 'Data display', keywords: ['card', 'stat', 'list'] },
   { to: '/tables', label: 'Tables', keywords: ['datatable', 'rows'] },
+  { to: '/tree', label: 'Tree view', keywords: ['tree', 'folder', 'explorer', 'nav'] },
   { to: '/charts', label: 'Charts', keywords: ['line', 'bar', 'pie', 'recharts'] },
   { to: '/positioning', label: 'Positioning', keywords: ['flip', 'shift', 'boundary', 'tooltip'] },
   { to: '/layout', label: 'Layout demo', keywords: ['sidebar', 'topbar', 'shell'] },
@@ -207,6 +209,7 @@ const router = createBrowserRouter([
             errorElement: <RouterErrorElement source="route:/tables" />,
           },
           { path: 'positioning', element: <PositioningPage /> },
+          { path: 'tree', element: <TreePage /> },
           {
             path: 'charts',
             lazy: async () => {

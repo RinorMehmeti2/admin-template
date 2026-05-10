@@ -89,7 +89,13 @@ export function RichTextEditor({
     content: value ?? defaultValue ?? '',
     editable: !readOnly,
     autofocus: autoFocus === true ? 'end' : false,
+    // React 19 StrictMode mounts → unmounts → remounts, which destroys the
+    // ProseMirror schema mid-flight. Defer the first render so useEditor
+    // settles on a single live editor instance before any consumer calls
+    // getHTML() / setContent(). Required since React 19; harmless before.
+    immediatelyRender: false,
     onUpdate: ({ editor: ed }) => {
+      if (ed.isDestroyed) return;
       onChange?.(ed.getHTML());
     },
     onBlur: () => {
@@ -119,14 +125,14 @@ export function RichTextEditor({
 
   // Keep editable in sync with readOnly.
   useEffect(() => {
-    if (editor === null) return;
+    if (editor === null || editor.isDestroyed) return;
     if (editor.isEditable === !readOnly) return;
     editor.setEditable(!readOnly);
   }, [editor, readOnly]);
 
   // Controlled value sync — only when external value differs from current HTML.
   useEffect(() => {
-    if (editor === null) return;
+    if (editor === null || editor.isDestroyed) return;
     if (value === undefined) return;
     if (editor.getHTML() === value) return;
     editor.commands.setContent(value, { emitUpdate: false });
@@ -139,8 +145,8 @@ export function RichTextEditor({
       focus: () => editor?.commands.focus(),
       blur: () => editor?.commands.blur(),
       clear: () => editor?.commands.clearContent(true),
-      getHTML: () => editor?.getHTML() ?? '',
-      getJSON: () => editor?.getJSON() ?? null,
+      getHTML: () => (editor !== null && !editor.isDestroyed ? editor.getHTML() : ''),
+      getJSON: () => (editor !== null && !editor.isDestroyed ? editor.getJSON() : null),
       getEditor: () => editor,
     }),
     [editor],
