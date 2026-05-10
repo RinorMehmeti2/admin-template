@@ -184,11 +184,7 @@ export function createMockNotificationsClient(
   const emitEveryMs = opts.emitEveryMs ?? null;
 
   let items: Notification[] =
-    opts.initialItems !== undefined
-      ? [...opts.initialItems]
-      : persist
-        ? readStored()
-        : makeSeed();
+    opts.initialItems !== undefined ? [...opts.initialItems] : persist ? readStored() : makeSeed();
 
   let nextId = items.length + 1;
   const subscribers = new Set<(n: Notification) => void>();
@@ -230,9 +226,7 @@ export function createMockNotificationsClient(
       const limit = params.limit ?? DEFAULT_LIMIT;
       const filtered = params.unreadOnly === true ? items.filter((n) => !n.read) : items;
       const startIdx =
-        params.cursor !== undefined
-          ? filtered.findIndex((n) => n.id === params.cursor) + 1
-          : 0;
+        params.cursor !== undefined ? filtered.findIndex((n) => n.id === params.cursor) + 1 : 0;
       const slice = filtered.slice(startIdx, startIdx + limit);
       const nextCursor =
         startIdx + limit < filtered.length && slice.length > 0

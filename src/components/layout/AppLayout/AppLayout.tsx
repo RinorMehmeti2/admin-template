@@ -141,8 +141,7 @@ export function AppLayout() {
     remove: t('notifications.remove'),
     closeLabel: t('notifications.closeLabel'),
     bellLabel: t('notifications.bellLabel'),
-    unreadSuffix: (count: number) =>
-      count > 0 ? t('notifications.unreadSuffix', { count }) : '',
+    unreadSuffix: (count: number) => (count > 0 ? t('notifications.unreadSuffix', { count }) : ''),
   };
 
   return (

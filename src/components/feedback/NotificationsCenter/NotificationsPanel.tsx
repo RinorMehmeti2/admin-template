@@ -157,12 +157,12 @@ export function NotificationsPanel({
     () =>
       drawerMode
         ? undefined
-        : ({
+        : {
             position: 'absolute' as const,
             left: position.x,
             top: position.y,
             visibility: position.ready ? ('visible' as const) : ('hidden' as const),
-          }),
+          },
     [drawerMode, position.x, position.y, position.ready],
   );
 
@@ -306,7 +306,9 @@ function FilterTab({ active, onClick, label, count }: FilterTabProps) {
         <span
           className={cn(
             'inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] leading-none',
-            active ? 'bg-primary text-primary-foreground' : 'bg-surface-muted text-foreground-muted',
+            active
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-surface-muted text-foreground-muted',
           )}
         >
           {count}

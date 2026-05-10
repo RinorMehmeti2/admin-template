@@ -576,7 +576,7 @@ Use dot-notation grouped by feature at the call site:
 ```ts
 const fresh: Notification = {
   id: 'n_1',
-  kind: 'orders.shipped',          // or 'billing.invoice.paid', etc.
+  kind: 'orders.shipped', // or 'billing.invoice.paid', etc.
   severity: 'success',
   title: 'Order shipped',
   description: 'Tracking JX-2391 — ETA 2 days.',
@@ -606,12 +606,12 @@ Severity drives the dot-color and is the only visual signal that
 varies per kind. The mapping uses existing accent tokens — do not add
 new tokens for notifications:
 
-| `severity`  | Token used                     |
-| ----------- | ------------------------------ |
-| `info`      | `bg-info`                      |
-| `success`   | `bg-success`                   |
-| `warning`   | `bg-warning`                   |
-| `danger`    | `bg-danger`                    |
+| `severity` | Token used   |
+| ---------- | ------------ |
+| `info`     | `bg-info`    |
+| `success`  | `bg-success` |
+| `warning`  | `bg-warning` |
+| `danger`   | `bg-danger`  |
 
 The unread badge on the bell always uses `bg-danger` regardless of
 severity — it represents "needs attention", not the severity of any

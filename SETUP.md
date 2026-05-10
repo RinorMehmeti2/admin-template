@@ -29,6 +29,7 @@ Open the dev server and click **Toggle dark/light** to verify tokens, surfaces, 
 ## Decisions
 
 ### Palette
+
 - **Neutrals (light):** Tailwind `slate` (cool, slightly blue). Fits the admin/SaaS aesthetic better than `gray`/`zinc`. Tweak in `src/styles/tokens.css` if you want warmer.
 - **Neutrals (dark):** Framer-template neutral grays — `hsl(0 0% 9–22%)` for backgrounds/surfaces/borders, `hsl(0 0% 49–96%)` for foregrounds. **No blue tint** in dark mode (the original slate-900 base was swapped out — see commit `1a726a3 adopt Framer neutral-gray dark palette`). Both modes still live in `src/styles/tokens.css`.
 - **Primary:** `indigo` (`hsl(238 75% 58%)` light, `hsl(238 85% 66%)` dark). High contrast on both surfaces, distinct from danger/info.
@@ -36,30 +37,36 @@ Open the dev server and click **Toggle dark/light** to verify tokens, surfaces, 
 - All values are in HSL for easy manual tuning.
 
 ### Tokens
+
 - Defined as CSS custom properties in `src/styles/tokens.css`. `:root` = light, `html.dark` = dark overrides.
 - Mapped to Tailwind v4 via the `@theme` block in `src/styles/globals.css` so they become utilities (`bg-primary`, `text-foreground-muted`, `rounded-md`, `shadow-sm`, etc.).
 - **Shadows are darker in dark mode** — cleaner separation against the dark background.
 
 ### Dark mode
+
 - Class strategy on `<html>`. `App.tsx` toggles by adding/removing `dark` and persists to `localStorage`. Initial value reads `localStorage` then falls back to `prefers-color-scheme`.
 - Tailwind v4's `@custom-variant dark (&:where(.dark, .dark *))` is declared in `globals.css` so `dark:` variants work if ever needed — but **components should not need them**, since semantic tokens already swap.
 
 ### TypeScript
+
 - `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride` all on (per CLAUDE.md).
 - Path alias `@/*` -> `./src/*` set in **both** `tsconfig.json`/`tsconfig.app.json` and `vite.config.ts`. No `baseUrl` (deprecated in TS 6); modern `paths` use the project root automatically.
 - `tsconfig.app.json` adds `"vitest/globals"` and `"@testing-library/jest-dom"` to `types` so test globals + matchers resolve without per-file imports.
 
 ### Vitest
+
 - Lives in `vitest.config.ts` (separate from `vite.config.ts`) and `mergeConfig`s the Vite base. Vite 8's `UserConfig` type does not accept a `test` field, so a split config is required.
 - `environment: 'jsdom'`, `globals: true`, `setupFiles: ['./src/setupTests.ts']`.
 - `setupTests.ts` imports `@testing-library/jest-dom/vitest` and runs `cleanup()` after each test.
 
 ### `cn()`
+
 - `src/lib/cn.ts` — `clsx` + `tailwind-merge`. Single helper, used everywhere.
 
 ## Files created or replaced
 
 **New**
+
 - `src/styles/tokens.css`
 - `src/styles/globals.css`
 - `src/lib/cn.ts`
@@ -70,6 +77,7 @@ Open the dev server and click **Toggle dark/light** to verify tokens, surfaces, 
 - `SETUP.md`
 
 **Replaced**
+
 - `vite.config.ts` — added `@tailwindcss/vite`, `@/*` alias, Vitest config
 - `tsconfig.json` — added `baseUrl` + `paths`
 - `tsconfig.app.json` — strict flags, paths, test/jest-dom types, added `DOM.Iterable`
@@ -79,6 +87,7 @@ Open the dev server and click **Toggle dark/light** to verify tokens, surfaces, 
 - `package.json` — added `typecheck`, `format`, `test`, `test:watch` scripts; reordered
 
 **Untouched (still present, no longer wired in)**
+
 - `src/index.css`, `src/App.css`, `src/assets/*` — Vite starter leftovers. Safe to delete; left in place since the task scope was foundation only.
 
 ## Things to review

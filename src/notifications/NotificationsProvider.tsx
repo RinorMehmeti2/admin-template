@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { NotificationsClient } from './NotificationsClient';
 import { mockNotificationsClient } from './mockNotificationsClient';
 import { NotificationsContext, type NotificationsContextValue } from './useNotifications';
@@ -221,7 +214,5 @@ export function NotificationsProvider({
     ],
   );
 
-  return (
-    <NotificationsContext.Provider value={value}>{children}</NotificationsContext.Provider>
-  );
+  return <NotificationsContext.Provider value={value}>{children}</NotificationsContext.Provider>;
 }

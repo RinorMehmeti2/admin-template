@@ -31,10 +31,38 @@ function makeItem(
 
 const SAMPLE: Notification[] = [
   makeItem('s1', false, 'success', 'Order #4821 shipped', 'Tracking JX-2391 — ETA 2 days.', 60_000),
-  makeItem('s2', false, 'info', 'New mention in #design-review', 'Edie tagged you on the spec.', 5 * 60_000),
-  makeItem('s3', false, 'warning', 'Storage at 82% capacity', 'Consider archiving old data.', 30 * 60_000),
-  makeItem('s4', true, 'danger', 'Import job failed', 'CSV import failed at row 1,204.', 60 * 60_000),
-  makeItem('s5', true, 'info', 'Weekly report ready', 'Active users +12% week-over-week.', 24 * 60 * 60_000),
+  makeItem(
+    's2',
+    false,
+    'info',
+    'New mention in #design-review',
+    'Edie tagged you on the spec.',
+    5 * 60_000,
+  ),
+  makeItem(
+    's3',
+    false,
+    'warning',
+    'Storage at 82% capacity',
+    'Consider archiving old data.',
+    30 * 60_000,
+  ),
+  makeItem(
+    's4',
+    true,
+    'danger',
+    'Import job failed',
+    'CSV import failed at row 1,204.',
+    60 * 60_000,
+  ),
+  makeItem(
+    's5',
+    true,
+    'info',
+    'Weekly report ready',
+    'Active users +12% week-over-week.',
+    24 * 60 * 60_000,
+  ),
 ];
 
 function withProvider(items: Notification[], children: React.ReactNode) {
@@ -76,16 +104,37 @@ export const ItemVariants = {
     <Card className="max-w-sm">
       <ul className="flex flex-col">
         <NotificationItem
-          notification={makeItem('i1', false, 'info', 'Info notification', 'Description text.', 60_000)}
+          notification={makeItem(
+            'i1',
+            false,
+            'info',
+            'Info notification',
+            'Description text.',
+            60_000,
+          )}
           onSelect={() => undefined}
         />
         <NotificationItem
-          notification={makeItem('i2', false, 'success', 'Success notification', 'Description text.', 5 * 60_000)}
+          notification={makeItem(
+            'i2',
+            false,
+            'success',
+            'Success notification',
+            'Description text.',
+            5 * 60_000,
+          )}
           onSelect={() => undefined}
         />
         <NotificationItem
           notification={{
-            ...makeItem('i3', false, 'warning', 'Warning with action', 'Description text.', 30 * 60_000),
+            ...makeItem(
+              'i3',
+              false,
+              'warning',
+              'Warning with action',
+              'Description text.',
+              30 * 60_000,
+            ),
             actionLabel: 'Open report',
             actionHref: '/charts',
           }}
@@ -93,13 +142,27 @@ export const ItemVariants = {
         />
         <NotificationItem
           notification={{
-            ...makeItem('i4', false, 'danger', 'Danger w/ remove', 'Description text.', 60 * 60_000),
+            ...makeItem(
+              'i4',
+              false,
+              'danger',
+              'Danger w/ remove',
+              'Description text.',
+              60 * 60_000,
+            ),
           }}
           onSelect={() => undefined}
           onRemove={() => undefined}
         />
         <NotificationItem
-          notification={makeItem('i5', true, 'info', 'Read item', 'Description text.', 24 * 60 * 60_000)}
+          notification={makeItem(
+            'i5',
+            true,
+            'info',
+            'Read item',
+            'Description text.',
+            24 * 60 * 60_000,
+          )}
           onSelect={() => undefined}
         />
       </ul>

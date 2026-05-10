@@ -27,7 +27,9 @@ describe('NotificationItem', () => {
     );
     expect(screen.getByText('Order shipped')).toBeInTheDocument();
     expect(screen.getByText('Your package is on the way.')).toBeInTheDocument();
-    const time = screen.getByRole('time' satisfies string as never) as unknown as HTMLTimeElement | null;
+    const time = screen.getByRole(
+      'time' satisfies string as never,
+    ) as unknown as HTMLTimeElement | null;
     // jsdom doesn't expose role="time"; query by tagName instead.
     const timeEl = document.querySelector('time');
     expect(timeEl).not.toBeNull();

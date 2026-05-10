@@ -27,17 +27,17 @@ pnpm analyze           # bundle treemap → dist/stats.html
 
 ## Where things live
 
-| Folder                                | What's there                                                        |
-| ------------------------------------- | ------------------------------------------------------------------- |
-| `src/components/{primitives,forms,…}` | The component library (one folder per component, 5 files each).     |
+| Folder                                | What's there                                                                                                                                                                   |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/components/{primitives,forms,…}` | The component library (one folder per component, 5 files each).                                                                                                                |
 | `src/hooks/`                          | Behavioral primitives (`useFocusTrap`, `usePosition`, `useListbox`, `useDrag`, `useErrorHandler`, …). Compose these — never inline focus traps or click-outside in components. |
-| `src/auth/`                           | `AuthClient` interface + `mockAuthClient` + provider + route guards (`ProtectedRoute`, `PublicOnlyRoute`, `RoleGate`). |
-| `src/data/`                           | `@tanstack/react-query` v5 wrapper layer (`useApiQuery`, `useApiSuspenseQuery`, `useApiMutation`, `useInvalidate`, `keys`, `mapApiError`). |
-| `src/mocks/`                          | MSW handlers + browser/node servers + fixtures.                     |
-| `src/i18n/`                           | i18next init + `locales/<lng>.json`. EN + ES out of the box.        |
-| `src/styles/`                         | `tokens.css` (semantic tokens, light + dark) + `globals.css` + `print.css`. |
-| `src/test-utils/a11y.ts`              | `runAxe()` + `toHaveNoViolations` matcher. Call it in every test.    |
-| `e2e/`                                | Playwright specs + `loginAs` / `gotoSignedIn` fixtures.             |
+| `src/auth/`                           | `AuthClient` interface + `mockAuthClient` + provider + route guards (`ProtectedRoute`, `PublicOnlyRoute`, `RoleGate`).                                                         |
+| `src/data/`                           | `@tanstack/react-query` v5 wrapper layer (`useApiQuery`, `useApiSuspenseQuery`, `useApiMutation`, `useInvalidate`, `keys`, `mapApiError`).                                     |
+| `src/mocks/`                          | MSW handlers + browser/node servers + fixtures.                                                                                                                                |
+| `src/i18n/`                           | i18next init + `locales/<lng>.json`. EN + ES out of the box.                                                                                                                   |
+| `src/styles/`                         | `tokens.css` (semantic tokens, light + dark) + `globals.css` + `print.css`.                                                                                                    |
+| `src/test-utils/a11y.ts`              | `runAxe()` + `toHaveNoViolations` matcher. Call it in every test.                                                                                                              |
+| `e2e/`                                | Playwright specs + `loginAs` / `gotoSignedIn` fixtures.                                                                                                                        |
 
 ## Reading order
 

@@ -24,7 +24,14 @@ function wrapperWith(children: ReactNode, items: Notification[]) {
     latencyMs: 0,
     emitEveryMs: null,
   });
-  return { client, ui: <NotificationsProvider client={client} pageSize={3}>{children}</NotificationsProvider> };
+  return {
+    client,
+    ui: (
+      <NotificationsProvider client={client} pageSize={3}>
+        {children}
+      </NotificationsProvider>
+    ),
+  };
 }
 
 describe('NotificationsProvider', () => {

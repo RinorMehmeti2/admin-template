@@ -56,9 +56,7 @@ describe('NotificationsBell', () => {
   it('hides the badge when there are no unread items', async () => {
     render(wrap([makeItem('a', true)]));
     await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: /open notifications/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /open notifications/i })).toBeInTheDocument();
     });
     expect(screen.queryByText('1')).toBeNull();
   });
