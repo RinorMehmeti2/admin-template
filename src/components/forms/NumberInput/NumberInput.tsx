@@ -50,17 +50,10 @@ const DEFAULT_LOCALE: string =
   typeof Intl !== 'undefined' ? Intl.NumberFormat().resolvedOptions().locale : 'en';
 
 export interface NumberInputProps
-  extends Omit<
+  extends
+    Omit<
       InputHTMLAttributes<HTMLInputElement>,
-      | 'value'
-      | 'defaultValue'
-      | 'onChange'
-      | 'prefix'
-      | 'size'
-      | 'min'
-      | 'max'
-      | 'step'
-      | 'type'
+      'value' | 'defaultValue' | 'onChange' | 'prefix' | 'size' | 'min' | 'max' | 'step' | 'type'
     >,
     VariantProps<typeof shellStyles> {
   ref?: Ref<HTMLInputElement>;
@@ -320,10 +313,7 @@ export function NumberInput({
   const stepperButtonClass =
     'h-1/2 w-7 flex-1 rounded-none border-0 bg-transparent px-0 text-foreground-muted hover:bg-surface-muted focus-visible:ring-0 focus-visible:ring-offset-0';
 
-  const onStepperPointerDown = (
-    direction: 1 | -1,
-    e: ReactPointerEvent<HTMLButtonElement>,
-  ) => {
+  const onStepperPointerDown = (direction: 1 | -1, e: ReactPointerEvent<HTMLButtonElement>) => {
     if (e.button !== undefined && e.button !== 0) return;
     // Prevent the button from stealing focus from the input.
     e.preventDefault();

@@ -67,7 +67,8 @@ const defaultFilterSuggestions = <T,>(
 };
 
 export interface TagInputProps<T = string>
-  extends Omit<
+  extends
+    Omit<
       LabelHTMLAttributes<HTMLLabelElement>,
       'defaultValue' | 'onChange' | 'children' | 'onInvalid' | 'htmlFor'
     >,
@@ -185,10 +186,13 @@ export function TagInput<T = string>({
   const [query, setQuery] = useState('');
   const [focusedChip, setFocusedChip] = useState<number | null>(null);
   const [shakeKey, setShakeKey] = useState(0);
-  const triggerShake = useCallback((raw?: string) => {
-    setShakeKey((k) => k + 1);
-    if (raw !== undefined) onInvalid?.(raw);
-  }, [onInvalid]);
+  const triggerShake = useCallback(
+    (raw?: string) => {
+      setShakeKey((k) => k + 1);
+      if (raw !== undefined) onInvalid?.(raw);
+    },
+    [onInvalid],
+  );
 
   const containerRef = useRef<HTMLLabelElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -238,8 +242,7 @@ export function TagInput<T = string>({
   const filteredSuggestions = useMemo<ReadonlyArray<T>>(() => {
     if (suggestions === undefined) return [];
     const filterFn =
-      filterSuggestions ??
-      ((item: T, q: string) => defaultFilterSuggestions(item, q, labelFor));
+      filterSuggestions ?? ((item: T, q: string) => defaultFilterSuggestions(item, q, labelFor));
     let list = query === '' ? suggestions : suggestions.filter((it) => filterFn(it, query));
     if (!allowDuplicates) {
       const seen = new Set(tagsArr.map(keyFor));
@@ -272,10 +275,13 @@ export function TagInput<T = string>({
 
   const commitToken = useCallback(
     (raw: string): boolean => {
-      const result = validate !== undefined ? validate(raw) : ((): T | null => {
-        const trimmed = raw.trim();
-        return trimmed === '' ? null : (trimmed as unknown as T);
-      })();
+      const result =
+        validate !== undefined
+          ? validate(raw)
+          : ((): T | null => {
+              const trimmed = raw.trim();
+              return trimmed === '' ? null : (trimmed as unknown as T);
+            })();
       if (result === null) {
         triggerShake(raw);
         return false;
@@ -321,10 +327,7 @@ export function TagInput<T = string>({
     { enabled: popover.isOpen },
   );
 
-  const charSeparators = useMemo(
-    () => separators.filter((s) => s.length === 1),
-    [separators],
-  );
+  const charSeparators = useMemo(() => separators.filter((s) => s.length === 1), [separators]);
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const text = e.currentTarget.value;
@@ -362,12 +365,7 @@ export function TagInput<T = string>({
       return;
     }
 
-    if (
-      e.key === 'ArrowLeft' &&
-      query === '' &&
-      cursorAtStart(target) &&
-      tagsArr.length > 0
-    ) {
+    if (e.key === 'ArrowLeft' && query === '' && cursorAtStart(target) && tagsArr.length > 0) {
       e.preventDefault();
       focusChip(tagsArr.length - 1);
       return;
@@ -568,9 +566,7 @@ export function TagInput<T = string>({
             )}
           >
             <span className="truncate">{label}</span>
-            {!readOnly && !disabled ? (
-              <X className="h-3 w-3 shrink-0" aria-hidden="true" />
-            ) : null}
+            {!readOnly && !disabled ? <X className="h-3 w-3 shrink-0" aria-hidden="true" /> : null}
           </button>
         );
       })}
@@ -641,7 +637,7 @@ export function TagInput<T = string>({
                   return (
                     // role="option" comes via {...itemProps}; lint can't see
                     // attributes through spread.
-                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/no-noninteractive-element-interactions
+                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                     <div
                       key={keyFor(item)}
                       {...itemProps}

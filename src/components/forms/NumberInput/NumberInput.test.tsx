@@ -29,27 +29,13 @@ describe('NumberInput', () => {
   });
 
   it('renders default value with formatting (en, precision=2)', () => {
-    render(
-      <NumberInput
-        aria-label="amount"
-        defaultValue={1234.5}
-        locale="en"
-        precision={2}
-      />,
-    );
+    render(<NumberInput aria-label="amount" defaultValue={1234.5} locale="en" precision={2} />);
     expect(screen.getByRole('spinbutton')).toHaveValue('1,234.50');
   });
 
   it('shows raw editable string on focus, formatted on blur', async () => {
     const user = userEvent.setup();
-    render(
-      <NumberInput
-        aria-label="amount"
-        defaultValue={1234.5}
-        locale="en"
-        precision={2}
-      />,
-    );
+    render(<NumberInput aria-label="amount" defaultValue={1234.5} locale="en" precision={2} />);
     const input = screen.getByRole('spinbutton');
     expect(input).toHaveValue('1,234.50');
     await user.click(input);
@@ -162,13 +148,7 @@ describe('NumberInput', () => {
     const onValueChange = vi.fn();
     const user = userEvent.setup();
     render(
-      <NumberInput
-        aria-label="x"
-        locale="en"
-        min={0}
-        max={10}
-        onValueChange={onValueChange}
-      />,
+      <NumberInput aria-label="x" locale="en" min={0} max={10} onValueChange={onValueChange} />,
     );
     const input = screen.getByRole('spinbutton');
     await user.click(input);
@@ -246,15 +226,7 @@ describe('NumberInput', () => {
   });
 
   it('disables stepper buttons at min/max', () => {
-    render(
-      <NumberInput
-        aria-label="x"
-        locale="en"
-        defaultValue={10}
-        min={0}
-        max={10}
-      />,
-    );
+    render(<NumberInput aria-label="x" locale="en" defaultValue={10} min={0} max={10} />);
     expect(screen.getByLabelText('Increment')).toBeDisabled();
     expect(screen.getByLabelText('Decrement')).not.toBeDisabled();
   });
@@ -282,12 +254,7 @@ describe('NumberInput', () => {
   it('does not change value on wheel when allowWheel is off', () => {
     const onValueChange = vi.fn();
     render(
-      <NumberInput
-        aria-label="x"
-        locale="en"
-        defaultValue={0}
-        onValueChange={onValueChange}
-      />,
+      <NumberInput aria-label="x" locale="en" defaultValue={0} onValueChange={onValueChange} />,
     );
     const input = screen.getByRole('spinbutton');
     fireEvent.focus(input);

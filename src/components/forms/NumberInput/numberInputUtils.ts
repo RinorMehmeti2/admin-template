@@ -29,11 +29,7 @@ export interface ParseOptions {
   allowNegative?: boolean;
 }
 
-export function parseNumber(
-  input: string,
-  locale: string,
-  options?: ParseOptions,
-): number | null {
+export function parseNumber(input: string, locale: string, options?: ParseOptions): number | null {
   const trimmed = input.trim();
   if (trimmed === '') return null;
   const { group, decimal, minus } = getLocaleParts(locale);

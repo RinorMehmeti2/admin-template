@@ -44,9 +44,7 @@ describe('TagInput', () => {
   it('Backspace on empty input removes last chip', async () => {
     const onValueChange = vi.fn();
     const user = userEvent.setup();
-    render(
-      <TagInput aria-label="tags" defaultValue={['a', 'b']} onValueChange={onValueChange} />,
-    );
+    render(<TagInput aria-label="tags" defaultValue={['a', 'b']} onValueChange={onValueChange} />);
     const input = getInput();
     await user.click(input);
     await user.keyboard('{Backspace}');
@@ -82,11 +80,7 @@ describe('TagInput', () => {
     const onValueChange = vi.fn();
     const user = userEvent.setup();
     render(
-      <TagInput
-        aria-label="tags"
-        defaultValue={['a', 'b', 'c']}
-        onValueChange={onValueChange}
-      />,
+      <TagInput aria-label="tags" defaultValue={['a', 'b', 'c']} onValueChange={onValueChange} />,
     );
     const input = getInput();
     await user.click(input);
@@ -152,9 +146,7 @@ describe('TagInput', () => {
   it('rejects duplicates by default', async () => {
     const onValueChange = vi.fn();
     const user = userEvent.setup();
-    render(
-      <TagInput aria-label="tags" defaultValue={['a']} onValueChange={onValueChange} />,
-    );
+    render(<TagInput aria-label="tags" defaultValue={['a']} onValueChange={onValueChange} />);
     const input = getInput();
     await user.click(input);
     await user.type(input, 'a');
@@ -250,13 +242,7 @@ describe('TagInput', () => {
   });
 
   it('with suggestions: combobox role exposes correct ARIA', () => {
-    render(
-      <TagInput
-        aria-label="tags"
-        suggestions={['a', 'b']}
-        defaultValue={[]}
-      />,
-    );
+    render(<TagInput aria-label="tags" suggestions={['a', 'b']} defaultValue={[]} />);
     const input = screen.getByRole('combobox');
     expect(input).toHaveAttribute('aria-expanded', 'false');
     expect(input).toHaveAttribute('aria-haspopup', 'listbox');
@@ -285,13 +271,7 @@ describe('TagInput', () => {
   it('controlled mode', async () => {
     function Harness() {
       const [v, setV] = useState<string[]>([]);
-      return (
-        <TagInput<string>
-          aria-label="tags"
-          value={v}
-          onValueChange={setV}
-        />
-      );
+      return <TagInput<string> aria-label="tags" value={v} onValueChange={setV} />;
     }
     const user = userEvent.setup();
     render(<Harness />);

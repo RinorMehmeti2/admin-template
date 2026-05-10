@@ -755,13 +755,7 @@ function NumberInputDemo() {
       </FormField>
 
       <FormField label="With affixes" description="Prefix/suffix slots.">
-        <NumberInput
-          prefix="$"
-          suffix="USD"
-          precision={2}
-          step={0.01}
-          defaultValue={1234.5}
-        />
+        <NumberInput prefix="$" suffix="USD" precision={2} step={0.01} defaultValue={1234.5} />
       </FormField>
     </div>
   );
