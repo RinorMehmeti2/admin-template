@@ -42,7 +42,11 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
   { to: '/charts', label: 'Charts', keywords: ['line', 'bar', 'pie', 'recharts'] },
   { to: '/positioning', label: 'Positioning', keywords: ['flip', 'shift', 'boundary', 'tooltip'] },
   { to: '/layout', label: 'Layout demo', keywords: ['sidebar', 'topbar', 'shell'] },
-  { to: '/split', label: 'Split layout', keywords: ['inbox', 'master', 'detail', 'pane', 'resize'] },
+  {
+    to: '/split',
+    label: 'Split layout',
+    keywords: ['inbox', 'master', 'detail', 'pane', 'resize'],
+  },
   { to: '/focus', label: 'Focus mode', keywords: ['fullscreen', 'editor', 'distraction'] },
   { to: '/workspace', label: 'Workspace', keywords: ['canvas', 'panels', 'editor', 'design'] },
 ];

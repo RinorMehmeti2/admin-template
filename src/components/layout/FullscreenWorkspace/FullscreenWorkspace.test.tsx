@@ -2,11 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { useRef } from 'react';
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  FullscreenWorkspace,
-  WorkspaceCanvas,
-  WorkspacePanel,
-} from './FullscreenWorkspace';
+import { FullscreenWorkspace, WorkspaceCanvas, WorkspacePanel } from './FullscreenWorkspace';
 
 interface Box {
   x: number;

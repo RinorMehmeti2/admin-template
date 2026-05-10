@@ -148,9 +148,7 @@ export function WorkspaceDemoPage() {
   const [selectedId, setSelectedId] = useState<string>(INITIAL_LAYERS[1]!.id);
 
   const toggle = (id: string, key: 'visible' | 'locked') => {
-    setLayers((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, [key]: !l[key] } : l)),
-    );
+    setLayers((prev) => prev.map((l) => (l.id === id ? { ...l, [key]: !l[key] } : l)));
   };
   const selected = layers.find((l) => l.id === selectedId) ?? layers[0]!;
 
@@ -160,8 +158,8 @@ export function WorkspaceDemoPage() {
         <header>
           <h1 className="text-2xl font-semibold tracking-tight">FullscreenWorkspace</h1>
           <p className="mt-1 text-foreground-muted">
-            A true full-viewport canvas with floating, draggable, collapsible panels. Use for
-            visual editors, dashboard-edit modes, and design tools.
+            A true full-viewport canvas with floating, draggable, collapsible panels. Use for visual
+            editors, dashboard-edit modes, and design tools.
           </p>
         </header>
         <section className="space-y-3 rounded-lg border border-border bg-surface p-6">
@@ -226,4 +224,3 @@ export function WorkspaceDemoPage() {
     </FullscreenWorkspace>
   );
 }
-

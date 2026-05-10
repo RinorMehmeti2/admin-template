@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
 
 export interface DragDelta {
   /** Pixels moved on x since the drag started. */
@@ -66,20 +72,17 @@ export function useDrag(options: UseDragOptions): UseDragReturn {
     optionsRef.current.onEnd?.(event);
   }, []);
 
-  const handleWindowMove = useCallback(
-    (event: PointerEvent): void => {
-      const s = stateRef.current;
-      if (s.pointerId === null || event.pointerId !== s.pointerId) return;
-      const delta: DragDelta = {
-        dx: event.clientX - s.startX,
-        dy: event.clientY - s.startY,
-        x: event.clientX,
-        y: event.clientY,
-      };
-      optionsRef.current.onMove(delta, event);
-    },
-    [],
-  );
+  const handleWindowMove = useCallback((event: PointerEvent): void => {
+    const s = stateRef.current;
+    if (s.pointerId === null || event.pointerId !== s.pointerId) return;
+    const delta: DragDelta = {
+      dx: event.clientX - s.startX,
+      dy: event.clientY - s.startY,
+      x: event.clientX,
+      y: event.clientY,
+    };
+    optionsRef.current.onMove(delta, event);
+  }, []);
 
   const handleWindowUp = useCallback(
     (event: PointerEvent): void => {

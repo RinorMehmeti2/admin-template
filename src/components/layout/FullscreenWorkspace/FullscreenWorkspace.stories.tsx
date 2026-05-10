@@ -1,9 +1,5 @@
 import { useState } from 'react';
-import {
-  FullscreenWorkspace,
-  WorkspaceCanvas,
-  WorkspacePanel,
-} from './FullscreenWorkspace';
+import { FullscreenWorkspace, WorkspaceCanvas, WorkspacePanel } from './FullscreenWorkspace';
 import { Button } from '@/components/primitives/Button';
 
 export default { title: 'Layout/FullscreenWorkspace', component: FullscreenWorkspace };

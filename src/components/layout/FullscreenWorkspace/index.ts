@@ -1,8 +1,4 @@
-export {
-  FullscreenWorkspace,
-  WorkspaceCanvas,
-  WorkspacePanel,
-} from './FullscreenWorkspace';
+export { FullscreenWorkspace, WorkspaceCanvas, WorkspacePanel } from './FullscreenWorkspace';
 export type {
   FullscreenWorkspaceProps,
   WorkspaceCanvasProps,

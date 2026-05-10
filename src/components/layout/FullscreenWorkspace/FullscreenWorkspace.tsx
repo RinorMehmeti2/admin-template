@@ -60,10 +60,7 @@ export function FullscreenWorkspace({
   return (
     <div
       ref={ref}
-      className={cn(
-        'fixed inset-0 z-30 flex flex-col bg-background text-foreground',
-        className,
-      )}
+      className={cn('fixed inset-0 z-30 flex flex-col bg-background text-foreground', className)}
       {...rest}
     >
       {children}
@@ -94,10 +91,7 @@ export function WorkspaceCanvas({ ref, className, children, ...rest }: Workspace
     <WorkspaceCanvasContext.Provider value={value}>
       <div
         ref={merged}
-        className={cn(
-          'relative min-h-0 flex-1 overflow-hidden bg-surface-muted/40',
-          className,
-        )}
+        className={cn('relative min-h-0 flex-1 overflow-hidden bg-surface-muted/40', className)}
         {...rest}
       >
         {children}
@@ -163,16 +157,19 @@ export function WorkspacePanel({
   const body = useDisclosure(!defaultCollapsed);
   const [position, setPosition] = useState<PanelPosition>(defaultPosition);
 
-  const clampToCanvas = useCallback((x: number, y: number): PanelPosition => {
-    const canvas = canvasRef.current;
-    const panel = panelRef.current;
-    if (canvas === null || panel === null) return { x, y };
-    const cb = canvas.getBoundingClientRect();
-    const pb = panel.getBoundingClientRect();
-    const maxX = Math.max(0, cb.width - pb.width);
-    const maxY = Math.max(0, cb.height - pb.height);
-    return { x: clamp(x, 0, maxX), y: clamp(y, 0, maxY) };
-  }, [canvasRef]);
+  const clampToCanvas = useCallback(
+    (x: number, y: number): PanelPosition => {
+      const canvas = canvasRef.current;
+      const panel = panelRef.current;
+      if (canvas === null || panel === null) return { x, y };
+      const cb = canvas.getBoundingClientRect();
+      const pb = panel.getBoundingClientRect();
+      const maxX = Math.max(0, cb.width - pb.width);
+      const maxY = Math.max(0, cb.height - pb.height);
+      return { x: clamp(x, 0, maxX), y: clamp(y, 0, maxY) };
+    },
+    [canvasRef],
+  );
 
   const startPosRef = useRef<PanelPosition>(position);
 

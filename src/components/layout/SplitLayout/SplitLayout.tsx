@@ -244,8 +244,8 @@ export function SplitLayout({
             </button>
           ) : null}
         </div>
-        /* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */
-      ) : null}
+      ) : /* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */
+      null}
 
       <main className="min-w-0 flex-1 overflow-auto bg-background">{right}</main>
     </div>
