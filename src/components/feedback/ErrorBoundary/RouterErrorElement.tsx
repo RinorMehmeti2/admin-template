@@ -28,9 +28,7 @@ function normalize(error: unknown): Error {
   if (typeof error === 'object' && error !== null) {
     const e = error as { status?: number; statusText?: string; data?: unknown };
     if (typeof e.status === 'number') {
-      const next = new Error(
-        `${e.status}${e.statusText !== undefined ? ` ${e.statusText}` : ''}`,
-      );
+      const next = new Error(`${e.status}${e.statusText !== undefined ? ` ${e.statusText}` : ''}`);
       next.name = 'RouteError';
       return next;
     }
@@ -38,10 +36,7 @@ function normalize(error: unknown): Error {
   return new Error(String(error));
 }
 
-export function RouterErrorElement({
-  fallback,
-  source = 'router',
-}: RouterErrorElementProps = {}) {
+export function RouterErrorElement({ fallback, source = 'router' }: RouterErrorElementProps = {}) {
   const raw = useRouteError();
   const error = normalize(raw);
 

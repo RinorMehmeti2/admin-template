@@ -45,6 +45,6 @@ export function reportError(error: unknown, context: ErrorContext = {}): void {
   const payload = serialize(error, context);
   // Production swap: replace this block with `Sentry.captureException(error, { contexts: { … } })`
   // (or equivalent). Keep the structured `payload` shape so log search stays consistent.
-  // eslint-disable-next-line no-console
+
   console.error('[error]', payload);
 }

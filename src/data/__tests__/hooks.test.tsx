@@ -25,10 +25,12 @@ function silentClient(): QueryClient {
 
 describe('useApiQuery', () => {
   it('infers the data type from the fetcher and surfaces ApiError on failure', async () => {
-    const fetcher = vi.fn(async (): Promise<{ id: string; name: string }> => ({
-      id: 'u_1',
-      name: 'Ada',
-    }));
+    const fetcher = vi.fn(
+      async (): Promise<{ id: string; name: string }> => ({
+        id: 'u_1',
+        name: 'Ada',
+      }),
+    );
     const { result } = renderHook(() => useApiQuery(keys.users.detail('u_1'), fetcher), {
       wrapper: makeWrapper(silentClient()),
     });

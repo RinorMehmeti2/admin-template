@@ -8,10 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/data-display';
-import {
-  ErrorBoundary,
-  RouteErrorFallback,
-} from '@/components/feedback/ErrorBoundary';
+import { ErrorBoundary, RouteErrorFallback } from '@/components/feedback/ErrorBoundary';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 
 /*

@@ -106,7 +106,12 @@ async function parseError(res: Response): Promise<ApiError> {
   } catch {
     // Body parsing failed — keep the default message.
   }
-  return new ApiError({ status: res.status, message, ...(code !== undefined ? { code } : {}), payload });
+  return new ApiError({
+    status: res.status,
+    message,
+    ...(code !== undefined ? { code } : {}),
+    payload,
+  });
 }
 
 async function parseSuccess<T>(res: Response): Promise<T> {

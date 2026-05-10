@@ -13,11 +13,7 @@ function Boom({ when }: { when: boolean }) {
 
 function Trigger({ children }: { children: (boom: () => void) => React.ReactNode }) {
   const [, set] = useState(0);
-  return (
-    <>
-      {children(() => set((n) => n + 1))}
-    </>
-  );
+  return <>{children(() => set((n) => n + 1))}</>;
 }
 
 export const DefaultFallback = {

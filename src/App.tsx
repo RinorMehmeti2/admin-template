@@ -31,10 +31,7 @@ import {
 } from '@/components/overlays/CommandPalette';
 import { AuthProvider, ProtectedRoute, PublicOnlyRoute, RoleGate } from '@/auth';
 import { ApiAuthBridge, QueryProvider } from '@/data';
-import {
-  RootRouterErrorElement,
-  RouterErrorElement,
-} from '@/components/feedback/ErrorBoundary';
+import { RootRouterErrorElement, RouterErrorElement } from '@/components/feedback/ErrorBoundary';
 import { ErrorsDemoPage } from '@/pages/errors';
 import { LoginPage } from '@/pages/auth/login';
 import { AdminPage } from '@/pages/admin';
@@ -56,7 +53,11 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
   },
   { to: '/focus', label: 'Focus mode', keywords: ['fullscreen', 'editor', 'distraction'] },
   { to: '/workspace', label: 'Workspace', keywords: ['canvas', 'panels', 'editor', 'design'] },
-  { to: '/errors', label: 'Error boundaries', keywords: ['error', 'boundary', 'crash', 'fallback'] },
+  {
+    to: '/errors',
+    label: 'Error boundaries',
+    keywords: ['error', 'boundary', 'crash', 'fallback'],
+  },
 ];
 
 function RootShell() {

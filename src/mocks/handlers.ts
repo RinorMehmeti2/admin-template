@@ -26,9 +26,7 @@ export const handlers = [
       search.length === 0
         ? MOCK_USERS
         : MOCK_USERS.filter(
-            (u) =>
-              u.name.toLowerCase().includes(search) ||
-              u.email.toLowerCase().includes(search),
+            (u) => u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search),
           );
 
     const start = (page - 1) * pageSize;

@@ -399,7 +399,10 @@ src/data/
 ```tsx
 import { api, keys, useApiQuery } from '@/data';
 
-interface UsersResponse { data: User[]; total: number }
+interface UsersResponse {
+  data: User[];
+  total: number;
+}
 
 function UsersTable() {
   const filters = { page: 1, search: '' };
@@ -575,7 +578,7 @@ reporter (Sentry, Bugsnag, Datadog). The `context` shape is:
 ```ts
 interface ErrorContext {
   componentStack?: string; // present for boundary catches
-  source?: string;         // 'app-root', 'route:/tables', 'event:invite-user', …
+  source?: string; // 'app-root', 'route:/tables', 'event:invite-user', …
   extra?: Record<string, unknown>;
 }
 ```

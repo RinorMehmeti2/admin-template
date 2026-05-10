@@ -20,7 +20,9 @@ export function QueryProvider({ children, client = defaultClient }: QueryProvide
   return (
     <QueryClientProvider client={client}>
       {children}
-      {import.meta.env.DEV ? <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" /> : null}
+      {import.meta.env.DEV ? (
+        <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+      ) : null}
     </QueryClientProvider>
   );
 }

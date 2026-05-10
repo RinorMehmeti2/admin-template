@@ -144,9 +144,7 @@ describe('ErrorBoundary — interactions with reportError', () => {
       </ErrorBoundary>,
     );
     // The reporter calls console.error with `'[error]'` plus a serialized payload.
-    const reporterCall = consoleError.mock.calls.find(
-      (call: unknown[]) => call[0] === '[error]',
-    );
+    const reporterCall = consoleError.mock.calls.find((call: unknown[]) => call[0] === '[error]');
     expect(reporterCall).toBeDefined();
     const payload = reporterCall![1] as { source: string; message: string };
     expect(payload.source).toBe('test-source');
