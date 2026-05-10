@@ -9,6 +9,8 @@ export * from './FormField';
 export * from './Input';
 export * from './Label';
 export * from './NumberInput';
+export * from './OtpInput';
+export * from './PhoneInput';
 export * from './Radio';
 export * from './RadioGroup';
 export * from './RangeSlider';

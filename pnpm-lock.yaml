@@ -56,6 +56,9 @@ dependencies:
   i18next-browser-languagedetector:
     specifier: ^8.2.1
     version: 8.2.1
+  libphonenumber-js:
+    specifier: ^1.13.0
+    version: 1.13.0
   lucide-react:
     specifier: ^1.14.0
     version: 1.14.0(react@19.2.6)
@@ -4085,6 +4088,10 @@ packages:
       prelude-ls: 1.2.1
       type-check: 0.4.0
     dev: true
+
+  /libphonenumber-js@1.13.0:
+    resolution: {integrity: sha512-N12qmdu0BM1wVNkMKYOoJR4fTOZDblrKNsOqGbKoUZrYsYLX2zx1O5X+vhK0WJPBU/+/kh9tCr8x0a7t1puGWg==}
+    dev: false
 
   /lightningcss-android-arm64@1.32.0:
     resolution: {integrity: sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg==}

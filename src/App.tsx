@@ -31,6 +31,7 @@ import { ApiAuthBridge, ErrorBridge, QueryProvider } from '@/data';
 import { RootRouterErrorElement, RouterErrorElement } from '@/components/feedback/ErrorBoundary';
 import { ErrorsDemoPage } from '@/pages/errors';
 import { LoginPage } from '@/pages/auth/login';
+import { VerifyPage } from '@/pages/auth/verify';
 import { PrintPreviewPage } from '@/pages/PrintPreviewPage';
 import { TreePage } from '@/pages/TreePage';
 
@@ -175,6 +176,10 @@ const router = createBrowserRouter([
             <LoginPage />
           </PublicOnlyRoute>
         ),
+      },
+      {
+        path: '/auth/verify',
+        element: <VerifyPage />,
       },
       {
         path: '/',
