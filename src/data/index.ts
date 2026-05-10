@@ -17,3 +17,19 @@ export { useApiMutation, type ApiMutationOptions } from './useApiMutation';
 export { useInvalidate } from './useInvalidate';
 export * as keys from './keys';
 export type { UserListFilters } from './keys';
+export {
+  mapApiError,
+  runErrorAction,
+  dispatchError,
+  registerErrorDispatcher,
+  getErrorDispatcher,
+  type ErrorAction,
+  type ToastAction,
+  type RedirectAction,
+  type InlineAction,
+  type FatalAction,
+  type ToastSeverity,
+  type ErrorDispatcher,
+} from './errorHandler';
+export { ErrorBridge } from './ErrorBridge';
+export { useApiFormSubmit, type UseApiFormSubmitOptions } from './useApiFormSubmit';

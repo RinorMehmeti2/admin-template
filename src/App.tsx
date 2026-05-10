@@ -11,13 +11,10 @@ import { PrimitivesPage } from '@/pages/PrimitivesPage';
 import { FormsPage } from '@/pages/FormsPage';
 import { FeedbackPage } from '@/pages/FeedbackPage';
 import { DataPage } from '@/pages/DataPage';
-import { TablesPage } from '@/pages/TablesPage';
 import { PositioningPage } from '@/pages/PositioningPage';
 import { ShowcasePage } from '@/pages/ShowcasePage';
-import { ChartsPage } from '@/pages/ChartsPage';
 import { SplitDemoPage } from '@/pages/SplitDemoPage';
 import { FocusDemoPage } from '@/pages/FocusDemoPage';
-import { WorkspaceDemoPage } from '@/pages/WorkspaceDemoPage';
 import { DashboardPage, LayoutDemo, SettingsPage, UsersPage } from '@/pages/layout-demo';
 import { ToastProvider } from '@/context/ToastProvider';
 import { ThemeProvider, useTheme } from '@/context/ThemeProvider';
@@ -30,11 +27,32 @@ import {
   useRegisterCommands,
 } from '@/components/overlays/CommandPalette';
 import { AuthProvider, ProtectedRoute, PublicOnlyRoute, RoleGate } from '@/auth';
-import { ApiAuthBridge, QueryProvider } from '@/data';
+import { ApiAuthBridge, ErrorBridge, QueryProvider } from '@/data';
 import { RootRouterErrorElement, RouterErrorElement } from '@/components/feedback/ErrorBoundary';
 import { ErrorsDemoPage } from '@/pages/errors';
 import { LoginPage } from '@/pages/auth/login';
-import { AdminPage } from '@/pages/admin';
+
+/*
+ * Code splitting strategy.
+ *
+ * react-router v7's `lazy` route option fires the dynamic import on
+ * navigation and waits before rendering — no Suspense boundary required at
+ * the route boundary. Each lazy() factory becomes its own chunk.
+ *
+ * Eager (in main bundle): auth, AppLayout, theme, i18n, primitives, forms
+ *   shell, feedback, data display, positioning, showcase, layout demo. These
+ *   are touched on most navigations and would just be re-fetched as chunks
+ *   with no benefit.
+ *
+ * Lazy: routes that pull a heavy carve-out or are rarely visited:
+ *   - /charts    → recharts
+ *   - /tables    → tanstack-table
+ *   - /workspace → FullscreenWorkspace + heavy demo data
+ *   - /admin     → only loads after a role check passes anyway
+ *
+ * RichTextEditor (TipTap + ProseMirror) is lazy-loaded *inside* FormsPage
+ * via React.lazy + Suspense — see components/forms/RichTextEditor/lazy.tsx.
+ */
 
 const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[] }> = [
   { to: '/showcase', label: 'Overview', keywords: ['home', 'index', 'showcase'] },
@@ -135,6 +153,7 @@ function RootShell() {
 
   return (
     <>
+      <ErrorBridge />
       <CommandPalette />
       <Outlet />
     </>
@@ -174,38 +193,57 @@ const router = createBrowserRouter([
           },
           {
             path: 'tables',
-            element: (
-              <ProtectedRoute>
-                <TablesPage />
-              </ProtectedRoute>
-            ),
+            lazy: async () => {
+              const { TablesPage } = await import('@/pages/TablesPage');
+              return {
+                Component: () => (
+                  <ProtectedRoute>
+                    <TablesPage />
+                  </ProtectedRoute>
+                ),
+              };
+            },
             errorElement: <RouterErrorElement source="route:/tables" />,
           },
           { path: 'positioning', element: <PositioningPage /> },
           {
             path: 'charts',
-            element: <ChartsPage />,
+            lazy: async () => {
+              const { ChartsPage } = await import('@/pages/ChartsPage');
+              return { Component: ChartsPage };
+            },
             errorElement: <RouterErrorElement source="route:/charts" />,
           },
           { path: 'split', element: <SplitDemoPage /> },
           { path: 'focus', element: <FocusDemoPage /> },
-          { path: 'workspace', element: <WorkspaceDemoPage /> },
+          {
+            path: 'workspace',
+            lazy: async () => {
+              const { WorkspaceDemoPage } = await import('@/pages/WorkspaceDemoPage');
+              return { Component: WorkspaceDemoPage };
+            },
+          },
           {
             path: 'admin',
-            element: (
-              <ProtectedRoute>
-                <RoleGate
-                  roles={['admin']}
-                  fallback={
-                    <div className="rounded-md border border-danger/30 bg-danger/10 p-4 text-sm text-danger">
-                      You do not have permission to view this page.
-                    </div>
-                  }
-                >
-                  <AdminPage />
-                </RoleGate>
-              </ProtectedRoute>
-            ),
+            lazy: async () => {
+              const { AdminPage } = await import('@/pages/admin');
+              return {
+                Component: () => (
+                  <ProtectedRoute>
+                    <RoleGate
+                      roles={['admin']}
+                      fallback={
+                        <div className="rounded-md border border-danger/30 bg-danger/10 p-4 text-sm text-danger">
+                          You do not have permission to view this page.
+                        </div>
+                      }
+                    >
+                      <AdminPage />
+                    </RoleGate>
+                  </ProtectedRoute>
+                ),
+              };
+            },
             errorElement: <RouterErrorElement source="route:/admin" />,
           },
         ],

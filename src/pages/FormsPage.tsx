@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { Lock, Mail } from 'lucide-react';
 import { Button } from '@/components/primitives/Button';
 import { Separator } from '@/components/primitives/Separator';
+import { Alert } from '@/components/feedback/Alert';
+import { ApiError, useApiFormSubmit, useApiMutation } from '@/data';
 import {
   Checkbox,
   Combobox,
@@ -17,7 +19,7 @@ import {
   Input,
   Radio,
   RadioGroup,
-  RichTextEditor,
+  LazyRichTextEditor,
   Select,
   Switch,
   Textarea,
@@ -118,8 +120,47 @@ const settingsSchema = z.object({
 });
 type SettingsValues = z.infer<typeof settingsSchema>;
 
+// ScenarioPicker drives the mock API so reviewers can demo each error path
+// without touching the network layer. In production the mutation would call
+// the real endpoint via `api()`.
+type SettingsScenario = 'success' | 'fieldErrors' | 'serverError' | 'authExpired';
+
+function fakeSettingsApi(scenario: SettingsScenario, values: SettingsValues): Promise<SettingsValues> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (scenario === 'success') return resolve(values);
+      if (scenario === 'fieldErrors') {
+        // 422 with zod-style field map → useApiFormSubmit dispatches per-field
+        // setError calls back into RHF.
+        return reject(
+          new ApiError({
+            status: 422,
+            message: 'Some fields need attention.',
+            code: 'validation',
+            payload: {
+              fields: {
+                name: 'That display name is already taken.',
+                bio: 'Bio cannot reference internal usernames.',
+              },
+            },
+          }),
+        );
+      }
+      if (scenario === 'serverError') {
+        // 500 → mapApiError → toast (the helper fires toast.error itself).
+        return reject(new ApiError({ status: 500, message: 'Could not save settings. Try again.' }));
+      }
+      // 'authExpired' → 401 → mapApiError returns a redirect action; the
+      // helper navigates the user to /login.
+      reject(new ApiError({ status: 401, message: 'Session expired.' }));
+    }, 300);
+  });
+}
+
 function SettingsForm() {
   const [submitted, setSubmitted] = useState<SettingsValues | null>(null);
+  const [scenario, setScenario] = useState<SettingsScenario>('success');
+
   const form = useForm<SettingsValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
@@ -136,8 +177,47 @@ function SettingsForm() {
   const { register, control, formState, reset } = form;
   const { errors } = formState;
 
+  // INTEGRATION POINT 1: the mutation opts out of the global error dispatcher.
+  // Without `meta.handlesErrors`, the QueryClient's MutationCache.onError would
+  // toast every failure and useApiFormSubmit would never get a chance to
+  // setError per field.
+  const mutation = useApiMutation<SettingsValues, SettingsValues>(
+    (values) => fakeSettingsApi(scenario, values),
+    {
+      meta: { handlesErrors: true },
+    },
+  );
+
+  // INTEGRATION POINT 2: useApiFormSubmit returns a SubmitHandler. It runs the
+  // mutation, classifies failures via mapApiError, and routes them: inline
+  // → form.setError, toast → toast.error, redirect → navigate, fatal →
+  // re-throw to the nearest error boundary.
+  const handleSubmit = useApiFormSubmit(form, mutation, {
+    onSuccess: (data) => setSubmitted(data),
+  });
+
+  // INTEGRATION POINT 3: form-level server message is surfaced via the RHF
+  // 'root.serverError' slot. RHF stores it on errors.root.serverError.
+  const rootError = errors.root?.serverError?.message;
+
   return (
-    <Form form={form} onSubmit={(values) => setSubmitted(values)} className="space-y-5">
+    <Form form={form} onSubmit={handleSubmit} className="space-y-5">
+      <FormField
+        label="Mock API scenario"
+        description="Drives the fake mutation so each error path can be exercised without a backend."
+      >
+        <Select value={scenario} onChange={(e) => setScenario(e.currentTarget.value as SettingsScenario)}>
+          <option value="success">Success</option>
+          <option value="fieldErrors">422 — field errors</option>
+          <option value="serverError">500 — toast</option>
+          <option value="authExpired">401 — redirect to login</option>
+        </Select>
+      </FormField>
+
+      {rootError !== undefined ? (
+        <Alert variant="danger" title="Could not save" description={rootError} />
+      ) : null}
+
       <FormField label="Display name" required error={errors.name?.message}>
         <Input placeholder="Your name" {...register('name')} />
       </FormField>
@@ -263,7 +343,7 @@ function SettingsForm() {
           control={control}
           name="description"
           render={({ field, fieldState }) => (
-            <RichTextEditor
+            <LazyRichTextEditor
               value={field.value}
               onChange={field.onChange}
               onBlur={field.onBlur}
@@ -307,7 +387,7 @@ function BioEditorDemo() {
         label="Bio"
         description="Full toolbar with bubble menu on selection. Try selecting some text."
       >
-        <RichTextEditor
+        <LazyRichTextEditor
           value={html}
           onChange={setHtml}
           placeholder="Write your bio…"

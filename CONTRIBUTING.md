@@ -688,6 +688,69 @@ function useUpdateUser() {
 - `queryClient` defaults skip retries for 4xx and retry once on 5xx /
   network. Mutations never retry.
 
+#### One classifier, one dispatcher
+
+Every API failure goes through `mapApiError(err)` in
+`src/data/errorHandler.ts`, which returns one of:
+
+| `kind`     | When                                                        | Side effect                                |
+| ---------- | ----------------------------------------------------------- | ------------------------------------------ |
+| `toast`    | 403, generic 4xx, 5xx, network                              | `toast.<severity>(message)`                |
+| `redirect` | 401 (refresh already failed in `api.ts`)                    | `navigate(action.to)` — defaults `/login`  |
+| `inline`   | 422, or any 4xx with `payload.fields` / `payload.errors`    | Caller calls `form.setError` per field     |
+| `fatal`    | Unmapped (e.g. 3xx) — likely a bug                          | Re-thrown so an error boundary catches it  |
+
+`<ErrorBridge>` (mounted in `RootShell`) registers `navigate` + `toast`
+with the error module so the QueryCache / MutationCache global handlers
+can dispatch without taking a context dependency.
+
+#### What an endpoint should return
+
+| Server response                                                   | Maps to                                        |
+| ----------------------------------------------------------------- | ---------------------------------------------- |
+| `200/204 …`                                                       | success                                        |
+| `401 { message }`                                                 | redirect to `/login`                           |
+| `403 { message }`                                                 | warning toast                                  |
+| `422 { message, fields: { <name>: <msg \| msg[]> } }`             | inline — per-field `setError`                  |
+| `422 { message }`                                                 | inline — `root.serverError`                    |
+| `400-499 { message, errors: { <name>: <msg[]> } }`                | inline — per-field (Rails / DRF shape)         |
+| `400-499 { message }` (no fields)                                 | error toast                                    |
+| `500-599 { message }`                                             | error toast (server's `message` is shown)      |
+| Network failure / DNS / timeout                                   | error toast with a generic "check connection"  |
+
+The fields normalizer accepts:
+
+```jsonc
+// zod-style — either string or string[]
+{ "fields": { "email": "Invalid", "password": ["Too short"] } }
+// rails / drf-style
+{ "errors": { "email": ["Invalid"] } }
+```
+
+For a field, the first non-empty string wins. Other keys (`code`,
+extra metadata) are passed through on `error.payload`.
+
+#### Opting out of global dispatch
+
+Set `meta: { handlesErrors: true }` on the query / mutation when the
+caller wants full ownership of error handling — e.g., a form using
+`useApiFormSubmit`:
+
+```tsx
+const mutation = useApiMutation(saveSettings, {
+  meta: { handlesErrors: true },
+});
+const handleSubmit = useApiFormSubmit(form, mutation, {
+  onSuccess: () => navigate('/settings/saved'),
+});
+return <Form form={form} onSubmit={handleSubmit}>…</Form>;
+```
+
+Without the meta flag the global handler will toast every failure
+(including 422s) before `useApiFormSubmit` ever sees it. The
+`SettingsForm` on `/forms` is the canonical example — see
+`src/pages/FormsPage.tsx` for the three integration points.
+
 ### Auth integration
 
 `<ApiAuthBridge>` is mounted in `App.tsx` inside `<AuthProvider>`. It calls
@@ -790,6 +853,99 @@ interface ErrorContext {
 Keep the structured payload shape (`{ name, message, stack,
 componentStack, source, extra, timestamp }`) so log search stays
 consistent across the swap.
+
+## Bundle size
+
+Visibility is half the battle. We track size at every PR by running the
+analyzer and eyeballing the treemap; CI does not gate on size today.
+
+### Running the analyzer
+
+```bash
+pnpm analyze   # vite build --mode analyze, writes dist/stats.html
+```
+
+Open `dist/stats.html` in a browser. The treemap is grouped by chunk;
+click a chunk to drill into its modules. `gzip` and `brotli` columns are
+the numbers that matter.
+
+### Budgets (guardrails, not hard gates)
+
+- **First-paint bundle: < 200 KB gzipped.** Everything not behind a lazy
+  route. Includes React, react-router, the AppLayout, primitives,
+  feedback, data-display (no `DataTable`), forms shell (no
+  `RichTextEditor`), theme, i18n, and auth.
+- **Per-route chunk: < 100 KB gzipped each.** Routes that pull a heavy
+  dependency (Recharts, TipTap, TanStack Table) are exempt — but the
+  carve-out chunk should be alone and not duplicated across routes.
+- **Total app: < 1 MB gzipped.** Sum of all chunks served on a fully
+  exercised session.
+
+If a PR pushes the first-paint bundle over budget, the reviewer should
+expect either (a) a justification (e.g., a deliberate new top-level
+feature) or (b) a split.
+
+### Code splitting strategy
+
+Routes are split via [react-router v7's `lazy` route option][rr-lazy] —
+no `React.lazy` + `<Suspense>` boundary at the route level (the router
+handles it). Currently lazy:
+
+| Route        | Why                                                  |
+| ------------ | ---------------------------------------------------- |
+| `/charts`    | Pulls Recharts.                                      |
+| `/tables`    | Pulls TanStack Table + the heavy `DataTable` shell.  |
+| `/workspace` | `FullscreenWorkspace` + demo data is rarely needed.  |
+| `/admin`     | Hidden behind a role check anyway.                   |
+
+Component-level split (mid-component, not at a route boundary):
+
+- `LazyRichTextEditor` (`src/components/forms/RichTextEditor/lazy.tsx`)
+  uses `React.lazy` + `Suspense` to defer TipTap + ProseMirror until the
+  editor actually renders. The barrel `src/components/forms/RichTextEditor/index.ts`
+  intentionally does **not** re-export the eager `RichTextEditor` — that
+  would put it back on the static import graph and Rollup would refuse
+  to split (`INEFFECTIVE_DYNAMIC_IMPORT`). Tests / stories that need the
+  eager component import it directly via `./RichTextEditor`.
+
+[rr-lazy]: https://reactrouter.com/en/main/route/lazy
+
+### Adding a new lazy route
+
+```tsx
+{
+  path: 'reports',
+  lazy: async () => {
+    const { ReportsPage } = await import('@/pages/ReportsPage');
+    return { Component: ReportsPage };
+  },
+  errorElement: <RouterErrorElement source="route:/reports" />,
+},
+```
+
+If the route needs `<ProtectedRoute>` / `<RoleGate>`, return a wrapping
+component instead of `Component: ReportsPage` directly. See `/admin` in
+`src/App.tsx` for the canonical wrapper pattern.
+
+### Adding a new component-level split
+
+Use `React.lazy` + `<Suspense>`. Import the types via `import type` only
+so the static graph stays free of the heavy module. Provide a fallback
+that matches the loaded component's footprint to avoid layout shift.
+
+### Adding a CI size gate (optional, future)
+
+When budgets become a hard requirement, add [size-limit][sl]:
+
+```bash
+pnpm add -D size-limit @size-limit/preset-app
+```
+
+Configure via `.size-limit.json` with one entry per chunk pattern. Wire
+into CI as `pnpm size`. Today this is intentionally not enabled — the
+first-paint number lives in PR review.
+
+[sl]: https://github.com/ai/size-limit
 
 ## Pragmatic carve-outs
 

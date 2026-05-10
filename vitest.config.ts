@@ -1,8 +1,10 @@
 import { defineConfig, mergeConfig } from 'vitest/config';
 import viteConfig from './vite.config';
 
+const resolvedViteConfig = viteConfig({ mode: 'test', command: 'serve' });
+
 export default mergeConfig(
-  viteConfig,
+  resolvedViteConfig,
   defineConfig({
     test: {
       globals: true,

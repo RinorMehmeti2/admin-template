@@ -1,5 +1,12 @@
-import { QueryClient, type DefaultOptions } from '@tanstack/react-query';
+import {
+  MutationCache,
+  QueryCache,
+  QueryClient,
+  type DefaultOptions,
+  type Mutation,
+} from '@tanstack/react-query';
 import { ApiError } from './api';
+import { dispatchError } from './errorHandler';
 
 /*
  * QueryClient defaults for the admin template.
@@ -12,6 +19,16 @@ import { ApiError } from './api';
  *     (api.ts already handles 401 once internally; further retries would
  *     thrash logout).
  *   - refetchOnWindowFocus: production only. Dev focus-flicker is annoying.
+ *
+ * Global error handling lives on QueryCache + MutationCache here (per
+ * TanStack Query v5 — query-level onError on defaultOptions is gone). Both
+ * caches forward to dispatchError(), which classifies via mapApiError() and
+ * fires the toast / redirect side effect through the registered dispatcher.
+ *
+ * Components opt out of global dispatch by setting
+ *   meta: { handlesErrors: true }
+ * on the query / mutation. useApiFormSubmit relies on this to fully own
+ * inline error handling.
  */
 
 export const DEFAULT_QUERY_OPTIONS: DefaultOptions = {
@@ -32,8 +49,30 @@ export const DEFAULT_QUERY_OPTIONS: DefaultOptions = {
   },
 };
 
+interface ErrorMeta {
+  handlesErrors?: boolean;
+}
+
+function shouldDispatch(meta: Record<string, unknown> | undefined): boolean {
+  return (meta as ErrorMeta | undefined)?.handlesErrors !== true;
+}
+
 export function createQueryClient(): QueryClient {
-  return new QueryClient({ defaultOptions: DEFAULT_QUERY_OPTIONS });
+  const queryCache = new QueryCache({
+    onError: (error, query) => {
+      if (shouldDispatch(query.meta)) dispatchError(error);
+    },
+  });
+  const mutationCache = new MutationCache({
+    onError: (error, _vars, _ctx, mutation: Mutation<unknown, unknown, unknown, unknown>) => {
+      if (shouldDispatch(mutation.meta)) dispatchError(error);
+    },
+  });
+  return new QueryClient({
+    queryCache,
+    mutationCache,
+    defaultOptions: DEFAULT_QUERY_OPTIONS,
+  });
 }
 
 /** Default singleton — fine for the app. Tests should call createQueryClient() per case. */
