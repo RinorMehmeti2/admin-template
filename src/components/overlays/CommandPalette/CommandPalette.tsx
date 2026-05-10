@@ -157,9 +157,10 @@ export function CommandPalette({
     <Portal>
       <div
         aria-hidden="true"
+        data-print="hide"
         className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm motion-safe:animate-overlay-in"
       />
-      <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-[15vh]">
+      <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-[15vh]" data-print="hide">
         <div
           ref={panelRef}
           role="dialog"

@@ -128,7 +128,7 @@ export function Sidebar({
   if (ctx.isMobile) {
     return (
       <Drawer open={ctx.mobileOpen} onOpenChange={ctx.setMobileOpen} side="left">
-        <DrawerContent className="w-72 max-w-[85vw]">
+        <DrawerContent className="w-72 max-w-[85vw]" data-print="hide">
           <DrawerHeader>
             <DrawerTitle>{mobileTitle}</DrawerTitle>
           </DrawerHeader>
@@ -147,6 +147,7 @@ export function Sidebar({
     <aside
       ref={ref}
       data-collapsed={ctx.collapsed}
+      data-print="hide"
       style={{ width: `${widthRem}rem` }}
       className={cn(
         'flex shrink-0 flex-col border-r border-border bg-surface transition-[width] duration-200 ease-in-out',

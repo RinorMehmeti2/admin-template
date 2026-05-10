@@ -50,7 +50,7 @@ src/
                       # RoleGate, mockAuthClient, types  — see "Auth" below
   i18n/               # i18next init + locales/<lng>.json — see "Internationalization" below
   lib/                # cn.ts, date.ts, formatters, validators, constants
-  styles/             # globals.css, tokens.css
+  styles/             # globals.css, tokens.css, print.css
   pages/              # Demo / showcase pages
   types/              # Shared TS types
   App.tsx
@@ -83,6 +83,7 @@ Required hooks:
 - **`useMediaQuery(query)`** → SSR-safe media query hook. Used by Sidebar (mobile/desktop switch).
 - **`usePosition(triggerRef, contentRef, { placement, offset, boundary })`** → returns `{ x, y, ready, placement }` (document-absolute coords) for content anchored to a trigger. Handles viewport flip and perpendicular shift. Companion `usePositionAtPoint` does the same anchored to a `{ x, y }` point (used by ContextMenu). Known unhandled cases — see "Positioning — known limitations" at the bottom of this file.
 - **`useDebouncedValue(value, delay)`** → debounces a value.
+- **`usePrintMode()`** → returns `true` while the browser is preparing/rendering for print. Subscribes to `beforeprint` / `afterprint` and the `print` media query. Used by DataTable (render every filtered row) and Tabs (render every panel) so the print stylesheet sees the full content. Compose this in any new component that hides content behind state and would be expected to print in full.
 
 Plus one component utility:
 
@@ -282,6 +283,7 @@ A component is complete only when ALL of these are true:
 - ❌ Add `dark:` variants when semantic tokens already handle dark mode
 - ❌ Reach for `react-i18next`'s date / number formatter — use `Intl.*` (or our `date-fns` wrappers) instead
 - ❌ Translate strings with hardcoded English literals or hand-rolled string maps — use `t('feature.subfeature.key')` from `useTranslation()`
+- ❌ Add per-component `@media print` rules — print logic is centralized in `src/styles/print.css`. Components opt in via `data-print="hide"` / `data-print="expand"` / `data-print-block` (see "Print" below)
 
 Note: `useListbox` (Combobox, Select) and the chart container (Recharts) already exist. Extend them rather than building parallel implementations.
 
@@ -404,6 +406,71 @@ Full recipe in `CONTRIBUTING.md` § "Auth: swap the client".
 - Introducing a new global Provider (locale, theme, etc.) requires
   updating every render harness: tests, story decorators in
   `.storybook/preview.tsx`, and any page-level mounts.
+
+## Print
+
+Every page that contains useful information (tables, charts, dashboards,
+read-only forms) prints cleanly: no sidebar, no topbar, no command
+palette, no overlays, no action buttons. The print stylesheet lives at
+`src/styles/print.css` (imported from `globals.css`). The demo route
+`/print-preview` is the verification surface — open it in the browser
+and use the platform print preview.
+
+### `data-print` attribute contract
+
+Three values, three meanings. Tag the **root** of the affected element:
+
+| Value                  | Effect                                                                                                                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data-print="hide"`    | Element is removed from print output (`display: none`). Use for chrome (Sidebar, Topbar), portaled overlays (Dialog/Drawer/Tooltip/Popover/DropdownMenu/CommandPalette/Toast), and pure interaction (Pagination, action button rows, column-visibility menu, theme/locale switcher). |
+| `data-print="expand"`  | Host component renders all collapsed content during print (DataTable: every filtered row; Tabs: every panel). Print CSS additionally un-hides any `[hidden]` descendants inside the region. Compose `usePrintMode()` to flip internal rendering during `beforeprint`/`afterprint`. |
+| `data-print="no-href"` | Suppresses the auto-appended `(href)` after a link. Use only when the URL would just be noise (in-page anchors, decorative links).                                                                       |
+
+A separate boolean attribute, `data-print-block`, marks an element whose
+contents should not break across pages (`break-inside: avoid`). Already
+applied automatically to `Card` and `Stat`. Add it to any other block
+root that should stay together on paper.
+
+### Color strategy
+
+Inside `@media print`, `print.css` overrides only the **neutral** tokens
+(`--color-background`, `--color-surface*`, `--color-foreground*`,
+`--color-border*`, `--shadow-*`) to a light grayscale palette — both
+`:root` and `html.dark` are flipped, so dark mode users get a clean
+printable surface. **Accent tokens** (`--color-primary`,
+`--color-success`, `--color-warning`, `--color-danger`, `--color-info`)
+are intentionally preserved so charts retain meaning.
+
+Print CSS also strips shadows, gradients, and `backdrop-filter`,
+collapses `sticky`/`fixed` to `static`, restores scrolling overflow
+containers, and appends `(href)` after every external link.
+
+### When you build a new component
+
+- If the component is **page chrome or a portaled overlay**, tag the
+  root with `data-print="hide"`. For overlays this means the panel that
+  ends up in `document.body`, not the trigger.
+- If the component **collapses content behind state** that users would
+  expect to see in full when printing (Accordion, paginated lists,
+  Stepper-with-history, …), follow the DataTable/Tabs pattern:
+  1. Tag the root with `data-print="expand"`.
+  2. Read `usePrintMode()` and render every sub-region while it returns
+     `true`.
+  3. Tag any internal chrome (toolbar, pagination strip, tab strip)
+     with `data-print="hide"` so it disappears alongside.
+- If the component is a **block root that should stay together on
+  paper**, add `data-print-block`.
+- Do not write per-component `@media print` rules. The contract is the
+  attribute set above plus `print.css` — keep print logic centralized.
+
+### Verifying
+
+Open `/print-preview` (`PrintPreviewPage` in `src/pages/`) and use the
+browser's print preview (Ctrl/⌘ P). Acceptance: chrome gone, every
+DataTable row visible, every Tabs panel visible, charts keep colors and
+legends, links show `(href)`, no card or table row split across pages.
+There is no Playwright suite for print today — verification is the
+browser preview.
 
 ## Positioning — known limitations
 

@@ -22,6 +22,7 @@ export function Topbar({
   return (
     <header
       ref={ref}
+      data-print="hide"
       className={cn(
         'flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface/80 px-4 backdrop-blur',
         sticky && 'sticky top-0 z-30',

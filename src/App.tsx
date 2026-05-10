@@ -31,6 +31,7 @@ import { ApiAuthBridge, ErrorBridge, QueryProvider } from '@/data';
 import { RootRouterErrorElement, RouterErrorElement } from '@/components/feedback/ErrorBoundary';
 import { ErrorsDemoPage } from '@/pages/errors';
 import { LoginPage } from '@/pages/auth/login';
+import { PrintPreviewPage } from '@/pages/PrintPreviewPage';
 
 /*
  * Code splitting strategy.
@@ -215,6 +216,7 @@ const router = createBrowserRouter([
             errorElement: <RouterErrorElement source="route:/charts" />,
           },
           { path: 'split', element: <SplitDemoPage /> },
+          { path: 'print-preview', element: <PrintPreviewPage /> },
           { path: 'focus', element: <FocusDemoPage /> },
           {
             path: 'workspace',

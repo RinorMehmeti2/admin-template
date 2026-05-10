@@ -27,6 +27,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
           aria-label={`Theme: ${theme}. Click to change.`}
           variant="ghost"
           size="md"
+          data-print="hide"
           className={cn(className)}
         >
           <Icon className="h-4 w-4" />

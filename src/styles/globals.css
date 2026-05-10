@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './tokens.css';
+@import './print.css';
 
 /* Tailwind v4 dark mode strategy: trigger on html.dark */
 @custom-variant dark (&:where(.dark, .dark *));

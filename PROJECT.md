@@ -56,7 +56,7 @@ These are the foundation that every interactive component composes:
 `useClickOutside`, `useControllableState`, `useDebouncedValue`,
 `useDisclosure`, `useDrag`, `useEscapeKey`, `useFocusReturn`,
 `useFocusTrap`, `useId`, `useListbox`, `useMediaQuery`, `useMergedRefs`,
-`usePosition` (incl. flip + shift), `useRovingFocus`,
+`usePosition` (incl. flip + shift), `usePrintMode`, `useRovingFocus`,
 `useRovingFocusGrid`, `useScrollLock`, `useTypeahead`.
 
 All hooks have test coverage in `src/hooks/__tests__/`.
@@ -99,9 +99,21 @@ availableLocales, dir }`, a `LocaleSwitcher` in the topbar, and a
   flat `feature.subfeature.key` resource layout. Locale persists via
   `localStorage` and switches between `en` / `es` (Spanish) out of the
   box, with `RTL_LOCALES` baked in for future right-to-left work.
+- **Print system.** Every page that contains useful information
+  (tables, charts, dashboards, read-only forms) prints cleanly: no
+  sidebar, no topbar, no command palette, no overlays, no action
+  buttons. The print stylesheet (`src/styles/print.css`) is a single
+  centralized `@media print` block — components opt in via three
+  attributes: `data-print="hide"` (chrome / overlays / pure-interaction
+  surfaces), `data-print="expand"` (DataTable + Tabs render every
+  filtered row / every panel during print, driven by `usePrintMode()`),
+  and `data-print-block` (break-inside-avoid for Card / Stat). Neutral
+  tokens flip to grayscale inside `@media print`; accent tokens
+  (primary/success/warning/danger/info) are preserved so charts retain
+  meaning. The `/print-preview` route is the verification surface.
 - **Layout demos.** `/showcase`, `/primitives`, `/forms`, `/feedback`,
   `/data`, `/tables`, `/charts`, `/positioning`, `/layout`, `/split`,
-  `/focus`, `/workspace`, `/admin` plus the `/login` flow.
+  `/focus`, `/workspace`, `/admin`, `/print-preview` plus the `/login` flow.
 
 ### 2.4 Tooling
 
@@ -173,7 +185,8 @@ admin-template/
 │  │  └─ date.test.ts
 │  ├─ pages/                         # demo / showcase pages
 │  ├─ styles/
-│  │  ├─ globals.css                 # Tailwind import + base resets
+│  │  ├─ globals.css                 # Tailwind import + base resets + print import
+│  │  ├─ print.css                   # @media print rules (data-print contract)
 │  │  └─ tokens.css                  # semantic tokens (light + dark)
 │  ├─ types/
 │  ├─ App.tsx
@@ -523,7 +536,30 @@ interface — `AuthClient` with `login` / `logout` / `refresh` /
 Production code drops in a real implementation in one file
 without changing any component.
 
-### 7.10 i18n integration without UI bloat
+### 7.10 Print without per-component CSS
+
+The naive approach is component-local `@media print` rules. That decays
+fast — every new component reinvents the same hide / expand / grayscale
+logic, and inconsistencies pile up. We centralized everything in
+`src/styles/print.css` and gave components a three-attribute contract
+(`data-print="hide"|"expand"|"no-href"` plus `data-print-block`). Two
+specific traps:
+
+- **Token override, not utility override.** Forcing every `.bg-surface`
+  to `background: white` would have meant chasing every utility class
+  used in the app. Instead we override the underlying CSS custom
+  properties inside `@media print` (and inside `html.dark` so dark
+  users still get a clean surface). Accent tokens are deliberately
+  preserved so chart series stay distinguishable.
+- **Expanding collapsed content needs JS, not CSS.** TabsContent
+  unmounts inactive panels and DataTable only renders the current page
+  — neither can be revealed by CSS. `usePrintMode()` subscribes to
+  `beforeprint`/`afterprint` (with the `print` MQL as a fallback) and
+  flips internal rendering during the print transaction. CSS is the
+  cosmetic safety net (un-hide `[hidden]` panels inside an expand
+  region); the JS does the real work.
+
+### 7.11 i18n integration without UI bloat
 
 Three concrete decisions:
 

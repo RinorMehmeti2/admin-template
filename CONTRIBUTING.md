@@ -316,6 +316,77 @@ pnpm build-storybook
 All must be green. The pre-commit hook will run typecheck + lint-staged
 automatically.
 
+## Print
+
+Every page that contains useful information (tables, charts, dashboards,
+read-only forms) should print cleanly: no sidebar, no topbar, no command
+palette, no overlays, no action buttons. The print stylesheet lives at
+`src/styles/print.css` and is imported from `src/styles/globals.css`. The
+demo route `/print-preview` is the fastest way to verify changes — open it
+in the browser and use the platform print preview.
+
+### The `data-print` contract
+
+Three values, three meanings. Tag the **root** of the affected element:
+
+| Value                 | Effect                                                                                                                                                                                                                                  |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data-print="hide"`   | Element is removed from print output (`display: none`).                                                                                                                                                                                 |
+| `data-print="expand"` | Host component should render all collapsed content during print (DataTable: every filtered row; Tabs: every panel). Print CSS additionally un-hides any `[hidden]` descendants inside the region.                                       |
+| `data-print="no-href"` | Suppress the auto-appended `(href)` after a link. Use for visual-only anchors where the URL would just be noise.                                                                                                                       |
+
+A separate boolean attribute, `data-print-block`, marks an element whose
+contents should not break across pages (`break-inside: avoid`). It is
+applied automatically to `Card` and `Stat`; add it to other block roots
+that should stay together on paper.
+
+### When to add `data-print="hide"` to a new component
+
+Add it if **any** of these is true:
+
+- The component is page chrome (sidebar, topbar, breadcrumbs trail, search).
+- The component is a portaled overlay (Dialog, Drawer, Tooltip, Popover,
+  DropdownMenu, CommandPalette, Toast). The component body, not just the
+  trigger.
+- The component is purely interactive (Pagination controls, action button
+  rows, column-visibility menu, theme/locale switcher).
+
+Tag the root of the rendered DOM, not the wrapper. For portaled overlays,
+the tag goes on the panel that ends up in `document.body`.
+
+### When to add `data-print="expand"`
+
+Only on components that hide content behind state and that users would
+expect to see in full when printing. Today: `DataTable` (paginated rows)
+and `Tabs` (inactive panels). Each owns the JS side: a `usePrintMode()`
+subscription flips internal rendering during `beforeprint`/`afterprint`.
+
+If you add a new component with similar collapsing behavior (e.g.
+Accordion, Stepper-with-history), follow the same pattern:
+
+1. Tag the root with `data-print="expand"`.
+2. Read `usePrintMode()` (`@/hooks/usePrintMode`) and render every
+   sub-region while it returns `true`.
+3. Tag any internal chrome (toolbar, pagination, tab strip) with
+   `data-print="hide"` so it disappears alongside.
+
+### Verifying print output
+
+Open `/print-preview` in the browser and use **Ctrl/⌘ P**. Acceptance:
+
+- The sidebar, topbar, command palette, theme toggle, and locale switcher
+  are gone.
+- Stats, cards, charts, tabs, and the invoice table are all on-page.
+- The DataTable shows every row (no pagination controls).
+- All three Tabs panels are visible.
+- Charts keep their colors and have legible legend / axis labels.
+- Anchor links display their `href` in parentheses.
+- Long sections break across pages without splitting cards or table rows.
+
+There is no Playwright spec for print today — browser print preview is
+the verification surface. If a regression slips, add the verification
+step to the PR description rather than expanding the test matrix.
+
 ## Banned dependencies
 
 The following imports are blocked by ESLint and will fail CI. They are

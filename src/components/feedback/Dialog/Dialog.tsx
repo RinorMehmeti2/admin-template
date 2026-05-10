@@ -156,6 +156,7 @@ export function DialogOverlay({ ref, className, ...rest }: DialogOverlayProps) {
     <div
       ref={ref}
       aria-hidden="true"
+      data-print="hide"
       className={cn(
         'fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm',
         'motion-safe:animate-overlay-in',
@@ -221,7 +222,7 @@ export function DialogContent({
   return (
     <Portal>
       <DialogOverlay />
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" data-print="hide">
         <div
           ref={merged}
           role="dialog"

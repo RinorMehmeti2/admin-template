@@ -300,6 +300,7 @@ export function MenuPanel({
           role="menu"
           id={id}
           data-side={dataSide}
+          data-print="hide"
           tabIndex={-1}
           style={positionStyle}
           onKeyDown={onKeyDownPanel}

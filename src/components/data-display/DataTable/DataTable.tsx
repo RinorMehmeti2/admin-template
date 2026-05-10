@@ -31,6 +31,7 @@ import {
   type ReactNode,
 } from 'react';
 import { cn } from '@/lib/cn';
+import { usePrintMode } from '@/hooks/usePrintMode';
 import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
 import { Skeleton } from '@/components/primitives/Skeleton';
@@ -240,7 +241,11 @@ export function DataTable<TData>({
 
   const visibleColumnCount = table.getVisibleLeafColumns().length;
   const totalRows = table.getFilteredRowModel().rows.length;
-  const pageRows = table.getRowModel().rows;
+  const isPrinting = usePrintMode();
+  // While printing, render every filtered row instead of just the active page.
+  const pageRows = isPrinting
+    ? table.getFilteredRowModel().rows
+    : table.getRowModel().rows;
   const skelCount = skeletonRows ?? table.getState().pagination.pageSize;
   const searchId = useId();
 
@@ -252,9 +257,9 @@ export function DataTable<TData>({
     toolbar?.right !== undefined;
 
   return (
-    <div className={cn('flex flex-col gap-3', className)}>
+    <div className={cn('flex flex-col gap-3', className)} data-print="expand">
       {showToolbar ? (
-        <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2" data-print="hide">
           <div className="flex flex-1 flex-wrap items-center gap-2">
             {enableGlobalFilter ? (
               <Input
@@ -457,7 +462,10 @@ function DataTablePagination<TData>({
   const selectedCount = table.getSelectedRowModel().rows.length;
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-foreground-muted">
+    <div
+      data-print="hide"
+      className="flex flex-wrap items-center justify-between gap-3 text-sm text-foreground-muted"
+    >
       <div className="flex items-center gap-3">
         {showSelectionCount && selectedCount > 0 ? (
           <span>

@@ -152,6 +152,7 @@ export function DrawerOverlay({ ref, className, ...rest }: DrawerOverlayProps) {
     <div
       ref={ref}
       aria-hidden="true"
+      data-print="hide"
       className={cn(
         'fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm motion-safe:animate-overlay-in',
         className,
@@ -212,6 +213,7 @@ export function DrawerContent({
         ref={merged}
         role="dialog"
         aria-modal="true"
+        data-print="hide"
         aria-labelledby={ctx.hasTitle ? ctx.titleId : undefined}
         aria-describedby={ctx.hasDescription ? ctx.descriptionId : undefined}
         tabIndex={-1}

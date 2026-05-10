@@ -254,6 +254,7 @@ export function TooltipContent({
         role="tooltip"
         id={ctx.contentId}
         data-side={pos.placement}
+        data-print="hide"
         // We render at (0,0) before first rAF measurement instead of hiding.
         // In a real browser the measurement happens within one frame so the
         // flash is imperceptible; in tests (faked timers) it lets queries

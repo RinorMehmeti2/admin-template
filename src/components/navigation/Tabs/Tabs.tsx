@@ -14,6 +14,7 @@ import {
 import { cn } from '@/lib/cn';
 import { useId } from '@/hooks/useId';
 import { useControllableState } from '@/hooks/useControllableState';
+import { usePrintMode } from '@/hooks/usePrintMode';
 import { RovingFocusGroup, useRovingFocusItem } from '@/hooks/useRovingFocus';
 
 export type TabsVariant = 'underline' | 'pills' | 'segmented';
@@ -25,6 +26,7 @@ interface TabsContextValue {
   baseId: string;
   orientation: TabsOrientation;
   variant: TabsVariant;
+  isPrinting: boolean;
 }
 
 const TabsContext = createContext<TabsContextValue | null>(null);
@@ -60,6 +62,7 @@ export function Tabs({
     onChange: onValueChange,
   });
   const baseId = useId('tabs');
+  const isPrinting = usePrintMode();
 
   const ctx = useMemo<TabsContextValue>(
     () => ({
@@ -68,8 +71,9 @@ export function Tabs({
       baseId,
       orientation,
       variant,
+      isPrinting,
     }),
-    [val, setVal, baseId, orientation, variant],
+    [val, setVal, baseId, orientation, variant, isPrinting],
   );
 
   return (
@@ -77,6 +81,7 @@ export function Tabs({
       <div
         className={cn(orientation === 'vertical' && 'flex gap-6', className)}
         data-orientation={orientation}
+        data-print="expand"
       >
         {children}
       </div>
@@ -98,6 +103,7 @@ export function TabsList({ ref, className, children, ...rest }: TabsListProps) {
       <div
         ref={ref}
         role="tablist"
+        data-print="hide"
         aria-orientation={ctx.orientation}
         className={cn(
           'flex',
@@ -231,7 +237,7 @@ export function TabsContent({
   const panelId = `${ctx.baseId}-panel-${value}`;
   const triggerId = `${ctx.baseId}-trigger-${value}`;
 
-  if (!isActive && forceMount !== true) return null;
+  if (!isActive && forceMount !== true && !ctx.isPrinting) return null;
 
   return (
     <div
@@ -240,7 +246,7 @@ export function TabsContent({
       id={panelId}
       aria-labelledby={triggerId}
       tabIndex={0}
-      hidden={!isActive}
+      hidden={!isActive && !ctx.isPrinting}
       className={cn(
         'flex-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md',
         ctx.orientation === 'horizontal' ? 'mt-4' : '',

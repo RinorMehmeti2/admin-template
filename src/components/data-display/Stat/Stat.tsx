@@ -74,7 +74,7 @@ export function Stat({
 
   if (v === 'compact') {
     return (
-      <div ref={ref} className={cn(statStyles({ variant: v }), className)} {...rest}>
+      <div ref={ref} data-print-block="" className={cn(statStyles({ variant: v }), className)} {...rest}>
         {icon !== undefined ? (
           <span
             aria-hidden="true"

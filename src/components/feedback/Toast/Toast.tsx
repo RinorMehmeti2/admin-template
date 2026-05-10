@@ -52,6 +52,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
     <div
       role={role}
       data-testid="toast"
+      data-print="hide"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}

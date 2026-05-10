@@ -29,6 +29,7 @@ export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
           aria-label={t('locale.switcher.aria')}
           variant="ghost"
           size="md"
+          data-print="hide"
           className={cn(className)}
         >
           <Languages className="h-4 w-4" />

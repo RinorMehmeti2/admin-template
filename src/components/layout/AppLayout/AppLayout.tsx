@@ -124,7 +124,7 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      <aside className="w-60 shrink-0 border-r border-border bg-surface">
+      <aside className="w-60 shrink-0 border-r border-border bg-surface" data-print="hide">
         <div className="border-b border-border px-5 py-4">
           <h1 className="text-base font-semibold tracking-tight">Admin Template</h1>
           <p className="mt-0.5 text-xs text-foreground-subtle">Component library</p>
@@ -154,7 +154,7 @@ export function AppLayout() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface px-6">
+        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface px-6" data-print="hide">
           <button
             type="button"
             onClick={openPalette}

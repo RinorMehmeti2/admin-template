@@ -33,6 +33,7 @@ export function Pagination({
     <nav
       ref={ref}
       aria-label={ariaLabel}
+      data-print="hide"
       className={cn('flex items-center gap-1', className)}
       {...rest}
     >

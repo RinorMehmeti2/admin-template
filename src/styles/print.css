@@ -1,0 +1,188 @@
+/*
+ * Print stylesheet. Goal: every page that contains useful information
+ * (tables, charts, dashboards, read-only forms) prints cleanly with no
+ * sidebar, topbar, command palette, or action buttons.
+ *
+ * Contract for components:
+ *   data-print="hide"    — element is removed from print output
+ *   data-print="expand"  — host component should reveal collapsed content
+ *                          (DataTable: render all rows; Tabs: render all panels).
+ *                          Print CSS additionally un-hides [hidden] descendants
+ *                          inside such regions for components that gate via
+ *                          the `hidden` attribute.
+ *
+ * Color/background strategy: rather than overriding every utility, we flip
+ * the neutral surface/foreground/border tokens to a light grayscale palette
+ * inside @media print. Accent tokens (primary/success/warning/danger/info)
+ * are intentionally preserved so charts retain meaning.
+ */
+
+@media print {
+  /* ----------------------------------------------------------------- */
+  /*  Token overrides — force light, grayscale neutrals for print      */
+  /* ----------------------------------------------------------------- */
+  :root,
+  .dark,
+  html.dark {
+    --color-background: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-muted: #ffffff;
+    --color-surface-elevated: #ffffff;
+    --color-foreground: #000000;
+    --color-foreground-muted: #333333;
+    --color-foreground-subtle: #555555;
+    --color-border: #999999;
+    --color-border-strong: #555555;
+    --color-ring: transparent;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+  }
+
+  /* Page setup */
+  @page {
+    margin: 14mm 12mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt;
+    line-height: 1.4;
+  }
+
+  /* Improve color fidelity for charts/badges where authors want it */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Strip gradients/blurs that don't reproduce on paper */
+  *,
+  *::before,
+  *::after {
+    background-image: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* ----------------------------------------------------------------- */
+  /*  Hide chrome and any element opted-out of print                    */
+  /* ----------------------------------------------------------------- */
+  [data-print='hide'] {
+    display: none !important;
+  }
+
+  /* Native form controls that are ornamental in print (search inputs in
+     toolbars are themselves wrapped with data-print="hide" by their host). */
+
+  /* ----------------------------------------------------------------- */
+  /*  Reveal expanded regions                                           */
+  /* ----------------------------------------------------------------- */
+  /* Components that opt-in (DataTable, Tabs) own the JS side: they render
+     all rows / all panels during printing. This rule is the CSS safety net
+     that un-hides `hidden` panels inside such regions, in case a consumer
+     pre-renders panels with the `hidden` attribute. */
+  [data-print='expand'] [hidden] {
+    display: revert !important;
+  }
+
+  /* ----------------------------------------------------------------- */
+  /*  Page break suggestions                                            */
+  /* ----------------------------------------------------------------- */
+  /* Avoid breaking inside major content blocks. We tag block roots with
+     data-print-block so the contract is explicit and selectors stay tight. */
+  [data-print-block],
+  [role='dialog'],
+  table tr,
+  thead,
+  tfoot,
+  figure {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Repeat table headers/footers across pages */
+  thead {
+    display: table-header-group;
+  }
+  tfoot {
+    display: table-footer-group;
+  }
+
+  /* Headings should stay with their next sibling */
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Major section: allow break before */
+  [data-print-section] {
+    break-before: auto;
+    page-break-before: auto;
+  }
+
+  /* ----------------------------------------------------------------- */
+  /*  Anchors — show href in parentheses                                */
+  /* ----------------------------------------------------------------- */
+  a[href]:not([data-print='no-href'])::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: #555555;
+    word-break: break-all;
+  }
+  /* Skip internal/in-page and javascript: links */
+  a[href^='#']::after,
+  a[href^='javascript:']::after,
+  a[href='']::after {
+    content: '';
+  }
+
+  /* Underline links so they read as links once color is removed */
+  a[href] {
+    text-decoration: underline;
+  }
+
+  /* ----------------------------------------------------------------- */
+  /*  Sticky / fixed positioning is meaningless on paper                */
+  /* ----------------------------------------------------------------- */
+  .sticky,
+  [class*='sticky'],
+  .fixed {
+    position: static !important;
+  }
+
+  /* Restore default scroll on overflow containers so content isn't clipped */
+  .overflow-auto,
+  .overflow-hidden,
+  .overflow-y-auto,
+  .overflow-x-auto {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  /* ----------------------------------------------------------------- */
+  /*  Form controls — make them readable, not interactive               */
+  /* ----------------------------------------------------------------- */
+  input,
+  textarea,
+  select {
+    border: 1px solid #999999 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Buttons inside a printed dashboard rarely matter; if a consumer leaves
+     them un-tagged, default to thin grayscale outlines so they don't
+     dominate the page. Wrap action rows in data-print="hide" to drop. */
+  button {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-color: #999999 !important;
+  }
+}
