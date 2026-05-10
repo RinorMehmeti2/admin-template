@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { ToastProvider, useToast } from '@/context/ToastProvider';
 import { Button } from '@/components/primitives/Button';
+import { runAxe } from '@/test-utils/a11y';
 
 // userEvent + vitest fake timers tend to hang together. We use fireEvent
 // (synchronous) for the trigger click and fake timers for the
@@ -93,5 +94,16 @@ describe('Toast', () => {
     const toasts = screen.getAllByTestId('toast');
     expect(toasts[0]).toHaveTextContent('Saved!');
     expect(toasts[1]).toHaveTextContent('Plain');
+  });
+
+  it('has no a11y violations (success + error toasts mounted)', async () => {
+    // axe-core uses real microtasks/timeouts internally. Switch to real timers
+    // for the assertion; the surrounding suite uses fake timers for the
+    // auto-dismiss assertions.
+    vi.useRealTimers();
+    render(<Harness />);
+    fireEvent.click(screen.getByRole('button', { name: 'success' }));
+    fireEvent.click(screen.getByRole('button', { name: 'error' }));
+    expect(await runAxe(document.body)).toHaveNoViolations();
   });
 });

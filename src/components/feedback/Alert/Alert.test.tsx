@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { Alert } from './Alert';
 
 describe('Alert', () => {
@@ -58,5 +59,16 @@ describe('Alert', () => {
   it('merges className', () => {
     render(<Alert title="x" className="custom" />);
     expect(screen.getByRole('status')).toHaveClass('custom');
+  });
+
+  it('has no a11y violations (variants + dismissible + actions)', async () => {
+    const { container } = render(
+      <div>
+        <Alert variant="info" title="Heads up" description="Important note." />
+        <Alert variant="danger" title="Failed" onClose={() => undefined} />
+        <Alert title="With actions" actions={<button type="button">Retry</button>} />
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

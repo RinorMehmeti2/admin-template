@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
+import { runAxe } from '@/test-utils/a11y';
 import { ErrorBoundary } from './ErrorBoundary';
 
 /*
@@ -118,6 +119,15 @@ describe('ErrorBoundary', () => {
     // Identity change — reset, child renders normally.
     rerender(<Harness k={2} throwIt={false} />);
     expect(screen.getByText('safe')).toBeInTheDocument();
+  });
+
+  it('has no a11y violations (default fallback after catch)', async () => {
+    const { container } = render(
+      <ErrorBoundary>
+        <Boom when />
+      </ErrorBoundary>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 
   it('onError fires with the error and componentStack', () => {

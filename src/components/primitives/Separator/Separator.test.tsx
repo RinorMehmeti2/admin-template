@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { Separator } from './Separator';
 
 describe('Separator', () => {
@@ -41,5 +42,15 @@ describe('Separator', () => {
   it('merges className', () => {
     render(<Separator className="my-4" data-testid="s" />);
     expect(screen.getByTestId('s')).toHaveClass('my-4');
+  });
+
+  it('has no a11y violations (decorative + semantic)', async () => {
+    const { container } = render(
+      <div>
+        <Separator />
+        <Separator decorative={false} orientation="vertical" />
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

@@ -13,6 +13,7 @@ import {
   DrawerClose,
 } from './Drawer';
 import { Button } from '@/components/primitives/Button';
+import { runAxe } from '@/test-utils/a11y';
 
 function Demo({
   side = 'right' as const,
@@ -89,5 +90,10 @@ describe('Drawer', () => {
   it.each(['left', 'right', 'top', 'bottom'] as const)('side=%s positions the panel', (side) => {
     render(<Demo side={side} defaultOpen />);
     expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('has no a11y violations (open)', async () => {
+    render(<Demo defaultOpen />);
+    expect(await runAxe(document.body)).toHaveNoViolations();
   });
 });

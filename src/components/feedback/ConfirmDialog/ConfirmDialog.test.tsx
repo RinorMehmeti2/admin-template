@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { useState } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { ConfirmDialog } from './ConfirmDialog';
 
 function Demo({
@@ -60,5 +61,10 @@ describe('ConfirmDialog', () => {
     expect(confirm).toBeDisabled();
     expect(cancel).toBeDisabled();
     expect(screen.getByRole('status')).toBeInTheDocument(); // spinner
+  });
+
+  it('has no a11y violations (open + danger variant)', async () => {
+    const { container } = render(<Demo onConfirm={() => undefined} variant="danger" />);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

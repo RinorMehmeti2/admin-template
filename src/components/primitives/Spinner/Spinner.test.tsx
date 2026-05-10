@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { Spinner } from './Spinner';
 
 describe('Spinner', () => {
@@ -30,5 +31,10 @@ describe('Spinner', () => {
   it('merges className', () => {
     render(<Spinner className="text-primary" data-testid="s" />);
     expect(screen.getByTestId('s')).toHaveClass('text-primary');
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(<Spinner label="Loading users" />);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

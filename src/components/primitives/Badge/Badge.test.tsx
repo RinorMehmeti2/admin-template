@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { Badge } from './Badge';
 
 describe('Badge', () => {
@@ -49,5 +50,15 @@ describe('Badge', () => {
   it('merges className', () => {
     render(<Badge className="extra" data-testid="b">x</Badge>);
     expect(screen.getByTestId('b')).toHaveClass('extra');
+  });
+
+  it('has no a11y violations (default + dot)', async () => {
+    const { container } = render(
+      <div>
+        <Badge>New</Badge>
+        <Badge dot>Active</Badge>
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

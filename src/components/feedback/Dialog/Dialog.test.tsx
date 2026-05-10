@@ -13,6 +13,7 @@ import {
   DialogBody,
 } from './Dialog';
 import { Button } from '@/components/primitives/Button';
+import { runAxe } from '@/test-utils/a11y';
 
 function Demo({
   onOpenChange,
@@ -130,5 +131,12 @@ describe('Dialog', () => {
       </Dialog>,
     );
     expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('has no a11y violations (closed + open)', async () => {
+    const { container } = render(<Demo />);
+    expect(await runAxe(container)).toHaveNoViolations();
+    await userEvent.click(screen.getByRole('button', { name: 'Open' }));
+    expect(await runAxe(document.body)).toHaveNoViolations();
   });
 });

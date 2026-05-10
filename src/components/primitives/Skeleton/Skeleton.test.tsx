@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { Skeleton } from './Skeleton';
 
 describe('Skeleton', () => {
@@ -23,5 +24,10 @@ describe('Skeleton', () => {
     const ref = createRef<HTMLDivElement>();
     render(<Skeleton ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(<Skeleton className="h-4 w-32" />);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

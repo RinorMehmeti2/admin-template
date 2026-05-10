@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { Kbd } from './Kbd';
 
 describe('Kbd', () => {
@@ -20,5 +21,10 @@ describe('Kbd', () => {
     render(<Kbd ref={ref}>x</Kbd>);
     expect(ref.current).not.toBeNull();
     expect(ref.current?.tagName).toBe('KBD');
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(<Kbd>⌘K</Kbd>);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRef } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { Avatar } from './Avatar';
 
 describe('Avatar', () => {
@@ -78,5 +79,16 @@ describe('Avatar', () => {
   it('merges className', () => {
     render(<Avatar name="x" className="extra" />);
     expect(screen.getByRole('img')).toHaveClass('extra');
+  });
+
+  it('has no a11y violations (initials + image + status)', async () => {
+    const { container } = render(
+      <div>
+        <Avatar name="Alice Cooper" />
+        <Avatar src="https://example.com/a.png" name="Alice" />
+        <Avatar name="Bob" status="online" />
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

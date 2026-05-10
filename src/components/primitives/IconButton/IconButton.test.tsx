@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { IconButton } from './IconButton';
 
 const Glyph = () => <svg aria-hidden="true" data-testid="glyph" />;
@@ -74,5 +75,20 @@ describe('IconButton', () => {
       </IconButton>,
     );
     expect(screen.getByRole('button')).toHaveClass('extra');
+  });
+
+  it('has no a11y violations (default + loading)', async () => {
+    const { container, rerender } = render(
+      <IconButton aria-label="Delete">
+        <Glyph />
+      </IconButton>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
+    rerender(
+      <IconButton aria-label="Delete" isLoading>
+        <Glyph />
+      </IconButton>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

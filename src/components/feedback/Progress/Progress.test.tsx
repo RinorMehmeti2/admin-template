@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { Progress } from './Progress';
 
 describe('Progress', () => {
@@ -54,5 +55,15 @@ describe('Progress', () => {
   it('merges className', () => {
     render(<Progress value={50} className="custom" data-testid="p" />);
     expect(screen.getByTestId('p')).toHaveClass('custom');
+  });
+
+  it('has no a11y violations (determinate + indeterminate)', async () => {
+    const { container } = render(
+      <div>
+        <Progress value={50} label="Loading" />
+        <Progress indeterminate label="Working" />
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

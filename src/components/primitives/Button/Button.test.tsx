@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { Button } from './Button';
 
 describe('Button', () => {
@@ -98,5 +99,12 @@ describe('Button', () => {
   it('defaults type to button (avoids accidental form submit)', () => {
     render(<Button>x</Button>);
     expect(screen.getByRole('button')).toHaveAttribute('type', 'button');
+  });
+
+  it('has no a11y violations (default + loading)', async () => {
+    const { container, rerender } = render(<Button>Save</Button>);
+    expect(await runAxe(container)).toHaveNoViolations();
+    rerender(<Button isLoading>Save</Button>);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

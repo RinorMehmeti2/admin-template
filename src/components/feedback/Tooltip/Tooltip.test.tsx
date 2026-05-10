@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from './Tooltip';
 import { Button } from '@/components/primitives/Button';
+import { runAxe } from '@/test-utils/a11y';
 
 function Demo({ delay = 0 }: { delay?: number }) {
   return (
@@ -101,5 +102,16 @@ describe('Tooltip', () => {
     });
     const tip = screen.getByRole('tooltip');
     expect(trigger.getAttribute('aria-describedby')).toContain(tip.getAttribute('id'));
+  });
+
+  it('has no a11y violations (open via focus)', async () => {
+    // axe-core needs real timers; the suite uses fake timers for delay/grace.
+    vi.useRealTimers();
+    render(<Demo />);
+    const trigger = screen.getByRole('button');
+    act(() => {
+      trigger.focus();
+    });
+    expect(await runAxe(document.body)).toHaveNoViolations();
   });
 });
