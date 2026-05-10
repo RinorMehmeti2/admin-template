@@ -35,15 +35,15 @@ showcase / demo pages.
 
 ### 2.1 Component library
 
-| Category | Components |
-|---|---|
-| **primitives/** | `Avatar`, `Badge`, `Button`, `IconButton`, `Kbd`, `Separator`, `Skeleton`, `Spinner` |
-| **forms/** | `Calendar`, `Checkbox`, `Combobox`, `DatePicker`, `DateRangePicker`, `DateTimePicker`, `Form`, `FormField`, `Input`, `Label`, `Radio`, `RadioGroup`, `RichTextEditor`, `Select`, `Switch`, `Textarea`, `TimePicker` |
-| **feedback/** | `Alert`, `ConfirmDialog`, `Dialog`, `Drawer`, `Progress`, `Toast`, `Tooltip` |
-| **navigation/** | `Breadcrumbs`, `ContextMenu`, `DropdownMenu`, `Menu`, `Pagination`, `Stepper`, `Tabs` |
-| **data-display/** | `Card`, `DataTable`, `EmptyState`, `List`, `Stat`, `Table`, **charts/** (`AreaChart`, `BarChart`, `ChartContainer`, `ComposedChart`, `DonutChart`, `LineChart`, `PieChart`, `RadialChart`, `StackedBarChart`) |
-| **overlays/** | `CommandPalette`, `Portal` |
-| **layout/** | `AppLayout`, `Container`, `FocusMode`, `FullscreenWorkspace`, `LocaleSwitcher`, `PageHeader`, `PageShell`, `Sidebar`, `SplitLayout`, `ThemeToggle`, `Topbar` |
+| Category          | Components                                                                                                                                                                                                          |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **primitives/**   | `Avatar`, `Badge`, `Button`, `IconButton`, `Kbd`, `Separator`, `Skeleton`, `Spinner`                                                                                                                                |
+| **forms/**        | `Calendar`, `Checkbox`, `Combobox`, `DatePicker`, `DateRangePicker`, `DateTimePicker`, `Form`, `FormField`, `Input`, `Label`, `Radio`, `RadioGroup`, `RichTextEditor`, `Select`, `Switch`, `Textarea`, `TimePicker` |
+| **feedback/**     | `Alert`, `ConfirmDialog`, `Dialog`, `Drawer`, `Progress`, `Toast`, `Tooltip`                                                                                                                                        |
+| **navigation/**   | `Breadcrumbs`, `ContextMenu`, `DropdownMenu`, `Menu`, `Pagination`, `Stepper`, `Tabs`                                                                                                                               |
+| **data-display/** | `Card`, `DataTable`, `EmptyState`, `List`, `Stat`, `Table`, **charts/** (`AreaChart`, `BarChart`, `ChartContainer`, `ComposedChart`, `DonutChart`, `LineChart`, `PieChart`, `RadialChart`, `StackedBarChart`)       |
+| **overlays/**     | `CommandPalette`, `Portal`                                                                                                                                                                                          |
+| **layout/**       | `AppLayout`, `Container`, `FocusMode`, `FullscreenWorkspace`, `LocaleSwitcher`, `PageHeader`, `PageShell`, `Sidebar`, `SplitLayout`, `ThemeToggle`, `Topbar`                                                        |
 
 Every component lives in its own folder with the standard 5-file
 layout (`<Name>.tsx`, optional `<Name>.types.ts`, `<Name>.test.tsx`,
@@ -95,7 +95,7 @@ All hooks have test coverage in `src/hooks/__tests__/`.
   `useListbox` keyboard model. No external listbox library.
 - **Internationalization.** `react-i18next` + browser language
   detector, `LocaleProvider` exposing `{ locale, setLocale,
-  availableLocales, dir }`, a `LocaleSwitcher` in the topbar, and a
+availableLocales, dir }`, a `LocaleSwitcher` in the topbar, and a
   flat `feature.subfeature.key` resource layout. Locale persists via
   `localStorage` and switches between `en` / `es` (Spanish) out of the
   box, with `RTL_LOCALES` baked in for future right-to-left work.
@@ -205,48 +205,48 @@ was not justified_.
 
 ### 4.1 Runtime — UI framework
 
-| Package | Why it stays |
-|---|---|
-| `react`, `react-dom` (19.x) | The framework. The ref-as-prop pattern (no `forwardRef`) is a React 19 feature we explicitly use. |
-| `react-router-dom` (7.x) | Routing only. Does not ship visuals. Replacement would be a multi-week project of zero product value. |
+| Package                     | Why it stays                                                                                          |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `react`, `react-dom` (19.x) | The framework. The ref-as-prop pattern (no `forwardRef`) is a React 19 feature we explicitly use.     |
+| `react-router-dom` (7.x)    | Routing only. Does not ship visuals. Replacement would be a multi-week project of zero product value. |
 
 ### 4.2 Runtime — styling & utility
 
-| Package | Role | Why it stays |
-|---|---|---|
-| `tailwindcss` (4.x) + `@tailwindcss/vite` | Utility CSS engine. | Tailwind is the styling foundation. It does **not** ship components; it ships utilities. |
-| `class-variance-authority` (`cva`) | Variant prop → class string mapping. | Tiny, dependency-free, replaces 60+ lines of hand-rolled variant logic per component. |
-| `clsx` + `tailwind-merge` | Class composition with last-wins precedence for conflicting Tailwind classes. | Combined into our own `cn()` helper in `src/lib/cn.ts`. The conflict resolution from `tailwind-merge` is non-trivial to reproduce correctly. |
-| `lucide-react` | Icon set. | Allowed by policy. Single icon library across the app. No other icon set may be added. |
+| Package                                   | Role                                                                          | Why it stays                                                                                                                                 |
+| ----------------------------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tailwindcss` (4.x) + `@tailwindcss/vite` | Utility CSS engine.                                                           | Tailwind is the styling foundation. It does **not** ship components; it ships utilities.                                                     |
+| `class-variance-authority` (`cva`)        | Variant prop → class string mapping.                                          | Tiny, dependency-free, replaces 60+ lines of hand-rolled variant logic per component.                                                        |
+| `clsx` + `tailwind-merge`                 | Class composition with last-wins precedence for conflicting Tailwind classes. | Combined into our own `cn()` helper in `src/lib/cn.ts`. The conflict resolution from `tailwind-merge` is non-trivial to reproduce correctly. |
+| `lucide-react`                            | Icon set.                                                                     | Allowed by policy. Single icon library across the app. No other icon set may be added.                                                       |
 
 ### 4.3 Runtime — behavior & state (no visuals)
 
-| Package | Role | Why it stays |
-|---|---|---|
-| `react-hook-form` | Form state, validation orchestration, dirty tracking. | Pure state management. Reimplementing it is months of work and yields a worse API. |
-| `zod` | Schema-first runtime validation. | Pairs with `react-hook-form` via `@hookform/resolvers`. Validation messages translate via i18n. |
-| `@hookform/resolvers` | Glue between RHF and zod. | Trivially thin — keeping it is easier than a maintained shim. |
-| `@tanstack/react-table` (v8) | DataTable headless engine (sorting/filtering/pagination state). | **Headless** — ships zero visuals. We provide all rendering. |
-| `date-fns` (4.x) | Date arithmetic. | Functional, tree-shakable, immutable Date in / Date out. We wrap formatters in `src/lib/date.ts`. No Moment. No Day.js. |
-| `recharts` (3.x) | Chart rendering primitives (SVG / responsive container / tooltip surface). | Pragmatic carve-out — see §6. We own the look via `ChartContainer`. |
-| `@tiptap/*` (`react`, `pm`, `starter-kit`, `extension-link`, `extension-placeholder`, `extension-underline`, `extension-bubble-menu`) | Rich text editor (ProseMirror runtime + a small set of extensions). | Pragmatic carve-out — see §6. We supply our own toolbar and bubble menu UI. |
-| `i18next` + `react-i18next` + `i18next-browser-languagedetector` | i18n runtime, React bindings, locale detection chain. | Behavior library — no visual surface. Resource lookup, plural rules, interpolation — not worth re-implementing. |
+| Package                                                                                                                               | Role                                                                       | Why it stays                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `react-hook-form`                                                                                                                     | Form state, validation orchestration, dirty tracking.                      | Pure state management. Reimplementing it is months of work and yields a worse API.                                      |
+| `zod`                                                                                                                                 | Schema-first runtime validation.                                           | Pairs with `react-hook-form` via `@hookform/resolvers`. Validation messages translate via i18n.                         |
+| `@hookform/resolvers`                                                                                                                 | Glue between RHF and zod.                                                  | Trivially thin — keeping it is easier than a maintained shim.                                                           |
+| `@tanstack/react-table` (v8)                                                                                                          | DataTable headless engine (sorting/filtering/pagination state).            | **Headless** — ships zero visuals. We provide all rendering.                                                            |
+| `date-fns` (4.x)                                                                                                                      | Date arithmetic.                                                           | Functional, tree-shakable, immutable Date in / Date out. We wrap formatters in `src/lib/date.ts`. No Moment. No Day.js. |
+| `recharts` (3.x)                                                                                                                      | Chart rendering primitives (SVG / responsive container / tooltip surface). | Pragmatic carve-out — see §6. We own the look via `ChartContainer`.                                                     |
+| `@tiptap/*` (`react`, `pm`, `starter-kit`, `extension-link`, `extension-placeholder`, `extension-underline`, `extension-bubble-menu`) | Rich text editor (ProseMirror runtime + a small set of extensions).        | Pragmatic carve-out — see §6. We supply our own toolbar and bubble menu UI.                                             |
+| `i18next` + `react-i18next` + `i18next-browser-languagedetector`                                                                      | i18n runtime, React bindings, locale detection chain.                      | Behavior library — no visual surface. Resource lookup, plural rules, interpolation — not worth re-implementing.         |
 
 ### 4.4 Build & dev tooling
 
-| Package | Role |
-|---|---|
-| `vite` (8.x), `@vitejs/plugin-react` | Build + dev server. |
-| `typescript` (~6.x) | Strict TS. |
-| `vitest` (4.x) + `@vitest/ui` | Test runner. |
-| `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom` | DOM testing. Role/label-first queries enforced by convention. |
-| `jsdom` | Test environment. |
-| `storybook` (10.x), `@storybook/react-vite`, `@storybook/addon-a11y`, `@storybook/addon-docs`, `@storybook/addon-themes` | Component documentation. |
-| `eslint` (9.x), `@typescript-eslint/*`, `eslint-plugin-react`, `eslint-plugin-react-hooks` (v7), `eslint-plugin-react-refresh`, `eslint-plugin-jsx-a11y`, `eslint-config-prettier` | Lint pipeline. |
-| `prettier` (3.x) | Formatter. |
-| `husky` + `lint-staged` | Pre-commit gate (typecheck + staged lint). |
-| `globals` | Globals registry for ESLint flat config. |
-| `@types/*` | Type definitions. |
+| Package                                                                                                                                                                            | Role                                                          |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `vite` (8.x), `@vitejs/plugin-react`                                                                                                                                               | Build + dev server.                                           |
+| `typescript` (~6.x)                                                                                                                                                                | Strict TS.                                                    |
+| `vitest` (4.x) + `@vitest/ui`                                                                                                                                                      | Test runner.                                                  |
+| `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`                                                                                               | DOM testing. Role/label-first queries enforced by convention. |
+| `jsdom`                                                                                                                                                                            | Test environment.                                             |
+| `storybook` (10.x), `@storybook/react-vite`, `@storybook/addon-a11y`, `@storybook/addon-docs`, `@storybook/addon-themes`                                                           | Component documentation.                                      |
+| `eslint` (9.x), `@typescript-eslint/*`, `eslint-plugin-react`, `eslint-plugin-react-hooks` (v7), `eslint-plugin-react-refresh`, `eslint-plugin-jsx-a11y`, `eslint-config-prettier` | Lint pipeline.                                                |
+| `prettier` (3.x)                                                                                                                                                                   | Formatter.                                                    |
+| `husky` + `lint-staged`                                                                                                                                                            | Pre-commit gate (typecheck + staged lint).                    |
+| `globals`                                                                                                                                                                          | Globals registry for ESLint flat config.                      |
+| `@types/*`                                                                                                                                                                         | Type definitions.                                             |
 
 ### 4.5 Banned dependencies (lint-blocked)
 

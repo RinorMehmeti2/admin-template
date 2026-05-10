@@ -19,7 +19,7 @@ This repository is an in-house admin UI template built with React, TypeScript, a
 - **@tanstack/react-table v8** for the DataTable (state/headless behavior only — we provide all visuals)
 - **date-fns** for date utilities (no Moment, no Day.js)
 - **recharts 3** for chart rendering primitives — explicit carve-out, see "Pragmatic carve-outs" below. Contained behind `src/components/data-display/charts/ChartContainer/`.
-- **@tiptap/* + ProseMirror** for the rich text editor — explicit carve-out, see "Pragmatic carve-outs" below. Toolbar / bubble menu are 100% ours.
+- **@tiptap/\* + ProseMirror** for the rich text editor — explicit carve-out, see "Pragmatic carve-outs" below. Toolbar / bubble menu are 100% ours.
 - **i18next + react-i18next + i18next-browser-languagedetector** for internationalization (behavior only — no visual surface)
 - **Vitest 4 + @testing-library/react** for tests
 - **Storybook 10** for component documentation (the Vite 8 builder requires Storybook 10+; lower versions peer Vite ≤ 6)
