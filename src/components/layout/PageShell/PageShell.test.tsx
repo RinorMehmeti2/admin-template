@@ -11,7 +11,11 @@ describe('PageShell', () => {
     render(
       <MemoryRouter>
         <PageShell
-          sidebar={<Sidebar><nav data-testid="nav" /></Sidebar>}
+          sidebar={
+            <Sidebar>
+              <nav data-testid="nav" />
+            </Sidebar>
+          }
           topbar={<Topbar left={<span data-testid="brand">Brand</span>} />}
         >
           <div data-testid="page">page content</div>
@@ -27,7 +31,13 @@ describe('PageShell', () => {
     const { container } = render(
       <MemoryRouter>
         <PageShell
-          sidebar={<Sidebar><nav aria-label="Sidebar"><a href="/">Home</a></nav></Sidebar>}
+          sidebar={
+            <Sidebar>
+              <nav aria-label="Sidebar">
+                <a href="/">Home</a>
+              </nav>
+            </Sidebar>
+          }
           topbar={<Topbar left={<span>Brand</span>} />}
         >
           <p>page content</p>

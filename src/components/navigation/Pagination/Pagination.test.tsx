@@ -45,7 +45,10 @@ describe('Pagination', () => {
     render(<Pagination page={3} totalPages={5} onPageChange={() => undefined} />);
     expect(screen.getByRole('button', { name: 'Previous page' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Next page' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Go to page 3' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('button', { name: 'Go to page 3' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
   });
 
   it('disables prev on first page', () => {

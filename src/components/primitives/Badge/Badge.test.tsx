@@ -18,7 +18,11 @@ describe('Badge', () => {
     ['danger', 'text-danger'],
     ['info', 'text-info'],
   ] as const)('variant=%s', (variant, signal) => {
-    render(<Badge variant={variant} data-testid="b">x</Badge>);
+    render(
+      <Badge variant={variant} data-testid="b">
+        x
+      </Badge>,
+    );
     expect(screen.getByTestId('b')).toHaveClass(signal);
   });
 
@@ -26,7 +30,11 @@ describe('Badge', () => {
     ['sm', 'text-xs'],
     ['md', 'text-sm'],
   ] as const)('size=%s', (size, signal) => {
-    render(<Badge size={size} data-testid="b">x</Badge>);
+    render(
+      <Badge size={size} data-testid="b">
+        x
+      </Badge>,
+    );
     expect(screen.getByTestId('b')).toHaveClass(signal);
   });
 
@@ -48,7 +56,11 @@ describe('Badge', () => {
   });
 
   it('merges className', () => {
-    render(<Badge className="extra" data-testid="b">x</Badge>);
+    render(
+      <Badge className="extra" data-testid="b">
+        x
+      </Badge>,
+    );
     expect(screen.getByTestId('b')).toHaveClass('extra');
   });
 

@@ -24,10 +24,7 @@ describe('Topbar', () => {
 
   it('has no a11y violations', async () => {
     const { container } = render(
-      <Topbar
-        left={<span>Brand</span>}
-        right={<button type="button">Account</button>}
-      />,
+      <Topbar left={<span>Brand</span>} right={<button type="button">Account</button>} />,
     );
     expect(await runAxe(container)).toHaveNoViolations();
   });

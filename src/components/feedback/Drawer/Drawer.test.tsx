@@ -19,7 +19,11 @@ function Demo({
   side = 'right' as const,
   onOpenChange,
   defaultOpen = false,
-}: { side?: 'left' | 'right' | 'top' | 'bottom'; onOpenChange?: (o: boolean) => void; defaultOpen?: boolean }) {
+}: {
+  side?: 'left' | 'right' | 'top' | 'bottom';
+  onOpenChange?: (o: boolean) => void;
+  defaultOpen?: boolean;
+}) {
   return (
     <Drawer side={side} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       <DrawerTrigger>

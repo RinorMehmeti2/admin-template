@@ -76,9 +76,7 @@ describe('DateTimePicker', () => {
   });
 
   it('has no a11y violations', async () => {
-    const { container } = render(
-      <DateTimePicker datePlaceholder="Date" timePlaceholder="Time" />,
-    );
+    const { container } = render(<DateTimePicker datePlaceholder="Date" timePlaceholder="Time" />);
     expect(await runAxe(container)).toHaveNoViolations();
   });
 });

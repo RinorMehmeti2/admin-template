@@ -1,12 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import {
-  Step,
-  StepDescription,
-  StepIndicator,
-  StepLabel,
-  Stepper,
-} from './Stepper';
+import { Step, StepDescription, StepIndicator, StepLabel, Stepper } from './Stepper';
 import { runAxe } from '@/test-utils/a11y';
 
 function Demo() {
@@ -75,8 +69,12 @@ describe('Stepper', () => {
   it('vertical orientation stacks the items', () => {
     const { container } = render(
       <Stepper orientation="vertical">
-        <Step status="idle" index={0}><StepIndicator /></Step>
-        <Step status="idle" index={1}><StepIndicator /></Step>
+        <Step status="idle" index={0}>
+          <StepIndicator />
+        </Step>
+        <Step status="idle" index={1}>
+          <StepIndicator />
+        </Step>
       </Stepper>,
     );
     expect(container.querySelector('ol')).toHaveClass('flex-col');

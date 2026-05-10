@@ -162,9 +162,18 @@ describe('DropdownMenu', () => {
     }
     render(<Demo3 />);
     await userEvent.click(screen.getByRole('button', { name: 'Open' }));
-    expect(screen.getByRole('menuitemradio', { name: 'A' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('menuitemradio', { name: 'A' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
     await userEvent.click(screen.getByRole('menuitemradio', { name: 'B' }));
-    expect(screen.getByRole('menuitemradio', { name: 'B' })).toHaveAttribute('aria-checked', 'true');
-    expect(screen.getByRole('menuitemradio', { name: 'A' })).toHaveAttribute('aria-checked', 'false');
+    expect(screen.getByRole('menuitemradio', { name: 'B' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+    expect(screen.getByRole('menuitemradio', { name: 'A' })).toHaveAttribute(
+      'aria-checked',
+      'false',
+    );
   });
 });

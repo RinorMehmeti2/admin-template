@@ -164,9 +164,7 @@ describe('DateRangePicker — presets', () => {
 describe('DateRangePicker — a11y', () => {
   it('has no a11y violations (closed + open)', async () => {
     const user = userEvent.setup();
-    const { container } = render(
-      <DateRangePicker placeholderFrom="From" placeholderTo="To" />,
-    );
+    const { container } = render(<DateRangePicker placeholderFrom="From" placeholderTo="To" />);
     expect(await runAxe(container)).toHaveNoViolations();
     await user.click(screen.getByPlaceholderText('From'));
     expect(await runAxe(document.body)).toHaveNoViolations();

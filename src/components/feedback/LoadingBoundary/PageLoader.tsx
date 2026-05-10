@@ -29,7 +29,11 @@ export function PageLoader({
       {...rest}
     >
       <Spinner size="lg" label={label} />
-      {hideLabel ? <span className="sr-only">{label}</span> : <span className="text-sm">{label}</span>}
+      {hideLabel ? (
+        <span className="sr-only">{label}</span>
+      ) : (
+        <span className="text-sm">{label}</span>
+      )}
     </div>
   );
 }

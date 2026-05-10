@@ -39,7 +39,11 @@ export function SettingsPage() {
         </TabsList>
 
         <TabsContent value="general" className="space-y-4">
-          <Alert variant="info" title="Heads up" description="Changes apply across all workspaces." />
+          <Alert
+            variant="info"
+            title="Heads up"
+            description="Changes apply across all workspaces."
+          />
           <div className="rounded-lg border border-border bg-surface p-6">
             <h2 className="text-base font-semibold">Workspace</h2>
             <p className="mt-1 text-sm text-foreground-muted">

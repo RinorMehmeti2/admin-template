@@ -16,11 +16,7 @@ export default defineConfig({
   workers: isCI ? 2 : undefined,
 
   reporter: isCI
-    ? [
-        ['html', { open: 'never', outputFolder: 'playwright-report' }],
-        ['list'],
-        ['github'],
-      ]
+    ? [['html', { open: 'never', outputFolder: 'playwright-report' }], ['list'], ['github']]
     : [['html', { open: 'never' }], ['list']],
 
   use: {

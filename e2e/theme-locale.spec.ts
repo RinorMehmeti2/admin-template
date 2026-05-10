@@ -18,17 +18,13 @@ test.describe('theme + locale persistence', () => {
     // Playwright's class/attribute observers race oddly against the React
     // useEffect that toggles the dark class on <html>; poll classList directly.
     await expect
-      .poll(() =>
-        page.evaluate(() => document.documentElement.classList.contains('dark')),
-      )
+      .poll(() => page.evaluate(() => document.documentElement.classList.contains('dark')))
       .toBe(true);
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect
       .poll(() =>
-        page
-          .evaluate(() => document.documentElement.classList.contains('dark'))
-          .catch(() => false),
+        page.evaluate(() => document.documentElement.classList.contains('dark')).catch(() => false),
       )
       .toBe(true);
   });
@@ -40,14 +36,10 @@ test.describe('theme + locale persistence', () => {
     await page.getByRole('button', { name: 'Change language' }).click();
     await page.getByRole('menuitemradio', { name: /Español/ }).click();
 
-    await expect
-      .poll(() => page.evaluate(() => document.documentElement.lang))
-      .toMatch(/^es/);
+    await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toMatch(/^es/);
     // Sanity: storage cache reflects es so the post-reload detector picks it.
     await expect
-      .poll(() =>
-        page.evaluate(() => window.localStorage.getItem('admin-template-locale')),
-      )
+      .poll(() => page.evaluate(() => window.localStorage.getItem('admin-template-locale')))
       .toBe('es');
 
     await page.reload({ waitUntil: 'domcontentloaded' });
@@ -56,11 +48,9 @@ test.describe('theme + locale persistence', () => {
     // Bump the poll timeout — i18next detection + React commit racing the lang
     // attribute write is observably slower on firefox than chromium.
     await expect
-      .poll(
-        () =>
-          page.evaluate(() => document.documentElement.lang).catch(() => 'navigating'),
-        { timeout: 10_000 },
-      )
+      .poll(() => page.evaluate(() => document.documentElement.lang).catch(() => 'navigating'), {
+        timeout: 10_000,
+      })
       .toMatch(/^es/);
   });
 });

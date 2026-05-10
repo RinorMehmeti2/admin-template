@@ -17,7 +17,11 @@ describe('Container', () => {
     ['xl', 'max-w-[96rem]'],
     ['full', 'max-w-none'],
   ] as const)('size=%s', (size, signal) => {
-    render(<Container size={size} data-testid="c">x</Container>);
+    render(
+      <Container size={size} data-testid="c">
+        x
+      </Container>,
+    );
     expect(screen.getByTestId('c')).toHaveClass(signal);
   });
 

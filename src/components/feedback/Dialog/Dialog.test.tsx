@@ -18,7 +18,10 @@ import { runAxe } from '@/test-utils/a11y';
 function Demo({
   onOpenChange,
   defaultOpen = false,
-}: { onOpenChange?: (o: boolean) => void; defaultOpen?: boolean }) {
+}: {
+  onOpenChange?: (o: boolean) => void;
+  defaultOpen?: boolean;
+}) {
   return (
     <Dialog defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       <DialogTrigger>

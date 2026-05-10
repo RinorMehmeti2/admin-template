@@ -1,12 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import {
-  BreadcrumbCurrent,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Breadcrumbs,
-} from './Breadcrumbs';
+import { BreadcrumbCurrent, BreadcrumbItem, BreadcrumbLink, Breadcrumbs } from './Breadcrumbs';
 import { runAxe } from '@/test-utils/a11y';
 
 function Demo() {

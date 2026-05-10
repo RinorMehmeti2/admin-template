@@ -1,12 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  Sidebar,
-  SidebarCollapseToggle,
-  SidebarMobileToggle,
-  SidebarProvider,
-} from './Sidebar';
+import { Sidebar, SidebarCollapseToggle, SidebarMobileToggle, SidebarProvider } from './Sidebar';
 import { runAxe } from '@/test-utils/a11y';
 
 function mockMatchMedia(matches: boolean) {

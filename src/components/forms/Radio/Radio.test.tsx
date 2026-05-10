@@ -8,7 +8,11 @@ import { RadioGroup } from '@/components/forms/RadioGroup';
 
 describe('Radio', () => {
   it('renders standalone with name + value', () => {
-    render(<Radio name="x" value="a">Alpha</Radio>);
+    render(
+      <Radio name="x" value="a">
+        Alpha
+      </Radio>,
+    );
     const r = screen.getByRole('radio', { name: 'Alpha' }) as HTMLInputElement;
     expect(r.name).toBe('x');
     expect(r.value).toBe('a');
@@ -41,7 +45,9 @@ describe('Radio', () => {
     render(
       <RadioGroup name="g" defaultValue="a">
         <Radio value="a">A</Radio>
-        <Radio value="b" disabled>B</Radio>
+        <Radio value="b" disabled>
+          B
+        </Radio>
       </RadioGroup>,
     );
     expect(screen.getByRole('radio', { name: 'A' })).not.toBeDisabled();
@@ -50,7 +56,11 @@ describe('Radio', () => {
 
   it('forwards ref', () => {
     const ref = createRef<HTMLInputElement>();
-    render(<Radio name="x" value="a" ref={ref}>A</Radio>);
+    render(
+      <Radio name="x" value="a" ref={ref}>
+        A
+      </Radio>,
+    );
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
   });
 

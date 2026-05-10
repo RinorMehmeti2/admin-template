@@ -76,7 +76,9 @@ describe('LoadingBoundary', () => {
       </LoadingBoundary>,
     );
     // PageLoader exposes role="status" with default label "Loading".
-    const region = screen.getAllByRole('status').find((el) => el.getAttribute('aria-label') === 'Loading');
+    const region = screen
+      .getAllByRole('status')
+      .find((el) => el.getAttribute('aria-label') === 'Loading');
     expect(region).toBeDefined();
   });
 
@@ -147,7 +149,9 @@ describe('LoadingBoundary', () => {
 describe('PageLoader', () => {
   it('renders a status region with the default Loading label', () => {
     render(<PageLoader />);
-    const region = screen.getAllByRole('status').find((el) => el.getAttribute('aria-label') === 'Loading');
+    const region = screen
+      .getAllByRole('status')
+      .find((el) => el.getAttribute('aria-label') === 'Loading');
     expect(region).toBeDefined();
     expect(screen.getAllByText('Loading').length).toBeGreaterThan(0);
   });

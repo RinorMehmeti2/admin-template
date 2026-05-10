@@ -57,7 +57,9 @@ describe('Portal', () => {
   it('has no a11y violations (portaled content)', async () => {
     render(
       <Portal>
-        <button type="button" aria-label="Portaled">ok</button>
+        <button type="button" aria-label="Portaled">
+          ok
+        </button>
       </Portal>,
     );
     expect(await runAxe(document.body)).toHaveNoViolations();

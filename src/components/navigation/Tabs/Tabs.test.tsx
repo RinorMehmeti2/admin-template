@@ -75,7 +75,9 @@ describe('Tabs', () => {
       <Tabs defaultValue="a">
         <TabsList>
           <TabsTrigger value="a">A</TabsTrigger>
-          <TabsTrigger value="b" disabled>B</TabsTrigger>
+          <TabsTrigger value="b" disabled>
+            B
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="a">PA</TabsContent>
         <TabsContent value="b">PB</TabsContent>

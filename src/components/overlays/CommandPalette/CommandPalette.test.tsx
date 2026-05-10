@@ -30,13 +30,7 @@ function AutoOpener() {
   return null;
 }
 
-function Harness({
-  commands,
-  autoOpen,
-}: {
-  commands: ReadonlyArray<Command>;
-  autoOpen?: boolean;
-}) {
+function Harness({ commands, autoOpen }: { commands: ReadonlyArray<Command>; autoOpen?: boolean }) {
   return (
     <CommandRegistryProvider>
       <Opener />
