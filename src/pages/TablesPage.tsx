@@ -19,7 +19,13 @@ import {
   TableRow,
 } from '@/components/data-display';
 import { Avatar } from '@/components/primitives/Avatar';
+import { AvatarGroup } from '@/components/primitives/AvatarGroup';
 import { Badge } from '@/components/primitives/Badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/feedback/Tooltip';
 import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
 import { Alert } from '@/components/feedback/Alert';
@@ -168,37 +174,88 @@ const userStatusVariant: Record<User['status'], 'success' | 'warning' | 'danger'
   Suspended: 'danger',
 };
 
-const userColumns: ColumnDef<User, unknown>[] = [
-  {
-    accessorKey: 'name',
-    header: 'User',
-    cell: ({ row }) => (
-      <div className="flex items-center gap-3">
-        <Avatar name={row.original.name} size="sm" />
-        <div className="min-w-0">
-          <p className="truncate text-sm font-medium">{row.original.name}</p>
-          <p className="truncate text-xs text-foreground-muted">{row.original.email}</p>
+function hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i += 1) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+function pickAssignees(self: User, pool: User[]): User[] {
+  if (pool.length <= 1) return [];
+  const others = pool.filter((u) => u.id !== self.id);
+  const count = 2 + (hashStr(self.id) % 6); // 2..7
+  const start = hashStr(self.id) % others.length;
+  return Array.from({ length: Math.min(count, others.length) }).map(
+    (_, i) => others[(start + i) % others.length]!,
+  );
+}
+
+function makeUserColumns(allUsers: User[]): ColumnDef<User, unknown>[] {
+  return [
+    {
+      accessorKey: 'name',
+      header: 'User',
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <Avatar name={row.original.name} size="sm" />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium">{row.original.name}</p>
+            <p className="truncate text-xs text-foreground-muted">{row.original.email}</p>
+          </div>
         </div>
-      </div>
-    ),
-  },
-  { accessorKey: 'role', header: 'Role' },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <Badge variant={userStatusVariant[row.original.status]} dot size="sm">
-        {row.original.status}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: 'lastSeenDays',
-    header: 'Last seen',
-    cell: ({ row }) =>
-      row.original.lastSeenDays === 0 ? 'Today' : `${row.original.lastSeenDays}d ago`,
-  },
-];
+      ),
+    },
+    { accessorKey: 'role', header: 'Role' },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => (
+        <Badge variant={userStatusVariant[row.original.status]} dot size="sm">
+          {row.original.status}
+        </Badge>
+      ),
+    },
+    {
+      id: 'assignedTo',
+      header: 'Assigned to',
+      enableSorting: false,
+      cell: ({ row }) => {
+        const assignees = pickAssignees(row.original, allUsers);
+        if (assignees.length === 0) {
+          return <span className="text-xs text-foreground-muted">—</span>;
+        }
+        return (
+          // Stop row-click bubbling so the chip/avatars don't trigger row navigation.
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+          <div onClick={(e) => e.stopPropagation()}>
+            <AvatarGroup
+              items={assignees.map((u) => ({ name: u.name }))}
+              max={3}
+              size="sm"
+              aria-label={`Assigned to ${assignees.length}`}
+              renderItem={(avatar, item) => (
+                <Tooltip>
+                  <TooltipTrigger>{avatar}</TooltipTrigger>
+                  <TooltipContent side="top">{item.name ?? 'Member'}</TooltipContent>
+                </Tooltip>
+              )}
+              onOverflowClick={() => {
+                /* Could open a popover with the remaining users — see the
+                 * Storybook story `WithOverflowPopover` for the wire-up. */
+              }}
+            />
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'lastSeenDays',
+      header: 'Last seen',
+      cell: ({ row }) =>
+        row.original.lastSeenDays === 0 ? 'Today' : `${row.original.lastSeenDays}d ago`,
+    },
+  ];
+}
 
 /*
  * --- BEFORE (kept for reference) ---------------------------------------
@@ -265,10 +322,11 @@ function UsersTableContent({
   const { data } = useApiSuspenseQuery<UsersResponse>(keys.users.list(filters), () =>
     api<UsersResponse>('/api/users', { query: filters }),
   );
+  const columns = useMemo(() => makeUserColumns(data.data), [data.data]);
 
   return (
     <DataTable<User>
-      columns={userColumns}
+      columns={columns}
       data={data.data}
       getRowId={(row) => row.id}
       enableRowSelection="multi"

@@ -34,6 +34,7 @@ import { LoginPage } from '@/pages/auth/login';
 import { VerifyPage } from '@/pages/auth/verify';
 import { PrintPreviewPage } from '@/pages/PrintPreviewPage';
 import { TreePage } from '@/pages/TreePage';
+import { TimelinePage } from '@/pages/TimelinePage';
 
 /*
  * Code splitting strategy.
@@ -65,6 +66,11 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
   { to: '/data', label: 'Data display', keywords: ['card', 'stat', 'list'] },
   { to: '/tables', label: 'Tables', keywords: ['datatable', 'rows'] },
   { to: '/tree', label: 'Tree view', keywords: ['tree', 'folder', 'explorer', 'nav'] },
+  {
+    to: '/timeline',
+    label: 'Timeline',
+    keywords: ['activity', 'feed', 'audit', 'log', 'history'],
+  },
   { to: '/charts', label: 'Charts', keywords: ['line', 'bar', 'pie', 'recharts'] },
   { to: '/positioning', label: 'Positioning', keywords: ['flip', 'shift', 'boundary', 'tooltip'] },
   { to: '/layout', label: 'Layout demo', keywords: ['sidebar', 'topbar', 'shell'] },
@@ -215,6 +221,7 @@ const router = createBrowserRouter([
           },
           { path: 'positioning', element: <PositioningPage /> },
           { path: 'tree', element: <TreePage /> },
+          { path: 'timeline', element: <TimelinePage /> },
           {
             path: 'charts',
             lazy: async () => {

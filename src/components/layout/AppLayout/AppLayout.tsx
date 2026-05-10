@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   BarChart3,
   ChevronDown,
+  Clock,
   Columns2,
   Compass,
   FolderTree,
@@ -54,6 +55,7 @@ const NAV_ITEMS: ReadonlyArray<NavItem> = [
   { to: '/data', label: 'Data display', icon: <LayoutDashboard className="h-4 w-4" /> },
   { to: '/tables', label: 'Tables', icon: <Table className="h-4 w-4" /> },
   { to: '/tree', label: 'Tree', icon: <FolderTree className="h-4 w-4" /> },
+  { to: '/timeline', label: 'Timeline', icon: <Clock className="h-4 w-4" /> },
   { to: '/charts', label: 'Charts', icon: <BarChart3 className="h-4 w-4" /> },
   { to: '/positioning', label: 'Positioning', icon: <Move className="h-4 w-4" /> },
   { to: '/layout', label: 'Layout', icon: <PanelsTopLeft className="h-4 w-4" /> },
