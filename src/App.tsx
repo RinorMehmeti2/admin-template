@@ -28,6 +28,7 @@ import {
 } from '@/components/overlays/CommandPalette';
 import { AuthProvider, ProtectedRoute, PublicOnlyRoute, RoleGate } from '@/auth';
 import { ApiAuthBridge, ErrorBridge, QueryProvider } from '@/data';
+import { NotificationsProvider } from '@/notifications';
 import { RootRouterErrorElement, RouterErrorElement } from '@/components/feedback/ErrorBoundary';
 import { ErrorsDemoPage } from '@/pages/errors';
 import { LoginPage } from '@/pages/auth/login';
@@ -290,13 +291,15 @@ export function App() {
         <QueryProvider>
           <AuthProvider>
             <ApiAuthBridge />
-            <CommandRegistryProvider>
-              <ToastProvider position="top-right">
-                <TooltipProvider delayDuration={300}>
-                  <RouterProvider router={router} />
-                </TooltipProvider>
-              </ToastProvider>
-            </CommandRegistryProvider>
+            <NotificationsProvider>
+              <CommandRegistryProvider>
+                <ToastProvider position="top-right">
+                  <TooltipProvider delayDuration={300}>
+                    <RouterProvider router={router} />
+                  </TooltipProvider>
+                </ToastProvider>
+              </CommandRegistryProvider>
+            </NotificationsProvider>
           </AuthProvider>
         </QueryProvider>
       </LocaleProvider>

@@ -1,6 +1,14 @@
 # SETUP
 
-Foundation for the in-house admin UI template per `CLAUDE.md`. No components yet — only the build, styling, and tooling skeleton.
+> **Historical snapshot.** This file documents the original foundation
+> commit (build, styling, tooling skeleton — no components yet) and the
+> initial decisions taken at project start. The repo has moved on
+> considerably since: see [PROJECT.md](./PROJECT.md) for the current
+> state, [CLAUDE.md](./CLAUDE.md) for the rule book, and
+> [CONTRIBUTING.md](./CONTRIBUTING.md) for the workflow. Notable drift:
+> the dark-mode palette is now Framer neutral-grays (no blue tint),
+> a dedicated `src/data/` server-state layer + MSW mocks ship, and
+> Playwright E2E + vitest-axe gate CI alongside the original commands.
 
 ## Run
 
@@ -21,9 +29,10 @@ Open the dev server and click **Toggle dark/light** to verify tokens, surfaces, 
 ## Decisions
 
 ### Palette
-- **Neutrals:** Tailwind `slate` (cool, slightly blue). Fits the admin/SaaS aesthetic better than `gray`/`zinc`. Tweak in `src/styles/tokens.css` if you want warmer.
+- **Neutrals (light):** Tailwind `slate` (cool, slightly blue). Fits the admin/SaaS aesthetic better than `gray`/`zinc`. Tweak in `src/styles/tokens.css` if you want warmer.
+- **Neutrals (dark):** Framer-template neutral grays — `hsl(0 0% 9–22%)` for backgrounds/surfaces/borders, `hsl(0 0% 49–96%)` for foregrounds. **No blue tint** in dark mode (the original slate-900 base was swapped out — see commit `1a726a3 adopt Framer neutral-gray dark palette`). Both modes still live in `src/styles/tokens.css`.
 - **Primary:** `indigo` (`hsl(238 75% 58%)` light, `hsl(238 85% 66%)` dark). High contrast on both surfaces, distinct from danger/info.
-- **Accents:** emerald (success), amber (warning), red (danger), sky (info). Each has a `-foreground` pair for text on the accent.
+- **Accents:** emerald (success), amber (warning), red (danger), sky (info). Each has a `-foreground` pair for text on the accent. Accent tokens are deliberately preserved inside `@media print` so chart series stay distinguishable.
 - All values are in HSL for easy manual tuning.
 
 ### Tokens

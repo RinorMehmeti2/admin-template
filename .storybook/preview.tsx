@@ -8,7 +8,16 @@ import { ToastProvider } from '../src/context/ToastProvider';
 import '../src/i18n';
 import { TooltipProvider } from '../src/components/feedback/Tooltip';
 import { CommandRegistryProvider } from '../src/components/overlays/CommandPalette';
+import { NotificationsProvider } from '../src/notifications';
+import { createMockNotificationsClient } from '../src/notifications/mockNotificationsClient';
 import '../src/styles/globals.css';
+
+// Stable, non-persisting client so stories don't share a localStorage cache.
+const storyNotificationsClient = createMockNotificationsClient({
+  persist: false,
+  emitEveryMs: null,
+  latencyMs: 0,
+});
 
 /**
  * Sync the toolbar theme into our ThemeProvider's persistence so its initial
@@ -33,15 +42,17 @@ const withProviders: Decorator = (Story, context) => {
     <MemoryRouter>
       <ThemeProvider key={theme} defaultTheme={theme}>
         <LocaleProvider>
-          <CommandRegistryProvider>
-            <ToastProvider position="top-right">
-              <TooltipProvider delayDuration={300}>
-                <StoryFrame>
-                  <Story />
-                </StoryFrame>
-              </TooltipProvider>
-            </ToastProvider>
-          </CommandRegistryProvider>
+          <NotificationsProvider client={storyNotificationsClient}>
+            <CommandRegistryProvider>
+              <ToastProvider position="top-right">
+                <TooltipProvider delayDuration={300}>
+                  <StoryFrame>
+                    <Story />
+                  </StoryFrame>
+                </TooltipProvider>
+              </ToastProvider>
+            </CommandRegistryProvider>
+          </NotificationsProvider>
         </LocaleProvider>
       </ThemeProvider>
     </MemoryRouter>

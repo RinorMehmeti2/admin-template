@@ -17,11 +17,14 @@ This repository is an in-house admin UI template built with React, TypeScript, a
 - **react-router-dom v7** for routing
 - **react-hook-form + zod + @hookform/resolvers** for forms and validation
 - **@tanstack/react-table v8** for the DataTable (state/headless behavior only — we provide all visuals)
+- **@tanstack/react-query v5** for server state — wrapped in `src/data/` (`useApiQuery`, `useApiSuspenseQuery`, `useApiMutation`, `useInvalidate`)
+- **MSW (Mock Service Worker)** for fetch mocking in dev (`VITE_USE_MSW=true`) and tests (`src/mocks/`)
 - **date-fns** for date utilities (no Moment, no Day.js)
 - **recharts 3** for chart rendering primitives — explicit carve-out, see "Pragmatic carve-outs" below. Contained behind `src/components/data-display/charts/ChartContainer/`.
 - **@tiptap/\* + ProseMirror** for the rich text editor — explicit carve-out, see "Pragmatic carve-outs" below. Toolbar / bubble menu are 100% ours.
 - **i18next + react-i18next + i18next-browser-languagedetector** for internationalization (behavior only — no visual surface)
-- **Vitest 4 + @testing-library/react** for tests
+- **Vitest 4 + @testing-library/react + vitest-axe** for tests (axe-core a11y assertions on every component test — see CONTRIBUTING.md § "Accessibility testing")
+- **Playwright** for E2E (`e2e/` specs, `playwright.config.ts`) — runs against `pnpm dev` with MSW enabled
 - **Storybook 10** for component documentation (the Vite 8 builder requires Storybook 10+; lower versions peer Vite ≤ 6)
 - **pnpm** as package manager
 
@@ -32,30 +35,43 @@ These are all behavior / utility / state libraries — none of them ship visual 
 ```
 src/
   components/
-    primitives/       # Avatar, Badge, Button, IconButton, Kbd, Separator, Skeleton, Spinner
+    primitives/       # Avatar, AvatarGroup, Badge, Button, IconButton, Kbd, Separator,
+                      # Skeleton, Spinner
     layout/           # AppLayout, Container, FocusMode, FullscreenWorkspace, LocaleSwitcher,
                       # PageHeader, PageShell, Sidebar, SplitLayout, ThemeToggle, Topbar
-    feedback/         # Alert, ConfirmDialog, Dialog, Drawer, Progress, Toast, Tooltip
+    feedback/         # Alert, ConfirmDialog, Dialog, Drawer, ErrorBoundary, LoadingBoundary,
+                      # NotificationsCenter (Bell + Panel + Item), Progress, Toast, Tooltip
     navigation/       # Breadcrumbs, ContextMenu, DropdownMenu, Menu, Pagination, Stepper, Tabs
-    data-display/     # Card, DataTable, EmptyState, List, Stat, Table
+    data-display/     # Card, DataTable, EmptyState, List, Stat, Table, Timeline, TreeView
       charts/         # AreaChart, BarChart, ChartContainer, ComposedChart, DonutChart,
                       # LineChart, PieChart, RadialChart, StackedBarChart  (Recharts-backed)
-    forms/            # Calendar, Checkbox, Combobox, DatePicker, DateRangePicker,
-                      # DateTimePicker, Form, FormField, Input, Label, Radio, RadioGroup,
-                      # RichTextEditor, Select, Switch, Textarea, TimePicker
+    forms/            # Calendar, Checkbox, ColorPicker, Combobox, DatePicker, DateRangePicker,
+                      # DateTimePicker, Form, FormField, Input, Label, NumberInput, OtpInput,
+                      # PhoneInput, Radio, RadioGroup, RangeSlider, Rating, RichTextEditor,
+                      # Select, Slider, Switch, TagInput, Textarea, TimePicker
     overlays/         # CommandPalette, Portal
   hooks/              # Behavioral primitives — see "Behavioral hooks" below
   context/            # ThemeProvider, ToastProvider, LocaleProvider
   auth/               # AuthClient, AuthProvider, useAuth, ProtectedRoute, PublicOnlyRoute,
                       # RoleGate, mockAuthClient, types  — see "Auth" below
+  notifications/      # NotificationsClient interface + mockNotificationsClient,
+                      # NotificationsProvider, useNotifications, types — same
+                      # swap-the-client pattern as auth. See "Notifications" in
+                      # CONTRIBUTING.md.
+  data/               # api.ts, queryClient, QueryProvider, ApiAuthBridge, ErrorBridge,
+                      # errorHandler, keys, useApiQuery, useApiSuspenseQuery, useApiMutation,
+                      # useApiFormSubmit, useInvalidate  — see "Data fetching" in CONTRIBUTING.md
+  mocks/              # MSW handlers + browser/node servers + fixtures
   i18n/               # i18next init + locales/<lng>.json — see "Internationalization" below
-  lib/                # cn.ts, date.ts, formatters, validators, constants
+  lib/                # cn.ts, date.ts, errorReporter.ts, formatters, validators, constants
   styles/             # globals.css, tokens.css, print.css
   pages/              # Demo / showcase pages
+  test-utils/         # a11y.ts (runAxe + toHaveNoViolations matcher)
   types/              # Shared TS types
   App.tsx
   main.tsx
-  setupTests.ts       # jsdom polyfills for ProseMirror
+  setupTests.ts       # jsdom polyfills for ProseMirror + axe matcher install
+e2e/                  # Playwright specs + fixtures (loginAs, gotoSignedIn)
 ```
 
 The path alias `@/*` maps to `src/*`. Always use it for non-relative imports.
@@ -84,6 +100,8 @@ Required hooks:
 - **`usePosition(triggerRef, contentRef, { placement, offset, boundary })`** → returns `{ x, y, ready, placement }` (document-absolute coords) for content anchored to a trigger. Handles viewport flip and perpendicular shift. Companion `usePositionAtPoint` does the same anchored to a `{ x, y }` point (used by ContextMenu). Known unhandled cases — see "Positioning — known limitations" at the bottom of this file.
 - **`useDebouncedValue(value, delay)`** → debounces a value.
 - **`usePrintMode()`** → returns `true` while the browser is preparing/rendering for print. Subscribes to `beforeprint` / `afterprint` and the `print` media query. Used by DataTable (render every filtered row) and Tabs (render every panel) so the print stylesheet sees the full content. Compose this in any new component that hides content behind state and would be expected to print in full.
+- **`useErrorHandler()`** → returns a `(err) => void` that re-throws on the next render so the nearest `<ErrorBoundary>` catches it. Use to bridge async / event-handler errors (which boundaries do NOT catch natively) into the boundary tree.
+- **`useIntersectionObserver(ref, onIntersect, opts?)`** → fires `onIntersect` when `ref.current` enters the root viewport. Used by `NotificationsPanel` for an infinite-scroll sentinel. SSR-safe (no-ops without `IntersectionObserver`).
 
 Plus one component utility:
 
@@ -215,8 +233,8 @@ For complex composite widgets where native semantics aren't enough (Combobox, Li
 
 - **Local state:** `useState`, `useReducer`
 - **Cross-component UI state** (theme, locale, sidebar collapsed, toasts): React Context in `src/context/`
-- **Server state:** TanStack Query when added — no Redux, no Zustand unless agreed
-- **Forms:** react-hook-form, validation always via zod schemas
+- **Server state:** `@tanstack/react-query` v5, wrapped in `src/data/`. Components call `useApiQuery` / `useApiSuspenseQuery` / `useApiMutation` (typed against `ApiError`), build keys from the `keys` factory, and invalidate via `useInvalidate()`. No Redux, no Zustand. See CONTRIBUTING.md § "Data fetching" for the full recipe (suspense vs. classic, optimistic updates, error dispatcher).
+- **Forms:** react-hook-form, validation always via zod schemas. `useApiFormSubmit(form, mutation)` handles the RHF ↔ mutation glue (success path + per-field error mapping). Mutations that opt out of the global error dispatcher must set `meta: { handlesErrors: true }`.
 
 ## Testing
 
@@ -237,6 +255,8 @@ Rules:
 - For overlays, test that focus is trapped, Escape closes, click-outside closes, and focus returns to the trigger on close.
 - **No snapshot tests.**
 - Use `vi.fn()` for callbacks; assert call count and arguments.
+- **Every component test file ships at least one `runAxe` assertion** (`@/test-utils/a11y`) against the default render; overlays add a second one against the open state using `runAxe(document.body)`. Two rules are globally disabled (`color-contrast`, `region`) — see CONTRIBUTING.md § "Accessibility testing" for per-component carve-outs and the fake-timer workaround.
+- **E2E.** Top-level user flows (auth, forms, tables, overlays, keyboard nav, theme/locale persistence) live under `e2e/` (Playwright). Use the shared `loginAs(role)` / `gotoSignedIn(path, role?)` fixtures from `e2e/fixtures.ts`; do not import `test` from `@playwright/test` directly. Do not reach for E2E for variant or hook coverage — that's unit territory.
 
 ## Commands
 
@@ -251,6 +271,12 @@ pnpm test         # vitest run
 pnpm test:watch   # vitest watch
 pnpm storybook    # Storybook dev server
 pnpm build-storybook
+pnpm analyze      # vite build with bundle-analyzer (writes dist/stats.html)
+pnpm e2e          # Playwright headless
+pnpm e2e:ui       # Playwright UI mode
+pnpm e2e:install  # one-time: download Playwright browser binaries
+
+VITE_USE_MSW=true pnpm dev    # dev server with MSW fetch mocking
 ```
 
 ## Definition of done for a component
@@ -260,13 +286,14 @@ A component is complete only when ALL of these are true:
 1. Implementation file with proper types, `ref` accepted as a regular prop (React 19 pattern), and `cn()` for className merging
 2. All variants defined via `cva` and reflected in props
 3. Composes the appropriate behavioral hooks (no inline focus-trap, click-outside, scroll-lock, or keyboard-nav logic — use the hooks)
-4. `*.test.tsx` covers default render, every variant, interactions, a11y attributes, edge states, and (for overlays) focus management
+4. `*.test.tsx` covers default render, every variant, interactions, a11y attributes, edge states, (for overlays) focus management, and **at least one `runAxe` assertion** (two for overlays — closed + open)
 5. `*.stories.tsx` shows every variant + at least one realistic composition
 6. Exported from `components/<category>/index.ts`
 7. Uses semantic tokens — zero raw colors / hex / rgb
 8. Light AND dark mode both look correct without per-component dark variants
 9. Keyboard navigation tested manually
-10. No new dependencies added without explicit approval (and if approved, documented as a carve-out — see "Pragmatic carve-outs")
+10. If the component represents a **new top-level user flow**, add an `e2e/<name>.spec.ts` (Playwright) that covers the flow end-to-end. Do not add E2E for variant coverage.
+11. No new dependencies added without explicit approval (and if approved, documented as a carve-out — see "Pragmatic carve-outs")
 
 ## Anti-patterns — do not do
 
@@ -344,6 +371,15 @@ If you find yourself wanting another visual library — even a "tiny" one —
 flag it before adding. New carve-outs require explicit approval and an entry
 in this section.
 
+## Data fetching & error boundaries
+
+- `src/data/` wraps `@tanstack/react-query` v5. Read paths: `useApiQuery` (classic, supports `enabled` / `keepPreviousData` / inline error states) and `useApiSuspenseQuery` (suspends; pair with `<LoadingBoundary>` from `feedback/LoadingBoundary/`). Write path: `useApiMutation` + `useInvalidate()`. Errors are always typed as `ApiError` (`status`, `code`, `message`, `payload`).
+- **Rule of thumb:** route segments suspense, leaf widgets `useApiQuery`. See CONTRIBUTING.md § "Data fetching → useQuery vs useSuspenseQuery — which one?" for the decision tree.
+- `mapApiError` in `src/data/errorHandler.ts` is the single classifier — every failure routes to one of four kinds: `toast`, `redirect` (401 → `/login`), `inline` (422 → per-field `setError`), or `fatal` (re-throw to a boundary). `<ErrorBridge>` (mounted in `RootShell`) hands `navigate` + `toast` to the dispatcher so the global QueryCache / MutationCache handlers can act without a context dependency. To opt out for a form that owns its own error UX, set `meta: { handlesErrors: true }` on the mutation and pair with `useApiFormSubmit`.
+- **Boundaries.** `feedback/ErrorBoundary/` ships a class boundary + two fallbacks + a router adapter. We catch at three levels: app root (in `main.tsx`), router root + per-route (`errorElement: <RouterErrorElement />`), and per-feature subtrees. Boundaries do NOT catch event handlers / async / SSR / errors thrown inside themselves — bridge async + event errors via `useErrorHandler()`.
+- **Reporting.** Every boundary catch calls `reportError(error, context)` from `src/lib/errorReporter.ts`. Production swaps the body for Sentry / Bugsnag / Datadog. Keep the structured payload shape (`{ name, message, stack, componentStack, source, extra, timestamp }`) so log search stays consistent across the swap.
+- **Mocking.** MSW handlers live in `src/mocks/handlers.ts`; `src/mocks/browser.ts` runs in dev (opt-in via `VITE_USE_MSW=true`), `src/mocks/node.ts` runs in tests. The data-layer unit tests stub `fetch` directly via `createApiClient({ fetchImpl })` — they do not use MSW.
+
 ## Auth
 
 Auth scaffolding lives in `src/auth/`. The provider, route guards, and
@@ -368,6 +404,34 @@ login-style pages, and `<RoleGate roles={['admin']}>` for role-based
 gating. `Role` is `'admin' | 'editor' | 'viewer' | (string & {})` — extend
 inline at call sites or replace project-wide via a `.d.ts` redeclaration.
 Full recipe in `CONTRIBUTING.md` § "Auth: swap the client".
+
+## Notifications
+
+Persistent notifications inbox lives in `src/notifications/` and the
+Topbar component lives in `src/components/feedback/NotificationsCenter/`.
+Different from `<Toast>` — Toast is transient feedback for the action you
+just took; a Notification is a server-side record surfaced via a Topbar
+bell with an unread count badge, openable into a panel that lists
+history and exposes per-item read / dismiss / mark-all-read.
+
+State sits in `<NotificationsProvider client={...}>` and depends on a
+single interface — `NotificationsClient` — with a shipped in-memory
+`mockNotificationsClient` (localStorage-backed, dev-only 30s
+fake-emitter to demo the subscribe channel). Swapping in a real
+backend (REST + SSE/WebSocket) is a one-file replacement; full
+recipe in `CONTRIBUTING.md` § "Notifications: swap the client".
+
+`useNotifications()` returns
+`{ notifications, unreadCount, isLoading, hasMore, filter, setFilter, fetchMore, markRead, markAllRead, remove, refresh }`.
+Mutations are optimistic with rollback on error. The provider also
+subscribes to `client.subscribe(onNew)` and prepends fresh items.
+
+The provider is mounted in `App.tsx` inside `<AuthProvider>`. Adding a
+new global Provider requires updating render harnesses (CLAUDE.md
+already enforces this for locale/theme): the AppLayout test, the
+Storybook preview decorator, and any page-level mounts already include
+it. New tests that mount `AppLayout` / `Topbar` need to wrap with
+`<NotificationsProvider client={createMockNotificationsClient({ persist: false, emitEveryMs: null, latencyMs: 0 })}>`.
 
 ## Internationalization (i18n)
 
@@ -406,6 +470,13 @@ Full recipe in `CONTRIBUTING.md` § "Auth: swap the client".
 - Introducing a new global Provider (locale, theme, etc.) requires
   updating every render harness: tests, story decorators in
   `.storybook/preview.tsx`, and any page-level mounts.
+
+## Bundle size
+
+- Soft budgets (not CI-gated): first-paint < 200 KB gz, per-route chunk < 100 KB gz, total app < 1 MB gz.
+- Routes that pull a heavy carve-out are lazy via react-router v7's `lazy` route option: `/charts` (Recharts), `/tables` (TanStack Table + DataTable), `/workspace`, `/admin`. Add new heavy routes the same way — see CONTRIBUTING.md § "Adding a new lazy route".
+- `RichTextEditor` is split mid-component via `LazyRichTextEditor` (`forms/RichTextEditor/lazy.tsx`). The barrel intentionally does NOT re-export the eager component — re-exporting it would put TipTap back on the static graph and Rollup would refuse to split (`INEFFECTIVE_DYNAMIC_IMPORT`). Tests / stories import the eager version directly via `./RichTextEditor`.
+- Inspect with `pnpm analyze` (writes `dist/stats.html`).
 
 ## Print
 

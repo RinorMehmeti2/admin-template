@@ -22,5 +22,18 @@
   "locale.switcher.label": "Language",
   "locale.switcher.aria": "Change language",
   "locale.en": "English",
-  "locale.es": "Español"
+  "locale.es": "Español",
+
+  "notifications.title": "Notifications",
+  "notifications.markAllRead": "Mark all read",
+  "notifications.empty": "You're all caught up",
+  "notifications.emptyDescription": "New notifications will appear here.",
+  "notifications.loading": "Loading…",
+  "notifications.remove": "Dismiss notification",
+  "notifications.closeLabel": "Close notifications",
+  "notifications.bellLabel": "Open notifications",
+  "notifications.filter.all": "All",
+  "notifications.filter.unread": "Unread",
+  "notifications.unreadSuffix_one": ", {{count}} unread",
+  "notifications.unreadSuffix_other": ", {{count}} unread"
 }

@@ -198,13 +198,13 @@ This is the workflow we want every contributor to follow.
 
 Pick the right folder under `src/components/`:
 
-- `primitives/` — Button, IconButton, Badge, Avatar, Spinner, Skeleton, Kbd, Separator
-- `forms/` — Label, Input, Textarea, Select, Checkbox, Radio, Switch, FormField, Form
-- `feedback/` — Alert, Toast, Dialog, Drawer, ConfirmDialog, Tooltip, Progress
-- `navigation/` — Tabs, Breadcrumbs, Pagination, Stepper, Menu, DropdownMenu
-- `data-display/` — Card, Stat, List, EmptyState, Table, DataTable
-- `layout/` — Container, PageShell, PageHeader, Sidebar, Topbar
-- `overlays/` — Popover, ContextMenu, Sheet, CommandPalette, Portal
+- `primitives/` — Avatar, AvatarGroup, Badge, Button, IconButton, Kbd, Separator, Skeleton, Spinner
+- `forms/` — Calendar, Checkbox, ColorPicker, Combobox, DatePicker, DateRangePicker, DateTimePicker, Form, FormField, Input, Label, NumberInput, OtpInput, PhoneInput, Radio, RadioGroup, RangeSlider, Rating, RichTextEditor, Select, Slider, Switch, TagInput, Textarea, TimePicker
+- `feedback/` — Alert, ConfirmDialog, Dialog, Drawer, ErrorBoundary, LoadingBoundary, Progress, Toast, Tooltip
+- `navigation/` — Breadcrumbs, ContextMenu, DropdownMenu, Menu, Pagination, Stepper, Tabs
+- `data-display/` — Card, DataTable, EmptyState, List, Stat, Table, Timeline, TreeView (`charts/` subfolder for Recharts-backed chart components)
+- `layout/` — AppLayout, Container, FocusMode, FullscreenWorkspace, LocaleSwitcher, PageHeader, PageShell, Sidebar, SplitLayout, ThemeToggle, Topbar
+- `overlays/` — CommandPalette, Portal
 
 ### 2. Check `src/hooks/` _before_ writing any UI code
 
@@ -224,6 +224,9 @@ Examples of things you should compose, not reinvent:
 - Merging multiple refs → `useMergedRefs`
 - Stable IDs → `useId`
 - Debounced values → `useDebouncedValue`
+- Pointer-event drag (with capture + axis lock + Escape cancel) → `useDrag`
+- Bridge async / event errors into the boundary tree → `useErrorHandler`
+- Render every collapsed sub-region during print → `usePrintMode`
 
 ### 3. If a hook you need does not exist, build the hook _first_
 
@@ -481,6 +484,164 @@ tests stay fast and offline.
 
    This is purely a type-level change — no runtime impact, and the rest of
    the auth code keeps working without modification.
+
+## Notifications: swap the client
+
+The persistent notifications inbox lives in `src/notifications/`. The
+provider, `useNotifications` hook, and Topbar `NotificationsBell` /
+`NotificationsPanel` (under `feedback/NotificationsCenter/`) depend on a
+single interface — `NotificationsClient` — and we ship an in-memory
+`mockNotificationsClient` (localStorage + a dev-only 30s fake emitter
+that demos the subscribe channel). To wire a real backend, implement
+the interface once and pass it in.
+
+```ts
+// src/notifications/NotificationsClient.ts
+export interface NotificationsClient {
+  list(params?: NotificationsListParams): Promise<NotificationsPage>;
+  markRead(ids: string[]): Promise<void>;
+  markAllRead(): Promise<void>;
+  remove(id: string): Promise<void>;
+  subscribe(onNew: (n: Notification) => void): Unsubscribe;
+}
+```
+
+### One-file replacement pattern
+
+```ts
+// src/notifications/myBackendClient.ts
+import type { NotificationsClient, NotificationsListParams } from '@/notifications';
+import type { Notification, NotificationsPage, Unsubscribe } from '@/notifications';
+
+export const myBackendClient: NotificationsClient = {
+  async list({ cursor, unreadOnly, limit = 20 }: NotificationsListParams = {}) {
+    const url = new URL('/api/notifications', window.location.origin);
+    if (cursor !== undefined) url.searchParams.set('cursor', cursor);
+    if (unreadOnly === true) url.searchParams.set('unreadOnly', '1');
+    url.searchParams.set('limit', String(limit));
+    const res = await fetch(url, { credentials: 'include' });
+    if (!res.ok) throw new Error('Failed to load notifications');
+    return (await res.json()) as NotificationsPage;
+  },
+  async markRead(ids: string[]) {
+    await fetch('/api/notifications/mark-read', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ids }),
+    });
+  },
+  async markAllRead() {
+    await fetch('/api/notifications/mark-all-read', { method: 'POST' });
+  },
+  async remove(id: string) {
+    await fetch(`/api/notifications/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  },
+  subscribe(onNew: (n: Notification) => void): Unsubscribe {
+    // SSE example — replace with WebSocket if you prefer.
+    const source = new EventSource('/api/notifications/stream', { withCredentials: true });
+    const handler = (event: MessageEvent<string>) => {
+      try {
+        onNew(JSON.parse(event.data) as Notification);
+      } catch {
+        /* ignore malformed payloads */
+      }
+    };
+    source.addEventListener('notification', handler as EventListener);
+    return () => {
+      source.removeEventListener('notification', handler as EventListener);
+      source.close();
+    };
+  },
+};
+```
+
+Then in `App.tsx`:
+
+```tsx
+<NotificationsProvider client={myBackendClient}>…</NotificationsProvider>
+```
+
+That's the entire integration surface. `useNotifications()` consumers
+do not change. Tests can pass any object satisfying
+`NotificationsClient` — the helper
+`createMockNotificationsClient({ initialItems, persist: false, latencyMs: 0, emitEveryMs: null })`
+is the canonical test-time factory (deterministic, no global side
+effects).
+
+### Adding a new `NotificationKind`
+
+`NotificationKind` is a string type — there is no enum to extend.
+Use dot-notation grouped by feature at the call site:
+
+```ts
+const fresh: Notification = {
+  id: 'n_1',
+  kind: 'orders.shipped',          // or 'billing.invoice.paid', etc.
+  severity: 'success',
+  title: 'Order shipped',
+  description: 'Tracking JX-2391 — ETA 2 days.',
+  timestamp: new Date().toISOString(),
+  read: false,
+  actionLabel: 'Track shipment',
+  actionHref: '/orders/4821',
+};
+```
+
+If you want a fixed catalog at the type level, narrow `NotificationKind`
+in your own `.d.ts`:
+
+```ts
+declare module '@/notifications' {
+  export type NotificationKind =
+    | 'auth.signin'
+    | 'orders.shipped'
+    | 'billing.invoice.paid'
+    | 'security.permission.changed';
+}
+```
+
+### Severity → token mapping
+
+Severity drives the dot-color and is the only visual signal that
+varies per kind. The mapping uses existing accent tokens — do not add
+new tokens for notifications:
+
+| `severity`  | Token used                     |
+| ----------- | ------------------------------ |
+| `info`      | `bg-info`                      |
+| `success`   | `bg-success`                   |
+| `warning`   | `bg-warning`                   |
+| `danger`    | `bg-danger`                    |
+
+The unread badge on the bell always uses `bg-danger` regardless of
+severity — it represents "needs attention", not the severity of any
+single item.
+
+### Dev-only fake emitter
+
+`mockNotificationsClient` is configured at module load with
+`emitEveryMs: import.meta.env.DEV ? 30_000 : null`. While the bell is
+mounted in dev, a fake notification appears every 30 seconds so you
+can see the subscribe channel and badge update live. In test / prod
+the emitter is silent. **Do not rely on this in real tests** — pass
+your own client via `createMockNotificationsClient(...)`.
+
+### Persisted state
+
+- The notification cache lives in `localStorage` under
+  `admin-template-notifications` (the mock's choice — a real client
+  almost certainly should not duplicate the server's state in storage).
+- Bell openness is per-session: `sessionStorage` under
+  `admin-template-notifications-open`. Clears on tab close, persists
+  across reload — different from theme/locale on purpose.
+
+### Mounting in tests
+
+If a new test renders `AppLayout`, `Topbar`, or anything that walks up
+to a `useNotifications()` consumer, wrap with
+`<NotificationsProvider client={createMockNotificationsClient({ persist: false, emitEveryMs: null, latencyMs: 0, initialItems: [] })}>`.
+The Storybook preview decorator and `AppLayout.test.tsx` are the
+canonical examples.
 
 ## i18n
 
@@ -1070,6 +1231,9 @@ The initial suites cover the critical flows the unit tests can't:
 - `e2e/keyboard.spec.ts` — Cmd/Ctrl+K opens the command palette,
   filter + Enter navigates, "/" opens, Escape closes.
 - `e2e/theme-locale.spec.ts` — theme + locale persist across reload.
+- `e2e/notifications.spec.ts` — bell unread count, open panel, filter
+  unread, mark one read decrements badge, mark-all-read empties badge,
+  panel openness persists across reload, Escape returns focus.
 
 ### When to add an E2E test
 

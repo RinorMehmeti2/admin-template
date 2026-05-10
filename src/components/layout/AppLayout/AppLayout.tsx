@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   BarChart3,
   ChevronDown,
@@ -35,7 +36,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/navigation/DropdownMenu';
+import { NotificationsBell } from '@/components/feedback/NotificationsCenter';
 import { useAuth } from '@/auth';
+import { useLocale } from '@/context/LocaleProvider';
 
 interface NavItem {
   to: string;
@@ -125,6 +128,22 @@ function AuthMenu() {
 
 export function AppLayout() {
   const { openPalette } = useCommandRegistry();
+  const { t } = useTranslation();
+  const { locale } = useLocale();
+  const notificationsLabels = {
+    title: t('notifications.title'),
+    markAllRead: t('notifications.markAllRead'),
+    filterAll: t('notifications.filter.all'),
+    filterUnread: t('notifications.filter.unread'),
+    empty: t('notifications.empty'),
+    emptyDescription: t('notifications.emptyDescription'),
+    loading: t('notifications.loading'),
+    remove: t('notifications.remove'),
+    closeLabel: t('notifications.closeLabel'),
+    bellLabel: t('notifications.bellLabel'),
+    unreadSuffix: (count: number) =>
+      count > 0 ? t('notifications.unreadSuffix', { count }) : '',
+  };
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
@@ -178,6 +197,7 @@ export function AppLayout() {
           </button>
           <div className="ml-auto flex items-center gap-2">
             <LocaleSwitcher />
+            <NotificationsBell labels={notificationsLabels} locale={locale} />
             <ThemeToggle />
             <AuthMenu />
           </div>

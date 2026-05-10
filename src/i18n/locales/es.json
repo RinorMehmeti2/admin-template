@@ -22,5 +22,18 @@
   "locale.switcher.label": "Idioma",
   "locale.switcher.aria": "Cambiar idioma",
   "locale.en": "English",
-  "locale.es": "Español"
+  "locale.es": "Español",
+
+  "notifications.title": "Notificaciones",
+  "notifications.markAllRead": "Marcar todas como leídas",
+  "notifications.empty": "Todo al día",
+  "notifications.emptyDescription": "Aquí aparecerán las nuevas notificaciones.",
+  "notifications.loading": "Cargando…",
+  "notifications.remove": "Descartar notificación",
+  "notifications.closeLabel": "Cerrar notificaciones",
+  "notifications.bellLabel": "Abrir notificaciones",
+  "notifications.filter.all": "Todas",
+  "notifications.filter.unread": "No leídas",
+  "notifications.unreadSuffix_one": ", {{count}} sin leer",
+  "notifications.unreadSuffix_other": ", {{count}} sin leer"
 }
