@@ -125,7 +125,10 @@ type SettingsValues = z.infer<typeof settingsSchema>;
 // the real endpoint via `api()`.
 type SettingsScenario = 'success' | 'fieldErrors' | 'serverError' | 'authExpired';
 
-function fakeSettingsApi(scenario: SettingsScenario, values: SettingsValues): Promise<SettingsValues> {
+function fakeSettingsApi(
+  scenario: SettingsScenario,
+  values: SettingsValues,
+): Promise<SettingsValues> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (scenario === 'success') return resolve(values);
@@ -148,7 +151,9 @@ function fakeSettingsApi(scenario: SettingsScenario, values: SettingsValues): Pr
       }
       if (scenario === 'serverError') {
         // 500 → mapApiError → toast (the helper fires toast.error itself).
-        return reject(new ApiError({ status: 500, message: 'Could not save settings. Try again.' }));
+        return reject(
+          new ApiError({ status: 500, message: 'Could not save settings. Try again.' }),
+        );
       }
       // 'authExpired' → 401 → mapApiError returns a redirect action; the
       // helper navigates the user to /login.
@@ -206,7 +211,10 @@ function SettingsForm() {
         label="Mock API scenario"
         description="Drives the fake mutation so each error path can be exercised without a backend."
       >
-        <Select value={scenario} onChange={(e) => setScenario(e.currentTarget.value as SettingsScenario)}>
+        <Select
+          value={scenario}
+          onChange={(e) => setScenario(e.currentTarget.value as SettingsScenario)}
+        >
           <option value="success">Success</option>
           <option value="fieldErrors">422 — field errors</option>
           <option value="serverError">500 — toast</option>

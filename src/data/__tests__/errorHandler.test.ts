@@ -65,7 +65,9 @@ describe('mapApiError', () => {
   });
 
   it('classifies network failures (status 0) with a friendly fallback message', () => {
-    const action = mapApiError(new ApiError({ status: 0, message: 'fetch failed', code: 'network' }));
+    const action = mapApiError(
+      new ApiError({ status: 0, message: 'fetch failed', code: 'network' }),
+    );
     expect(action).toEqual({
       kind: 'toast',
       severity: 'error',
@@ -80,7 +82,9 @@ describe('mapApiError', () => {
 });
 
 describe('runErrorAction / dispatchError', () => {
-  function withDispatcher(): ErrorDispatcher & { _spy: { toast: ReturnType<typeof vi.fn>; navigate: ReturnType<typeof vi.fn> } } {
+  function withDispatcher(): ErrorDispatcher & {
+    _spy: { toast: ReturnType<typeof vi.fn>; navigate: ReturnType<typeof vi.fn> };
+  } {
     const toast = vi.fn();
     const navigate = vi.fn();
     const dispatcher: ErrorDispatcher = { toast, navigate };

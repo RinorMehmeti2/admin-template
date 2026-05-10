@@ -693,12 +693,12 @@ function useUpdateUser() {
 Every API failure goes through `mapApiError(err)` in
 `src/data/errorHandler.ts`, which returns one of:
 
-| `kind`     | When                                                        | Side effect                                |
-| ---------- | ----------------------------------------------------------- | ------------------------------------------ |
-| `toast`    | 403, generic 4xx, 5xx, network                              | `toast.<severity>(message)`                |
-| `redirect` | 401 (refresh already failed in `api.ts`)                    | `navigate(action.to)` — defaults `/login`  |
-| `inline`   | 422, or any 4xx with `payload.fields` / `payload.errors`    | Caller calls `form.setError` per field     |
-| `fatal`    | Unmapped (e.g. 3xx) — likely a bug                          | Re-thrown so an error boundary catches it  |
+| `kind`     | When                                                     | Side effect                               |
+| ---------- | -------------------------------------------------------- | ----------------------------------------- |
+| `toast`    | 403, generic 4xx, 5xx, network                           | `toast.<severity>(message)`               |
+| `redirect` | 401 (refresh already failed in `api.ts`)                 | `navigate(action.to)` — defaults `/login` |
+| `inline`   | 422, or any 4xx with `payload.fields` / `payload.errors` | Caller calls `form.setError` per field    |
+| `fatal`    | Unmapped (e.g. 3xx) — likely a bug                       | Re-thrown so an error boundary catches it |
 
 `<ErrorBridge>` (mounted in `RootShell`) registers `navigate` + `toast`
 with the error module so the QueryCache / MutationCache global handlers
@@ -706,17 +706,17 @@ can dispatch without taking a context dependency.
 
 #### What an endpoint should return
 
-| Server response                                                   | Maps to                                        |
-| ----------------------------------------------------------------- | ---------------------------------------------- |
-| `200/204 …`                                                       | success                                        |
-| `401 { message }`                                                 | redirect to `/login`                           |
-| `403 { message }`                                                 | warning toast                                  |
-| `422 { message, fields: { <name>: <msg \| msg[]> } }`             | inline — per-field `setError`                  |
-| `422 { message }`                                                 | inline — `root.serverError`                    |
-| `400-499 { message, errors: { <name>: <msg[]> } }`                | inline — per-field (Rails / DRF shape)         |
-| `400-499 { message }` (no fields)                                 | error toast                                    |
-| `500-599 { message }`                                             | error toast (server's `message` is shown)      |
-| Network failure / DNS / timeout                                   | error toast with a generic "check connection"  |
+| Server response                                       | Maps to                                       |
+| ----------------------------------------------------- | --------------------------------------------- |
+| `200/204 …`                                           | success                                       |
+| `401 { message }`                                     | redirect to `/login`                          |
+| `403 { message }`                                     | warning toast                                 |
+| `422 { message, fields: { <name>: <msg \| msg[]> } }` | inline — per-field `setError`                 |
+| `422 { message }`                                     | inline — `root.serverError`                   |
+| `400-499 { message, errors: { <name>: <msg[]> } }`    | inline — per-field (Rails / DRF shape)        |
+| `400-499 { message }` (no fields)                     | error toast                                   |
+| `500-599 { message }`                                 | error toast (server's `message` is shown)     |
+| Network failure / DNS / timeout                       | error toast with a generic "check connection" |
 
 The fields normalizer accepts:
 
@@ -743,7 +743,11 @@ const mutation = useApiMutation(saveSettings, {
 const handleSubmit = useApiFormSubmit(form, mutation, {
   onSuccess: () => navigate('/settings/saved'),
 });
-return <Form form={form} onSubmit={handleSubmit}>…</Form>;
+return (
+  <Form form={form} onSubmit={handleSubmit}>
+    …
+  </Form>
+);
 ```
 
 Without the meta flag the global handler will toast every failure
@@ -891,12 +895,12 @@ Routes are split via [react-router v7's `lazy` route option][rr-lazy] —
 no `React.lazy` + `<Suspense>` boundary at the route level (the router
 handles it). Currently lazy:
 
-| Route        | Why                                                  |
-| ------------ | ---------------------------------------------------- |
-| `/charts`    | Pulls Recharts.                                      |
-| `/tables`    | Pulls TanStack Table + the heavy `DataTable` shell.  |
-| `/workspace` | `FullscreenWorkspace` + demo data is rarely needed.  |
-| `/admin`     | Hidden behind a role check anyway.                   |
+| Route        | Why                                                 |
+| ------------ | --------------------------------------------------- |
+| `/charts`    | Pulls Recharts.                                     |
+| `/tables`    | Pulls TanStack Table + the heavy `DataTable` shell. |
+| `/workspace` | `FullscreenWorkspace` + demo data is rarely needed. |
+| `/admin`     | Hidden behind a role check anyway.                  |
 
 Component-level split (mid-component, not at a route boundary):
 
