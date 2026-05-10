@@ -102,11 +102,7 @@ function FileIcon({ meta, isExpanded }: { meta: FileMeta | undefined; isExpanded
   return <File className="h-4 w-4 text-foreground-muted" />;
 }
 
-function FileExplorerRow({
-  ctx,
-}: {
-  ctx: TreeRenderItemContext<FileMeta>;
-}) {
+function FileExplorerRow({ ctx }: { ctx: TreeRenderItemContext<FileMeta> }) {
   const { node, level, isExpanded, isSelected, isFocused, hasChildren, isLoading } = ctx;
   return (
     <div
@@ -314,9 +310,7 @@ export const MultiSelectCheckboxes = {
               onSelectedChange={setSelected}
               aria-label="Permissions"
             />
-            <p className="mt-3 text-xs text-foreground-muted">
-              {selected.length} selected
-            </p>
+            <p className="mt-3 text-xs text-foreground-muted">{selected.length} selected</p>
           </CardContent>
         </Card>
       );
@@ -417,7 +411,12 @@ export const Disabled = {
                 { id: 'a-2', label: 'Child 2', disabled: true },
               ],
             },
-            { id: 'b', label: 'Disabled folder', disabled: true, children: [{ id: 'b-1', label: 'Hidden' }] },
+            {
+              id: 'b',
+              label: 'Disabled folder',
+              disabled: true,
+              children: [{ id: 'b-1', label: 'Hidden' }],
+            },
             { id: 'c', label: 'Plain leaf' },
           ]}
           selectionMode="single"

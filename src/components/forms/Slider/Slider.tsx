@@ -24,8 +24,10 @@ export interface SliderMark {
   label?: ReactNode;
 }
 
-export interface SliderProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange'> {
+export interface SliderProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  'defaultValue' | 'onChange'
+> {
   ref?: Ref<HTMLDivElement>;
   value?: number;
   defaultValue?: number;
@@ -203,7 +205,13 @@ export function Slider({
       >
         <SliderRange orientation={orientation} style={filledStyle} />
         {marks !== undefined ? (
-          <SliderMarks marks={marks} min={min} max={max} invert={invert} orientation={orientation} />
+          <SliderMarks
+            marks={marks}
+            min={min}
+            max={max}
+            invert={invert}
+            orientation={orientation}
+          />
         ) : null}
         <SliderThumb
           ref={thumbRef}
@@ -232,7 +240,13 @@ export function Slider({
         />
       </SliderTrack>
       {marks !== undefined ? (
-        <SliderMarkLabels marks={marks} min={min} max={max} invert={invert} orientation={orientation} />
+        <SliderMarkLabels
+          marks={marks}
+          min={min}
+          max={max}
+          invert={invert}
+          orientation={orientation}
+        />
       ) : null}
     </SliderRoot>
   );
@@ -261,9 +275,7 @@ export function SliderRoot({
       data-disabled={disabled ? '' : undefined}
       className={cn(
         'relative touch-none select-none',
-        orientation === 'horizontal'
-          ? 'flex w-full flex-col'
-          : 'inline-flex h-full flex-row',
+        orientation === 'horizontal' ? 'flex w-full flex-col' : 'inline-flex h-full flex-row',
         disabled && 'cursor-not-allowed opacity-50',
         className,
       )}
@@ -336,7 +348,10 @@ export function SliderThumb({
   style,
   ...rest
 }: SliderThumbProps) {
-  const offsetTransform = orientation === 'horizontal' ? '-translate-x-1/2 -translate-y-1/2 top-1/2' : '-translate-x-1/2 -translate-y-1/2 left-1/2';
+  const offsetTransform =
+    orientation === 'horizontal'
+      ? '-translate-x-1/2 -translate-y-1/2 top-1/2'
+      : '-translate-x-1/2 -translate-y-1/2 left-1/2';
   return (
     <div
       ref={ref}
@@ -398,7 +413,10 @@ function SliderMarkLabels({ marks, min, max, invert, orientation }: SliderMarksP
         m.label === undefined ? null : (
           <span
             key={m.value}
-            className={cn('absolute -translate-x-1/2', orientation === 'vertical' && '-translate-y-1/2')}
+            className={cn(
+              'absolute -translate-x-1/2',
+              orientation === 'vertical' && '-translate-y-1/2',
+            )}
             style={
               orientation === 'horizontal'
                 ? { left: `${ratioFromValue(m.value, min, max, invert) * 100}%` }
@@ -450,4 +468,3 @@ export function useSliderEngine(opts: UseSliderEngineOptions) {
 
   return { trackRef, valueFromEvent, disabled };
 }
-

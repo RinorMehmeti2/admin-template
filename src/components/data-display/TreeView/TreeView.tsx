@@ -103,7 +103,10 @@ function useTreeView<T>(): TreeViewContextValue<T> {
   return ctx as TreeViewContextValue<T>;
 }
 
-export interface TreeViewProps<T = unknown> extends Omit<HTMLAttributes<HTMLUListElement>, 'onSelect'> {
+export interface TreeViewProps<T = unknown> extends Omit<
+  HTMLAttributes<HTMLUListElement>,
+  'onSelect'
+> {
   ref?: Ref<HTMLUListElement>;
   items: ReadonlyArray<TreeNode<T>>;
 
@@ -164,14 +167,8 @@ export function TreeView<T = unknown>({
     onChange: (next) => onSelectedChange?.(next as string[]),
   });
 
-  const expandedSet = useMemo(
-    () => new Set<string>(expandedArr ?? []),
-    [expandedArr],
-  );
-  const selectedSet = useMemo(
-    () => new Set<string>(selectedArr ?? []),
-    [selectedArr],
-  );
+  const expandedSet = useMemo(() => new Set<string>(expandedArr ?? []), [expandedArr]);
+  const selectedSet = useMemo(() => new Set<string>(selectedArr ?? []), [selectedArr]);
 
   const flat = useMemo(() => flatten(items, expandedSet), [items, expandedSet]);
 

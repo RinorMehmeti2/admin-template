@@ -59,11 +59,7 @@ export const Inverted = {
 export const FormattedPercent = {
   render: () => (
     <div className="w-72">
-      <Slider
-        aria-label="Opacity"
-        defaultValue={75}
-        formatValue={(v) => `${v}%`}
-      />
+      <Slider aria-label="Opacity" defaultValue={75} formatValue={(v) => `${v}%`} />
     </div>
   ),
 };

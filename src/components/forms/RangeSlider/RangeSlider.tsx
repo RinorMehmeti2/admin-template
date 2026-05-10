@@ -27,8 +27,10 @@ import {
 
 export type RangeSliderValue = readonly [number, number];
 
-export interface RangeSliderProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange'> {
+export interface RangeSliderProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  'defaultValue' | 'onChange'
+> {
   ref?: Ref<HTMLDivElement>;
   value?: RangeSliderValue;
   defaultValue?: RangeSliderValue;
@@ -293,7 +295,13 @@ export function RangeSlider({
         {renderThumb(1)}
       </SliderTrack>
       {marks !== undefined ? (
-        <RangeMarkLabels marks={marks} min={min} max={max} invert={invert} orientation={orientation} />
+        <RangeMarkLabels
+          marks={marks}
+          min={min}
+          max={max}
+          invert={invert}
+          orientation={orientation}
+        />
       ) : null}
     </SliderRoot>
   );
@@ -343,7 +351,10 @@ function RangeMarkLabels({ marks, min, max, invert, orientation }: MarksProps) {
         m.label === undefined ? null : (
           <span
             key={m.value}
-            className={cn('absolute -translate-x-1/2', orientation === 'vertical' && '-translate-y-1/2')}
+            className={cn(
+              'absolute -translate-x-1/2',
+              orientation === 'vertical' && '-translate-y-1/2',
+            )}
             style={
               orientation === 'horizontal'
                 ? { left: `${ratioFromValue(m.value, min, max, invert) * 100}%` }

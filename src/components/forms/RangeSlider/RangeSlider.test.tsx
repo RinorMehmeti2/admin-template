@@ -40,11 +40,7 @@ function stubTrackRect(track: Element, rect: Partial<DOMRect>) {
 describe('RangeSlider', () => {
   it('renders two thumbs with proper ARIA', () => {
     render(
-      <RangeSlider
-        defaultValue={[20, 80]}
-        thumbAriaLabels={['Min', 'Max']}
-        aria-label="Range"
-      />,
+      <RangeSlider defaultValue={[20, 80]} thumbAriaLabels={['Min', 'Max']} aria-label="Range" />,
     );
     const minThumb = screen.getByRole('slider', { name: 'Min' });
     const maxThumb = screen.getByRole('slider', { name: 'Max' });
@@ -82,11 +78,7 @@ describe('RangeSlider', () => {
   it('respects custom minDistance', async () => {
     const user = userEvent.setup();
     render(
-      <RangeSlider
-        defaultValue={[10, 90]}
-        minDistance={20}
-        thumbAriaLabels={['Min', 'Max']}
-      />,
+      <RangeSlider defaultValue={[10, 90]} minDistance={20} thumbAriaLabels={['Min', 'Max']} />,
     );
     const minThumb = screen.getByRole('slider', { name: 'Min' });
     minThumb.focus();
@@ -172,10 +164,7 @@ describe('RangeSlider', () => {
 
   it('pointer: dragging beyond the other thumb clamps at the gap', () => {
     const { container } = render(
-      <RangeSlider
-        defaultValue={[40, 60]}
-        thumbAriaLabels={['Min', 'Max']}
-      />,
+      <RangeSlider defaultValue={[40, 60]} thumbAriaLabels={['Min', 'Max']} />,
     );
     const track = container.querySelector<HTMLDivElement>('[class*="cursor-pointer"]')!;
     const [minThumb] = screen.getAllByRole('slider');

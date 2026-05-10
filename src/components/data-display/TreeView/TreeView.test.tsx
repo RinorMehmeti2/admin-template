@@ -195,12 +195,7 @@ describe('TreeView', () => {
     const onChange = vi.fn();
     const items: TreeNode[] = [{ id: 'a', label: 'a', disabled: true }];
     render(
-      <TreeView
-        items={items}
-        selectionMode="single"
-        onSelectedChange={onChange}
-        aria-label="t"
-      />,
+      <TreeView items={items} selectionMode="single" onSelectedChange={onChange} aria-label="t" />,
     );
     const a = getItem('a');
     expect(a).toHaveAttribute('aria-disabled', 'true');
@@ -232,7 +227,12 @@ describe('TreeView', () => {
 
   it('has no a11y violations', async () => {
     const { container } = render(
-      <TreeView items={NODES} defaultExpandedIds={['src']} selectionMode="single" aria-label="Files" />,
+      <TreeView
+        items={NODES}
+        defaultExpandedIds={['src']}
+        selectionMode="single"
+        aria-label="Files"
+      />,
     );
     expect(await runAxe(container)).toHaveNoViolations();
   });
