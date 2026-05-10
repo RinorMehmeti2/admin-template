@@ -336,7 +336,9 @@ function CountryPicker({
   useEffect(() => {
     if (!isOpen) return undefined;
     const id = window.requestAnimationFrame(() => {
-      searchRef.current?.focus();
+      // preventScroll: portal renders at (0,0) until usePosition's measurement
+      // resolves on the next frame — a plain .focus() would scroll the page.
+      searchRef.current?.focus({ preventScroll: true });
       listbox.setActiveIndex(0);
     });
     return () => window.cancelAnimationFrame(id);

@@ -1,5 +1,6 @@
 export * from './Calendar';
 export * from './Checkbox';
+export * from './ColorPicker';
 export * from './Combobox';
 export * from './DatePicker';
 export * from './DateRangePicker';
@@ -14,6 +15,7 @@ export * from './PhoneInput';
 export * from './Radio';
 export * from './RadioGroup';
 export * from './RangeSlider';
+export * from './Rating';
 export * from './RichTextEditor';
 export * from './Select';
 export * from './Slider';

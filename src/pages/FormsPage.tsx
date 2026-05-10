@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { z } from 'zod';
-import { Lock, Mail } from 'lucide-react';
+import { Heart, Lock, Mail } from 'lucide-react';
 import { Button } from '@/components/primitives/Button';
 import { Separator } from '@/components/primitives/Separator';
 import { Alert } from '@/components/feedback/Alert';
 import { ApiError, useApiFormSubmit, useApiMutation } from '@/data';
 import {
   Checkbox,
+  ColorPicker,
   Combobox,
   ComboboxContent,
   ComboboxTrigger,
@@ -22,6 +23,7 @@ import {
   PhoneInput,
   Radio,
   RadioGroup,
+  Rating,
   LazyRichTextEditor,
   RangeSlider,
   type RangeSliderValue,
@@ -843,6 +845,84 @@ function NumberInputDemo() {
   );
 }
 
+// ---------- RATING ----------
+
+function RatingDemo() {
+  const [rating, setRating] = useState(0);
+  const [survey, setSurvey] = useState(7);
+  const [hearts, setHearts] = useState(2);
+
+  return (
+    <div className="grid gap-6 sm:grid-cols-2">
+      <FormField label="Rate this article" description="Half-star precision, click again to clear.">
+        <Rating value={rating} onValueChange={setRating} max={5} allowHalf />
+        <p className="mt-1 text-xs text-foreground-muted">value: {rating}</p>
+      </FormField>
+
+      <FormField label="NPS — 0 to 10" description="Survey scale, integer steps.">
+        <Rating value={survey} onValueChange={setSurvey} max={10} size="sm" />
+        <p className="mt-1 text-xs text-foreground-muted">score: {survey}</p>
+      </FormField>
+
+      <FormField label="Hearts" description="Custom icon.">
+        <Rating value={hearts} onValueChange={setHearts} max={5} icon={Heart} size="lg" />
+      </FormField>
+
+      <FormField label="Average rating" description="Read-only summary.">
+        <Rating value={4.5} max={5} allowHalf readOnly />
+        <p className="mt-1 text-xs text-foreground-muted">4.5 / 5 (1,284 reviews)</p>
+      </FormField>
+    </div>
+  );
+}
+
+// ---------- COLOR PICKER ----------
+
+const BRAND_PRESETS: ReadonlyArray<string> = [
+  '#ef4444',
+  '#f97316',
+  '#eab308',
+  '#22c55e',
+  '#14b8a6',
+  '#3b82f6',
+  '#8b5cf6',
+  '#ec4899',
+];
+
+function ColorPickerDemo() {
+  const [hex, setHex] = useState('#3b82f6');
+  const [rgb, setRgb] = useState('rgb(34, 197, 94)');
+  const [alpha, setAlpha] = useState('rgba(239, 68, 68, 0.5)');
+  const [brand, setBrand] = useState('#22c55e');
+
+  return (
+    <div className="grid gap-6 sm:grid-cols-2">
+      <FormField label="Hex" description="Default format.">
+        <ColorPicker value={hex} onValueChange={setHex} />
+        <p className="mt-1 font-mono text-xs text-foreground-muted">{hex}</p>
+      </FormField>
+
+      <FormField label="RGB with toggle" description="Toggle format inside the popover.">
+        <ColorPicker value={rgb} onValueChange={setRgb} format="rgb" />
+        <p className="mt-1 font-mono text-xs text-foreground-muted">{rgb}</p>
+      </FormField>
+
+      <FormField label="With alpha" description="Alpha slider + transparency-aware output.">
+        <ColorPicker value={alpha} onValueChange={setAlpha} withAlpha format="rgb" />
+        <div
+          aria-hidden="true"
+          className="mt-2 h-12 rounded-md border border-border"
+          style={{ backgroundColor: alpha }}
+        />
+      </FormField>
+
+      <FormField label="Brand color" description="With preset palette.">
+        <ColorPicker value={brand} onValueChange={setBrand} presets={BRAND_PRESETS} />
+      </FormField>
+    </div>
+  );
+}
+
 // ---------- PAGE ----------
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -932,6 +1012,18 @@ export function FormsPage() {
 
       <Section title="Tag input">
         <TagInputDemo />
+      </Section>
+
+      <Separator />
+
+      <Section title="Rating">
+        <RatingDemo />
+      </Section>
+
+      <Separator />
+
+      <Section title="Color picker">
+        <ColorPickerDemo />
       </Section>
     </div>
   );

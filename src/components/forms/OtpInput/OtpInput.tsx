@@ -167,7 +167,7 @@ export function OtpInput({
 
   return (
     <div
-      className={cn('relative inline-flex select-none items-center gap-2', className)}
+      className={cn('relative flex w-fit select-none items-center gap-2', className)}
       data-disabled={disabled || undefined}
     >
       <input
