@@ -319,6 +319,64 @@ tests stay fast and offline.
    This is purely a type-level change — no runtime impact, and the rest of
    the auth code keeps working without modification.
 
+## i18n
+
+Translations live in `src/i18n/`. We use **react-i18next** with
+`i18next-browser-languagedetector` (querystring → localStorage → navigator,
+fallback `en`). The init is imported in `main.tsx` before `<App />` mounts.
+
+### Where keys live
+
+- `src/i18n/locales/<lng>.json` — one flat JSON object per locale.
+- Keys are dot-separated and **flat**; we do not use nested objects.
+- Naming convention: `feature.subfeature.key` —
+  `auth.login.emailLabel`, `common.save`, `users.table.empty`.
+- Validation messages live alongside their feature:
+  `auth.login.validation.emailRequired`.
+
+Add the same key to **every** locale file. Missing keys fall back to the
+`fallbackLng` (`en`) resource; in dev a missing key shows the key string —
+treat that as a bug, not a feature.
+
+### Reading keys in components
+
+```tsx
+import { useTranslation } from 'react-i18next';
+
+export function Greeting({ name }: { name: string }) {
+  const { t } = useTranslation();
+  return <p>{t('greeting', { name })}</p>;
+}
+```
+
+- **Interpolation:** `t('greeting', { name })` with `{{name}}` in the
+  resource. We disable HTML escaping (`escapeValue: false`) because React
+  already escapes values.
+- **Pluralization:** pass `count` —
+  `t('items', { count })` with resource keys `items_one` / `items_other`.
+- **Switching locale:** use `useLocale()` from `@/context/LocaleProvider`.
+  The choice is persisted via the detector's `localStorage` cache.
+
+### Dates and numbers — do NOT use i18next formatting
+
+Use the platform Intl APIs (or our `date-fns` wrappers). i18next's
+`format` interpolation is opinionated and ships extra weight we do not
+need.
+
+```tsx
+const { locale } = useLocale();
+const formatted = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(d);
+const price = new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(n);
+```
+
+### Adding a locale
+
+1. Create `src/i18n/locales/<code>.json` with every key from `en.json`.
+2. Add the code to `SUPPORTED_LOCALES` in `src/i18n/index.ts`.
+3. Add a `LocaleOption` (label + flag) in `src/context/LocaleProvider.tsx`.
+4. If RTL, add the language code to `RTL_LOCALES` in `src/i18n/index.ts` —
+   the provider sets `<html dir>` accordingly.
+
 ## Pragmatic carve-outs
 
 A small set of lint rules are scoped or downgraded from their out-of-the-box

@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Lock, LogIn, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { Button } from '@/components/primitives/Button';
 import { Form, FormField, Input, useForm, zodResolver } from '@/components/forms';
@@ -8,22 +9,34 @@ import { Alert } from '@/components/feedback/Alert';
 import { useAuth } from '@/auth';
 import { MOCK_ACCOUNTS } from '@/auth/mockAuthClient';
 
-const loginSchema = z.object({
-  email: z.string().min(1, 'Email is required').email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
-});
-type LoginValues = z.infer<typeof loginSchema>;
+interface LoginValues {
+  email: string;
+  password: string;
+}
 
 interface FromState {
   from?: string;
 }
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const { login, error, state } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as FromState | null)?.from ?? '/';
   const [submitFailed, setSubmitFailed] = useState(false);
+
+  const loginSchema = useMemo(
+    () =>
+      z.object({
+        email: z
+          .string()
+          .min(1, t('auth.login.validation.emailRequired'))
+          .email(t('auth.login.validation.emailInvalid')),
+        password: z.string().min(1, t('auth.login.validation.passwordRequired')),
+      }),
+    [t],
+  );
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -51,44 +64,46 @@ export function LoginPage() {
           <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <LogIn className="h-5 w-5" aria-hidden="true" />
           </div>
-          <h1 className="text-lg font-semibold">Sign in</h1>
-          <p className="mt-1 text-sm text-foreground-muted">
-            Welcome back. Enter your credentials to continue.
-          </p>
+          <h1 className="text-lg font-semibold">{t('auth.login.title')}</h1>
+          <p className="mt-1 text-sm text-foreground-muted">{t('auth.login.subtitle')}</p>
         </div>
 
         {submitFailed && error !== null ? (
           <Alert
             variant="danger"
-            title="Sign-in failed"
+            title={t('auth.login.failedTitle')}
             description={error.message}
             className="mb-4"
           />
         ) : null}
 
         <Form form={form} onSubmit={onSubmit} className="space-y-4">
-          <FormField label="Email" required error={errors.email?.message}>
+          <FormField label={t('auth.login.emailLabel')} required error={errors.email?.message}>
             <Input
               type="email"
               autoComplete="email"
-              placeholder="you@example.com"
+              placeholder={t('auth.login.emailPlaceholder')}
               leftIcon={<Mail className="h-4 w-4" />}
               {...register('email')}
             />
           </FormField>
 
-          <FormField label="Password" required error={errors.password?.message}>
+          <FormField
+            label={t('auth.login.passwordLabel')}
+            required
+            error={errors.password?.message}
+          >
             <Input
               type="password"
               autoComplete="current-password"
-              placeholder="••••••••"
+              placeholder={t('auth.login.passwordPlaceholder')}
               leftIcon={<Lock className="h-4 w-4" />}
               {...register('password')}
             />
           </FormField>
 
           <Button type="submit" isLoading={isSubmitting} className="w-full">
-            Sign in
+            {t('auth.login.submit')}
           </Button>
         </Form>
 
@@ -96,7 +111,7 @@ export function LoginPage() {
 
         <p className="mt-4 text-center text-xs text-foreground-subtle">
           <Link to="/" className="text-primary hover:underline">
-            Back to overview
+            {t('auth.login.backToOverview')}
           </Link>
         </p>
       </div>
@@ -105,9 +120,12 @@ export function LoginPage() {
 }
 
 function DemoCredentials() {
+  const { t } = useTranslation();
   return (
     <div className="mt-6 rounded-md border border-dashed border-border bg-surface-muted/40 p-3">
-      <p className="text-xs font-medium text-foreground-muted">Demo accounts</p>
+      <p className="text-xs font-medium text-foreground-muted">
+        {t('auth.login.demoAccountsTitle')}
+      </p>
       <ul className="mt-2 space-y-1 text-xs text-foreground-subtle">
         {MOCK_ACCOUNTS.map((acc) => (
           <li key={acc.email} className="flex items-center justify-between gap-2">

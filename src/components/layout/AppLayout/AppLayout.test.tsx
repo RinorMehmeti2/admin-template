@@ -3,23 +3,26 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { AppLayout } from './AppLayout';
 import { ThemeProvider } from '@/context/ThemeProvider';
+import { LocaleProvider } from '@/context/LocaleProvider';
 import { CommandRegistryProvider } from '@/components/overlays/CommandPalette';
 import { AuthProvider } from '@/auth';
 
 function renderWithRouter(initialPath = '/primitives') {
   return render(
     <ThemeProvider>
-      <AuthProvider skipInitialRefresh>
-        <CommandRegistryProvider>
-          <MemoryRouter initialEntries={[initialPath]}>
-            <Routes>
-              <Route path="/" element={<AppLayout />}>
-                <Route path="primitives" element={<div>primitives content</div>} />
-              </Route>
-            </Routes>
-          </MemoryRouter>
-        </CommandRegistryProvider>
-      </AuthProvider>
+      <LocaleProvider>
+        <AuthProvider skipInitialRefresh>
+          <CommandRegistryProvider>
+            <MemoryRouter initialEntries={[initialPath]}>
+              <Routes>
+                <Route path="/" element={<AppLayout />}>
+                  <Route path="primitives" element={<div>primitives content</div>} />
+                </Route>
+              </Routes>
+            </MemoryRouter>
+          </CommandRegistryProvider>
+        </AuthProvider>
+      </LocaleProvider>
     </ThemeProvider>,
   );
 }

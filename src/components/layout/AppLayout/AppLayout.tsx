@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { LocaleSwitcher } from '@/components/layout/LocaleSwitcher';
 import { Avatar } from '@/components/primitives/Avatar';
 import { Button } from '@/components/primitives/Button';
 import { Kbd } from '@/components/primitives/Kbd';
@@ -169,6 +170,7 @@ export function AppLayout() {
             </span>
           </button>
           <div className="ml-auto flex items-center gap-2">
+            <LocaleSwitcher />
             <ThemeToggle />
             <AuthMenu />
           </div>

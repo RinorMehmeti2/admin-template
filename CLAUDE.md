@@ -18,32 +18,44 @@ This repository is an in-house admin UI template built with React, TypeScript, a
 - **react-hook-form + zod + @hookform/resolvers** for forms and validation
 - **@tanstack/react-table v8** for the DataTable (state/headless behavior only — we provide all visuals)
 - **date-fns** for date utilities (no Moment, no Day.js)
+- **recharts 3** for chart rendering primitives — explicit carve-out, see "Pragmatic carve-outs" below. Contained behind `src/components/data-display/charts/ChartContainer/`.
+- **@tiptap/* + ProseMirror** for the rich text editor — explicit carve-out, see "Pragmatic carve-outs" below. Toolbar / bubble menu are 100% ours.
+- **i18next + react-i18next + i18next-browser-languagedetector** for internationalization (behavior only — no visual surface)
 - **Vitest 4 + @testing-library/react** for tests
 - **Storybook 10** for component documentation (the Vite 8 builder requires Storybook 10+; lower versions peer Vite ≤ 6)
 - **pnpm** as package manager
 
-These are all behavior / utility / state libraries — none of them ship visual components. Do not install any UI library, headless component library, CSS framework, animation library, or icon set without checking first.
+These are all behavior / utility / state libraries — none of them ship visual components for our component library to consume. The two visual exceptions (Recharts, TipTap) are isolated carve-outs documented below. Do not install any UI library, headless component library, CSS framework, animation library, or icon set without checking first.
 
 ## Directory structure
 
 ```
 src/
   components/
-    primitives/       # Button, IconButton, Badge, Avatar, Spinner, Skeleton, Kbd, Separator
-    layout/           # Container, PageShell, PageHeader, Sidebar, Topbar
-    feedback/         # Alert, Toast, Dialog, Drawer, ConfirmDialog, Tooltip, Progress
-    navigation/       # Tabs, Breadcrumbs, Pagination, Stepper, Menu, DropdownMenu
-    data-display/     # Card, Stat, List, EmptyState, Table, DataTable
-    forms/            # Label, Input, Textarea, Select, Checkbox, Radio, Switch, FormField, Form
-    overlays/         # Popover, ContextMenu, Sheet, CommandPalette, Portal
+    primitives/       # Avatar, Badge, Button, IconButton, Kbd, Separator, Skeleton, Spinner
+    layout/           # AppLayout, Container, FocusMode, FullscreenWorkspace, LocaleSwitcher,
+                      # PageHeader, PageShell, Sidebar, SplitLayout, ThemeToggle, Topbar
+    feedback/         # Alert, ConfirmDialog, Dialog, Drawer, Progress, Toast, Tooltip
+    navigation/       # Breadcrumbs, ContextMenu, DropdownMenu, Menu, Pagination, Stepper, Tabs
+    data-display/     # Card, DataTable, EmptyState, List, Stat, Table
+      charts/         # AreaChart, BarChart, ChartContainer, ComposedChart, DonutChart,
+                      # LineChart, PieChart, RadialChart, StackedBarChart  (Recharts-backed)
+    forms/            # Calendar, Checkbox, Combobox, DatePicker, DateRangePicker,
+                      # DateTimePicker, Form, FormField, Input, Label, Radio, RadioGroup,
+                      # RichTextEditor, Select, Switch, Textarea, TimePicker
+    overlays/         # CommandPalette, Portal
   hooks/              # Behavioral primitives — see "Behavioral hooks" below
-  lib/                # cn.ts, formatters, validators, constants
+  context/            # ThemeProvider, ToastProvider, LocaleProvider
+  auth/               # AuthClient, AuthProvider, useAuth, ProtectedRoute, PublicOnlyRoute,
+                      # RoleGate, mockAuthClient, types  — see "Auth" below
+  i18n/               # i18next init + locales/<lng>.json — see "Internationalization" below
+  lib/                # cn.ts, date.ts, formatters, validators, constants
   styles/             # globals.css, tokens.css
-  context/            # ThemeProvider, ToastProvider
   pages/              # Demo / showcase pages
   types/              # Shared TS types
   App.tsx
   main.tsx
+  setupTests.ts       # jsdom polyfills for ProseMirror
 ```
 
 The path alias `@/*` maps to `src/*`. Always use it for non-relative imports.
@@ -63,9 +75,13 @@ Required hooks:
 - **`useScrollLock(active)`** → locks `<body>` scroll while `active` is true, preserving scroll position. Used by Dialog/Drawer.
 - **`useMergedRefs(...refs)`** → returns a single ref callback that updates all provided refs.
 - **`useRovingFocus({ items, orientation, loop })`** → manages roving tabindex + arrow-key navigation. Used by Menu, Tabs, DropdownMenu, RadioGroup.
+- **`useRovingFocusGrid(...)`** → 2-D variant of `useRovingFocus` (arrow-key nav across rows + columns). Used by Calendar / DataTable cells.
+- **`useTypeahead(...)`** → ARIA APG menu typeahead — accumulates printable keystrokes, jumps to next item starting with the buffer, resets after 500ms inactivity. Used by DropdownMenu, Menu, Combobox.
+- **`useListbox(...)`** → ARIA listbox keyboard model (Up/Down/Home/End/PageUp/PageDown, optional typeahead, single + multi-select). Used by Combobox and Select. The reusable engine is the reason we don't reach for an external listbox library.
+- **`useDrag({ onDragStart, onDrag, onDragEnd })`** → pointer-event drag with `setPointerCapture`, axis lock, and cancel-on-Escape. Used by SplitLayout resizer and any draggable canvas surfaces.
 - **`useId(prefix?)`** → wrapper around React 18's `useId` adding an optional prefix.
 - **`useMediaQuery(query)`** → SSR-safe media query hook. Used by Sidebar (mobile/desktop switch).
-- **`usePosition(triggerRef, contentRef, { placement, offset })`** → returns `{ x, y, ready }` (document-absolute coords) for content positioned relative to trigger. Works for both `style={{ left: x, top: y }}` and transform-based positioning. Initial implementation: simple placements (`bottom-start`, `bottom-end`, `bottom`, `top-start`, `top-end`, `top`, `right`, `left`) with no edge-flipping. Edge handling can be added later if needed.
+- **`usePosition(triggerRef, contentRef, { placement, offset, boundary })`** → returns `{ x, y, ready, placement }` (document-absolute coords) for content anchored to a trigger. Handles viewport flip and perpendicular shift. Companion `usePositionAtPoint` does the same anchored to a `{ x, y }` point (used by ContextMenu). Known unhandled cases — see "Positioning — known limitations" at the bottom of this file.
 - **`useDebouncedValue(value, delay)`** → debounces a value.
 
 Plus one component utility:
@@ -93,7 +109,7 @@ Every component file MUST:
 - **Spread `...rest` props** to the root element so consumers can pass HTML attributes
 - Define variants with **`cva`** when there is more than one visual variant
 - Be fully typed — no `any`, no `as unknown as`, no implicit returns
-- Set `displayName` after `forwardRef`
+- Use the React 19 ref-as-prop pattern. Do NOT call `forwardRef` and do NOT set `displayName` (function name is the displayName under React 19).
 
 Reference skeleton:
 
@@ -197,7 +213,7 @@ For complex composite widgets where native semantics aren't enough (Combobox, Li
 ## State management
 
 - **Local state:** `useState`, `useReducer`
-- **Cross-component UI state** (theme, sidebar collapsed, toasts): React Context in `src/context/`
+- **Cross-component UI state** (theme, locale, sidebar collapsed, toasts): React Context in `src/context/`
 - **Server state:** TanStack Query when added — no Redux, no Zustand unless agreed
 - **Forms:** react-hook-form, validation always via zod schemas
 
@@ -249,7 +265,7 @@ A component is complete only when ALL of these are true:
 7. Uses semantic tokens — zero raw colors / hex / rgb
 8. Light AND dark mode both look correct without per-component dark variants
 9. Keyboard navigation tested manually
-10. No new dependencies added
+10. No new dependencies added without explicit approval (and if approved, documented as a carve-out — see "Pragmatic carve-outs")
 
 ## Anti-patterns — do not do
 
@@ -264,7 +280,10 @@ A component is complete only when ALL of these are true:
 - ❌ Use barrel files for the entire `src/` (only at the component-folder level)
 - ❌ Inline `style={{}}` except for truly dynamic numeric values (positioning coordinates, percentage widths)
 - ❌ Add `dark:` variants when semantic tokens already handle dark mode
-- ❌ Build a "Custom Combobox" or "Custom Select" before the behavioral hooks they need exist
+- ❌ Reach for `react-i18next`'s date / number formatter — use `Intl.*` (or our `date-fns` wrappers) instead
+- ❌ Translate strings with hardcoded English literals or hand-rolled string maps — use `t('feature.subfeature.key')` from `useTranslation()`
+
+Note: `useListbox` (Combobox, Select) and the chart container (Recharts) already exist. Extend them rather than building parallel implementations.
 
 ## Workflow when asked to build something
 
@@ -285,6 +304,106 @@ A component is complete only when ALL of these are true:
 - If a request would violate a rule in this file, say so before writing the code.
 - If a task would be drastically simpler with a library we've banned, mention it as info — but build from scratch anyway unless I explicitly approve the dep.
 - Keep PR-style summaries terse — what changed, why, what to verify.
+
+## Pragmatic carve-outs
+
+The "no UI library" rule has three explicit, deliberately-scoped exceptions.
+Each is contained behind a single integration point and the look-and-feel is
+ours. Do not remove them, and do not duplicate their concerns elsewhere.
+
+### Recharts (charts)
+
+- Used by every component under `src/components/data-display/charts/`.
+- All chart-type components (`AreaChart`, `BarChart`, `LineChart`,
+  `PieChart`, `DonutChart`, `RadialChart`, `StackedBarChart`,
+  `ComposedChart`) compose `ChartContainer`, which owns colors (via tokens),
+  legend layout, tooltip surface, and SSR-safe sizing.
+- New charts MUST go through `ChartContainer`. Do not import from `recharts`
+  outside `src/components/data-display/charts/`.
+
+### TipTap / ProseMirror (rich text editor)
+
+- Single component: `src/components/forms/RichTextEditor/`.
+- TipTap supplies the editor engine; the toolbar, bubble menu, and styling
+  are 100% ours.
+- ProseMirror's `Range`/`Node.getClientRects` and `document.elementFromPoint`
+  calls are polyfilled in `src/setupTests.ts` for jsdom — do not remove
+  those polyfills.
+- Design proposal recorded at `docs/proposals/rich-text-editor.md`.
+
+### TanStack Table (DataTable)
+
+- Headless — ships zero visuals.
+- Used only inside `src/components/data-display/DataTable/`. Sorting,
+  filtering, pagination, and column visibility state come from TanStack;
+  every cell, row, header, and pagination control is rendered by us.
+
+If you find yourself wanting another visual library — even a "tiny" one —
+flag it before adding. New carve-outs require explicit approval and an entry
+in this section.
+
+## Auth
+
+Auth scaffolding lives in `src/auth/`. The provider, route guards, and
+`useAuth` hook depend on a single interface — `AuthClient` — and we ship an
+in-memory `mockAuthClient` that reads/writes `localStorage`. To wire a real
+backend, implement the interface once and pass it in via
+`<AuthProvider client={...}>`.
+
+```ts
+// src/auth/AuthClient.ts
+export interface AuthClient {
+  login(credentials: LoginCredentials): Promise<User>;
+  logout(): Promise<void>;
+  refresh(): Promise<User | null>;
+  getCurrentUser(): Promise<User | null>;
+}
+```
+
+State machine: `idle → authenticating → authenticated | unauthenticated`.
+Use `<ProtectedRoute>` to require a session, `<PublicOnlyRoute>` for
+login-style pages, and `<RoleGate roles={['admin']}>` for role-based
+gating. `Role` is `'admin' | 'editor' | 'viewer' | (string & {})` — extend
+inline at call sites or replace project-wide via a `.d.ts` redeclaration.
+Full recipe in `CONTRIBUTING.md` § "Auth: swap the client".
+
+## Internationalization (i18n)
+
+- Init in `src/i18n/index.ts` (imported at the top of `main.tsx` before
+  `<App />` mounts).
+- `react-i18next` + `i18next-browser-languagedetector`. Detector chain:
+  **querystring → localStorage → navigator**, fallback `en`. Persisted
+  under `admin-template-locale`.
+- Resources live as **flat JSON** at `src/i18n/locales/<lng>.json`. Keys
+  are dot-separated, organized by feature: `auth.login.title`,
+  `common.save`, `auth.login.validation.emailRequired`. Add the same key
+  to **every** locale file. Missing keys fall back to the `fallbackLng`
+  (`en`); in dev a missing key shows the key string — treat that as a bug.
+- `LocaleProvider` (`src/context/LocaleProvider.tsx`) exposes
+  `useLocale()` returning `{ locale, setLocale, availableLocales, dir }`
+  and sets `<html lang>` + `<html dir>` based on the resolved locale and
+  the `RTL_LOCALES` set.
+- `LocaleSwitcher` (`src/components/layout/LocaleSwitcher/`) is mounted
+  in `AppLayout`'s topbar next to `ThemeToggle`.
+- Read keys with `useTranslation()`:
+  ```tsx
+  const { t } = useTranslation();
+  return <p>{t('greeting', { name })}</p>;
+  ```
+  Interpolation uses `{{name}}` (we set `escapeValue: false` because React
+  already escapes). Pluralization: pass `count`, use `key_one` / `key_other`
+  resource keys.
+- **Translated zod schemas.** Build the schema inside the component via
+  `useMemo([t])` so validation messages re-translate on locale change.
+  See `src/pages/auth/login/LoginPage.tsx` for the canonical pattern.
+- **Dates and numbers DO NOT use i18next formatting.** Use `Intl.*`
+  (or our `date-fns` wrappers in `src/lib/date.ts`).
+- Adding a locale: create `src/i18n/locales/<code>.json` with every key
+  from `en.json`, append the code to `SUPPORTED_LOCALES` and the locale
+  options list, and (if RTL) add it to `RTL_LOCALES`.
+- Introducing a new global Provider (locale, theme, etc.) requires
+  updating every render harness: tests, story decorators in
+  `.storybook/preview.tsx`, and any page-level mounts.
 
 ## Positioning — known limitations
 

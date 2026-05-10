@@ -1,0 +1,26 @@
+{
+  "common.save": "Guardar",
+  "common.cancel": "Cancelar",
+  "common.back": "Atrás",
+  "common.signIn": "Iniciar sesión",
+  "common.signOut": "Cerrar sesión",
+
+  "auth.login.title": "Iniciar sesión",
+  "auth.login.subtitle": "Bienvenido de nuevo. Introduce tus credenciales para continuar.",
+  "auth.login.emailLabel": "Correo electrónico",
+  "auth.login.emailPlaceholder": "tu@ejemplo.com",
+  "auth.login.passwordLabel": "Contraseña",
+  "auth.login.passwordPlaceholder": "••••••••",
+  "auth.login.submit": "Iniciar sesión",
+  "auth.login.failedTitle": "Error al iniciar sesión",
+  "auth.login.backToOverview": "Volver al inicio",
+  "auth.login.demoAccountsTitle": "Cuentas de prueba",
+  "auth.login.validation.emailRequired": "El correo es obligatorio",
+  "auth.login.validation.emailInvalid": "Dirección de correo no válida",
+  "auth.login.validation.passwordRequired": "La contraseña es obligatoria",
+
+  "locale.switcher.label": "Idioma",
+  "locale.switcher.aria": "Cambiar idioma",
+  "locale.en": "English",
+  "locale.es": "Español"
+}

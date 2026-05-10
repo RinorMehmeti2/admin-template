@@ -3,7 +3,9 @@ import type { Decorator, Preview } from '@storybook/react-vite';
 import { withThemeByClassName } from '@storybook/addon-themes';
 import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider, type Theme } from '../src/context/ThemeProvider';
+import { LocaleProvider } from '../src/context/LocaleProvider';
 import { ToastProvider } from '../src/context/ToastProvider';
+import '../src/i18n';
 import { TooltipProvider } from '../src/components/feedback/Tooltip';
 import { CommandRegistryProvider } from '../src/components/overlays/CommandPalette';
 import '../src/styles/globals.css';
@@ -30,15 +32,17 @@ const withProviders: Decorator = (Story, context) => {
   return (
     <MemoryRouter>
       <ThemeProvider key={theme} defaultTheme={theme}>
-        <CommandRegistryProvider>
-          <ToastProvider position="top-right">
-            <TooltipProvider delayDuration={300}>
-              <StoryFrame>
-                <Story />
-              </StoryFrame>
-            </TooltipProvider>
-          </ToastProvider>
-        </CommandRegistryProvider>
+        <LocaleProvider>
+          <CommandRegistryProvider>
+            <ToastProvider position="top-right">
+              <TooltipProvider delayDuration={300}>
+                <StoryFrame>
+                  <Story />
+                </StoryFrame>
+              </TooltipProvider>
+            </ToastProvider>
+          </CommandRegistryProvider>
+        </LocaleProvider>
       </ThemeProvider>
     </MemoryRouter>
   );

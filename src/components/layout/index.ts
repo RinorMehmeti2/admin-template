@@ -2,6 +2,7 @@ export * from './AppLayout';
 export * from './Container';
 export * from './FocusMode';
 export * from './FullscreenWorkspace';
+export * from './LocaleSwitcher';
 export * from './PageHeader';
 export * from './PageShell';
 export * from './Sidebar';

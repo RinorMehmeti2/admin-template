@@ -21,6 +21,7 @@ import { WorkspaceDemoPage } from '@/pages/WorkspaceDemoPage';
 import { DashboardPage, LayoutDemo, SettingsPage, UsersPage } from '@/pages/layout-demo';
 import { ToastProvider } from '@/context/ToastProvider';
 import { ThemeProvider, useTheme } from '@/context/ThemeProvider';
+import { LocaleProvider } from '@/context/LocaleProvider';
 import { TooltipProvider } from '@/components/feedback/Tooltip';
 import {
   CommandPalette,
@@ -214,15 +215,17 @@ const router = createBrowserRouter([
 export function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <CommandRegistryProvider>
-          <ToastProvider position="top-right">
-            <TooltipProvider delayDuration={300}>
-              <RouterProvider router={router} />
-            </TooltipProvider>
-          </ToastProvider>
-        </CommandRegistryProvider>
-      </AuthProvider>
+      <LocaleProvider>
+        <AuthProvider>
+          <CommandRegistryProvider>
+            <ToastProvider position="top-right">
+              <TooltipProvider delayDuration={300}>
+                <RouterProvider router={router} />
+              </TooltipProvider>
+            </ToastProvider>
+          </CommandRegistryProvider>
+        </AuthProvider>
+      </LocaleProvider>
     </ThemeProvider>
   );
 }
