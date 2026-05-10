@@ -69,6 +69,7 @@
   --animate-drawer-in-left: drawer-in-left 0.22s ease-out;
   --animate-drawer-in-top: drawer-in-top 0.22s ease-out;
   --animate-drawer-in-bottom: drawer-in-bottom 0.22s ease-out;
+  --animate-shake: shake 0.32s ease-in-out;
 }
 
 @keyframes progress-indeterminate {
@@ -137,6 +138,24 @@
   }
   to {
     transform: translateY(0);
+  }
+}
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(2px);
   }
 }
 

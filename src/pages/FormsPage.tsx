@@ -17,6 +17,7 @@ import {
   Form,
   FormField,
   Input,
+  NumberInput,
   Radio,
   RadioGroup,
   LazyRichTextEditor,
@@ -25,6 +26,7 @@ import {
   Select,
   Slider,
   Switch,
+  TagInput,
   Textarea,
   TimePicker,
   DateTimePicker,
@@ -648,6 +650,123 @@ function SliderDemo() {
   );
 }
 
+// ---------- TAG INPUT ----------
+
+function TagInputDemo() {
+  const [tags, setTags] = useState<string[]>(['react', 'typescript']);
+  const [emails, setEmails] = useState<string[]>([]);
+  const [topics, setTopics] = useState<string[]>(['frontend']);
+
+  const validateEmail = (raw: string): string | null => {
+    const t = raw.trim();
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t) ? t : null;
+  };
+
+  return (
+    <div className="space-y-6">
+      <FormField label="Tags" description="Press comma, Enter, or Tab to commit a tag.">
+        <TagInput value={tags} onValueChange={setTags} placeholder="Add tag…" />
+      </FormField>
+
+      <FormField label="Recipients" description="Email validation — invalid entries shake.">
+        <TagInput
+          value={emails}
+          onValueChange={setEmails}
+          validate={validateEmail}
+          placeholder="someone@example.com"
+        />
+      </FormField>
+
+      <FormField label="Topics" description="With suggestions; ArrowDown to open.">
+        <TagInput
+          value={topics}
+          onValueChange={setTopics}
+          suggestions={[
+            'frontend',
+            'backend',
+            'design',
+            'docs',
+            'a11y',
+            'performance',
+            'testing',
+            'ops',
+          ]}
+          maxTags={5}
+          placeholder="Pick a topic…"
+        />
+      </FormField>
+    </div>
+  );
+}
+
+// ---------- NUMBER INPUT ----------
+
+function NumberInputDemo() {
+  const [price, setPrice] = useState<number | null>(1299.99);
+  const [eur, setEur] = useState<number | null>(1299.5);
+  const [pct, setPct] = useState<number | null>(0.42);
+  const [rating, setRating] = useState<number | null>(5);
+  const [rate, setRate] = useState<number | null>(3.14);
+
+  return (
+    <div className="grid gap-6 sm:grid-cols-2">
+      <FormField label="Price (USD)" description="en-US, currency formatting, step 0.01.">
+        <NumberInput
+          locale="en-US"
+          formatOptions={{ style: 'currency', currency: 'USD' }}
+          precision={2}
+          step={0.01}
+          min={0}
+          value={price}
+          onValueChange={setPrice}
+        />
+      </FormField>
+
+      <FormField label="Precio (EUR)" description="es-ES grouping (1.299,50 €).">
+        <NumberInput
+          locale="es-ES"
+          formatOptions={{ style: 'currency', currency: 'EUR' }}
+          precision={2}
+          step={0.01}
+          min={0}
+          value={eur}
+          onValueChange={setEur}
+        />
+      </FormField>
+
+      <FormField label="Completion" description="Percent format. 0–1, step 0.01.">
+        <NumberInput
+          formatOptions={{ style: 'percent' }}
+          precision={0}
+          step={0.01}
+          min={0}
+          max={1}
+          value={pct}
+          onValueChange={setPct}
+        />
+      </FormField>
+
+      <FormField label="Rating" description="0–10, integer, Home/End jump to bounds.">
+        <NumberInput min={0} max={10} step={1} value={rating} onValueChange={setRating} />
+      </FormField>
+
+      <FormField label="Rate" description="Two decimals.">
+        <NumberInput precision={2} step={0.01} value={rate} onValueChange={setRate} />
+      </FormField>
+
+      <FormField label="With affixes" description="Prefix/suffix slots.">
+        <NumberInput
+          prefix="$"
+          suffix="USD"
+          precision={2}
+          step={0.01}
+          defaultValue={1234.5}
+        />
+      </FormField>
+    </div>
+  );
+}
+
 // ---------- PAGE ----------
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -713,6 +832,18 @@ export function FormsPage() {
 
       <Section title="Sliders">
         <SliderDemo />
+      </Section>
+
+      <Separator />
+
+      <Section title="Number input">
+        <NumberInputDemo />
+      </Section>
+
+      <Separator />
+
+      <Section title="Tag input">
+        <TagInputDemo />
       </Section>
     </div>
   );
