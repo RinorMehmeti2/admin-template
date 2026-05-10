@@ -25,12 +25,36 @@ const INVOICES: InvoiceRow[] = [
   { id: 'INV-1043', customer: 'Globex', amount: 3_280, status: 'paid', issued: '2026-04-15' },
   { id: 'INV-1044', customer: 'Initech', amount: 7_800, status: 'pending', issued: '2026-04-18' },
   { id: 'INV-1045', customer: 'Umbrella', amount: 1_120, status: 'overdue', issued: '2026-03-30' },
-  { id: 'INV-1046', customer: 'Stark Industries', amount: 24_000, status: 'paid', issued: '2026-04-22' },
-  { id: 'INV-1047', customer: 'Wayne Enterprises', amount: 9_950, status: 'pending', issued: '2026-04-25' },
+  {
+    id: 'INV-1046',
+    customer: 'Stark Industries',
+    amount: 24_000,
+    status: 'paid',
+    issued: '2026-04-22',
+  },
+  {
+    id: 'INV-1047',
+    customer: 'Wayne Enterprises',
+    amount: 9_950,
+    status: 'pending',
+    issued: '2026-04-25',
+  },
   { id: 'INV-1048', customer: 'Cyberdyne', amount: 5_400, status: 'paid', issued: '2026-04-29' },
   { id: 'INV-1049', customer: 'Hooli', amount: 2_780, status: 'overdue', issued: '2026-04-02' },
-  { id: 'INV-1050', customer: 'Pied Piper', amount: 6_120, status: 'pending', issued: '2026-05-01' },
-  { id: 'INV-1051', customer: 'Massive Dynamic', amount: 18_300, status: 'paid', issued: '2026-05-03' },
+  {
+    id: 'INV-1050',
+    customer: 'Pied Piper',
+    amount: 6_120,
+    status: 'pending',
+    issued: '2026-05-01',
+  },
+  {
+    id: 'INV-1051',
+    customer: 'Massive Dynamic',
+    amount: 18_300,
+    status: 'paid',
+    issued: '2026-05-03',
+  },
   { id: 'INV-1052', customer: 'Soylent', amount: 4_650, status: 'paid', issued: '2026-05-04' },
   { id: 'INV-1053', customer: 'Vandelay', amount: 870, status: 'overdue', issued: '2026-04-09' },
 ];
@@ -61,7 +85,11 @@ const PLAN_BREAKDOWN = [
 ];
 
 const formatUsd = (n: number) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(n);
 
 function statusVariant(status: InvoiceRow['status']): 'success' | 'warning' | 'danger' {
   if (status === 'paid') return 'success';
@@ -105,30 +133,58 @@ export function PrintPreviewPage() {
         }
       />
 
-      <p className="mb-6 rounded-md border border-border bg-surface-muted p-3 text-sm text-foreground-muted" data-print="hide">
-        Open the browser print preview (<kbd>Ctrl/⌘ P</kbd>) to verify: sidebar, topbar, search, action buttons, and pagination
-        controls disappear; tables show every row; tabs render every panel; charts keep their colors and labels.
+      <p
+        className="mb-6 rounded-md border border-border bg-surface-muted p-3 text-sm text-foreground-muted"
+        data-print="hide"
+      >
+        Open the browser print preview (<kbd>Ctrl/⌘ P</kbd>) to verify: sidebar, topbar, search,
+        action buttons, and pagination controls disappear; tables show every row; tabs render every
+        panel; charts keep their colors and labels.
       </p>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card variant="outlined">
           <CardContent>
-            <Stat label="Active users" value="2,418" delta="+12%" deltaLabel="vs last month" icon={<Users className="h-4 w-4" />} />
+            <Stat
+              label="Active users"
+              value="2,418"
+              delta="+12%"
+              deltaLabel="vs last month"
+              icon={<Users className="h-4 w-4" />}
+            />
           </CardContent>
         </Card>
         <Card variant="outlined">
           <CardContent>
-            <Stat label="Revenue" value={formatUsd(47_200)} delta="+4.1%" deltaLabel="vs last month" icon={<TrendingUp className="h-4 w-4" />} />
+            <Stat
+              label="Revenue"
+              value={formatUsd(47_200)}
+              delta="+4.1%"
+              deltaLabel="vs last month"
+              icon={<TrendingUp className="h-4 w-4" />}
+            />
           </CardContent>
         </Card>
         <Card variant="outlined">
           <CardContent>
-            <Stat label="Conversion" value="3.4%" delta="-0.2%" deltaLabel="vs last month" icon={<TrendingDown className="h-4 w-4" />} />
+            <Stat
+              label="Conversion"
+              value="3.4%"
+              delta="-0.2%"
+              deltaLabel="vs last month"
+              icon={<TrendingDown className="h-4 w-4" />}
+            />
           </CardContent>
         </Card>
         <Card variant="outlined">
           <CardContent>
-            <Stat label="Errors" value="0.07%" delta="-0.01%" deltaLabel="vs last month" icon={<Activity className="h-4 w-4" />} />
+            <Stat
+              label="Errors"
+              value="0.07%"
+              delta="-0.01%"
+              deltaLabel="vs last month"
+              icon={<Activity className="h-4 w-4" />}
+            />
           </CardContent>
         </Card>
       </section>
@@ -195,8 +251,8 @@ export function PrintPreviewPage() {
               <TabsContent value="finance">
                 <h3 className="text-sm font-semibold">Finance</h3>
                 <p className="mt-1 text-sm text-foreground-muted">
-                  Revenue exceeded plan by 6.2%. Two overdue invoices over 30 days outstanding;
-                  see <a href="https://example.com/finance/aging">aging report</a> for follow-up.
+                  Revenue exceeded plan by 6.2%. Two overdue invoices over 30 days outstanding; see{' '}
+                  <a href="https://example.com/finance/aging">aging report</a> for follow-up.
                 </p>
               </TabsContent>
               <TabsContent value="ops">

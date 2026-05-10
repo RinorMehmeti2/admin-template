@@ -68,13 +68,7 @@ export interface DrawerProps {
   children: ReactNode;
 }
 
-export function Drawer({
-  open,
-  defaultOpen,
-  onOpenChange,
-  side = 'right',
-  children,
-}: DrawerProps) {
+export function Drawer({ open, defaultOpen, onOpenChange, side = 'right', children }: DrawerProps) {
   const [isOpen, setOpenInternal] = useControllableState<boolean>({
     value: open,
     defaultValue: defaultOpen ?? false,
@@ -109,7 +103,17 @@ export function Drawer({
       triggerRef,
       side,
     }),
-    [isOpen, setOpen, titleId, descriptionId, hasTitle, hasDescription, registerTitle, registerDescription, side],
+    [
+      isOpen,
+      setOpen,
+      titleId,
+      descriptionId,
+      hasTitle,
+      hasDescription,
+      registerTitle,
+      registerDescription,
+      side,
+    ],
   );
 
   return <DrawerContext.Provider value={value}>{children}</DrawerContext.Provider>;
@@ -240,7 +244,10 @@ export function DrawerHeader({
   return (
     <div
       ref={ref}
-      className={cn('flex items-start justify-between gap-4 border-b border-border px-6 py-4', className)}
+      className={cn(
+        'flex items-start justify-between gap-4 border-b border-border px-6 py-4',
+        className,
+      )}
       {...rest}
     >
       <div className="min-w-0 flex-1">{children}</div>
@@ -302,13 +309,7 @@ export function DrawerBody({
   className,
   ...rest
 }: HTMLAttributes<HTMLDivElement> & { ref?: Ref<HTMLDivElement> }) {
-  return (
-    <div
-      ref={ref}
-      className={cn('flex-1 overflow-auto px-6 py-4', className)}
-      {...rest}
-    />
-  );
+  return <div ref={ref} className={cn('flex-1 overflow-auto px-6 py-4', className)} {...rest} />;
 }
 
 export function DrawerFooter({
@@ -319,7 +320,10 @@ export function DrawerFooter({
   return (
     <div
       ref={ref}
-      className={cn('flex items-center justify-end gap-2 border-t border-border px-6 py-4', className)}
+      className={cn(
+        'flex items-center justify-end gap-2 border-t border-border px-6 py-4',
+        className,
+      )}
       {...rest}
     />
   );

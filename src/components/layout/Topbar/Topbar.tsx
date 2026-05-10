@@ -30,17 +30,13 @@ export function Topbar({
       )}
       {...rest}
     >
-      {left !== undefined ? (
-        <div className="flex shrink-0 items-center gap-2">{left}</div>
-      ) : null}
+      {left !== undefined ? <div className="flex shrink-0 items-center gap-2">{left}</div> : null}
       {center !== undefined ? (
         <div className="min-w-0 flex-1">{center}</div>
       ) : (
         <div className="flex-1" />
       )}
-      {right !== undefined ? (
-        <div className="flex shrink-0 items-center gap-2">{right}</div>
-      ) : null}
+      {right !== undefined ? <div className="flex shrink-0 items-center gap-2">{right}</div> : null}
     </header>
   );
 }

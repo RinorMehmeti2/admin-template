@@ -329,11 +329,11 @@ in the browser and use the platform print preview.
 
 Three values, three meanings. Tag the **root** of the affected element:
 
-| Value                 | Effect                                                                                                                                                                                                                                  |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `data-print="hide"`   | Element is removed from print output (`display: none`).                                                                                                                                                                                 |
-| `data-print="expand"` | Host component should render all collapsed content during print (DataTable: every filtered row; Tabs: every panel). Print CSS additionally un-hides any `[hidden]` descendants inside the region.                                       |
-| `data-print="no-href"` | Suppress the auto-appended `(href)` after a link. Use for visual-only anchors where the URL would just be noise.                                                                                                                       |
+| Value                  | Effect                                                                                                                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data-print="hide"`    | Element is removed from print output (`display: none`).                                                                                                                                           |
+| `data-print="expand"`  | Host component should render all collapsed content during print (DataTable: every filtered row; Tabs: every panel). Print CSS additionally un-hides any `[hidden]` descendants inside the region. |
+| `data-print="no-href"` | Suppress the auto-appended `(href)` after a link. Use for visual-only anchors where the URL would just be noise.                                                                                  |
 
 A separate boolean attribute, `data-print-block`, marks an element whose
 contents should not break across pages (`break-inside: avoid`). It is

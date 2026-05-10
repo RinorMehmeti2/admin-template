@@ -420,11 +420,11 @@ and use the platform print preview.
 
 Three values, three meanings. Tag the **root** of the affected element:
 
-| Value                  | Effect                                                                                                                                                                                                  |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Value                  | Effect                                                                                                                                                                                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `data-print="hide"`    | Element is removed from print output (`display: none`). Use for chrome (Sidebar, Topbar), portaled overlays (Dialog/Drawer/Tooltip/Popover/DropdownMenu/CommandPalette/Toast), and pure interaction (Pagination, action button rows, column-visibility menu, theme/locale switcher). |
-| `data-print="expand"`  | Host component renders all collapsed content during print (DataTable: every filtered row; Tabs: every panel). Print CSS additionally un-hides any `[hidden]` descendants inside the region. Compose `usePrintMode()` to flip internal rendering during `beforeprint`/`afterprint`. |
-| `data-print="no-href"` | Suppresses the auto-appended `(href)` after a link. Use only when the URL would just be noise (in-page anchors, decorative links).                                                                       |
+| `data-print="expand"`  | Host component renders all collapsed content during print (DataTable: every filtered row; Tabs: every panel). Print CSS additionally un-hides any `[hidden]` descendants inside the region. Compose `usePrintMode()` to flip internal rendering during `beforeprint`/`afterprint`.   |
+| `data-print="no-href"` | Suppresses the auto-appended `(href)` after a link. Use only when the URL would just be noise (in-page anchors, decorative links).                                                                                                                                                   |
 
 A separate boolean attribute, `data-print-block`, marks an element whose
 contents should not break across pages (`break-inside: avoid`). Already

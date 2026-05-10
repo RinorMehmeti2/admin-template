@@ -15,9 +15,7 @@ const statStyles = cva('flex', {
 
 export type StatDelta = number | string;
 
-export interface StatProps
-  extends HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof statStyles> {
+export interface StatProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof statStyles> {
   ref?: Ref<HTMLDivElement>;
   label: ReactNode;
   value: ReactNode;
@@ -74,7 +72,12 @@ export function Stat({
 
   if (v === 'compact') {
     return (
-      <div ref={ref} data-print-block="" className={cn(statStyles({ variant: v }), className)} {...rest}>
+      <div
+        ref={ref}
+        data-print-block=""
+        className={cn(statStyles({ variant: v }), className)}
+        {...rest}
+      >
         {icon !== undefined ? (
           <span
             aria-hidden="true"
@@ -85,9 +88,7 @@ export function Stat({
         ) : null}
         <div className="min-w-0 flex-1">
           <p className="text-xs font-medium text-foreground-muted">{label}</p>
-          <p className="truncate text-lg font-semibold leading-tight text-foreground">
-            {value}
-          </p>
+          <p className="truncate text-lg font-semibold leading-tight text-foreground">{value}</p>
         </div>
         {info !== null ? (
           <span

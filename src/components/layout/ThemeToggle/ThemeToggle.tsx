@@ -36,10 +36,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       <DropdownMenuContent side="bottom-end" sideOffset={6} className="min-w-[10rem]">
         <DropdownMenuLabel>Theme</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup
-          value={theme}
-          onValueChange={(next) => setTheme(next as Theme)}
-        >
+        <DropdownMenuRadioGroup value={theme} onValueChange={(next) => setTheme(next as Theme)}>
           <DropdownMenuRadioItem value="light">
             <Sun className="h-4 w-4 text-foreground-muted" aria-hidden="true" />
             <span>Light</span>

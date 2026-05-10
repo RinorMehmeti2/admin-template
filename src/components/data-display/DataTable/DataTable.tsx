@@ -23,13 +23,7 @@ import {
   Inbox,
   Search,
 } from 'lucide-react';
-import {
-  useEffect,
-  useId,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { useEffect, useId, useMemo, useState, type ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 import { usePrintMode } from '@/hooks/usePrintMode';
 import { Button } from '@/components/primitives/Button';
@@ -243,9 +237,7 @@ export function DataTable<TData>({
   const totalRows = table.getFilteredRowModel().rows.length;
   const isPrinting = usePrintMode();
   // While printing, render every filtered row instead of just the active page.
-  const pageRows = isPrinting
-    ? table.getFilteredRowModel().rows
-    : table.getRowModel().rows;
+  const pageRows = isPrinting ? table.getFilteredRowModel().rows : table.getRowModel().rows;
   const skelCount = skeletonRows ?? table.getState().pagination.pageSize;
   const searchId = useId();
 
@@ -286,10 +278,7 @@ export function DataTable<TData>({
         variant={variant}
         size={size}
         scrollable
-        containerClassName={cn(
-          maxHeight !== undefined && 'overflow-auto',
-          containerClassName,
-        )}
+        containerClassName={cn(maxHeight !== undefined && 'overflow-auto', containerClassName)}
         style={maxHeight !== undefined ? { maxHeight } : undefined}
       >
         <TableHeader sticky={stickyHeader}>
@@ -308,11 +297,7 @@ export function DataTable<TData>({
                     style={{ width: header.getSize() === 150 ? undefined : header.getSize() }}
                     className={isSelectCol ? 'w-9' : undefined}
                     aria-sort={
-                      sorted === 'asc'
-                        ? 'ascending'
-                        : sorted === 'desc'
-                          ? 'descending'
-                          : undefined
+                      sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : undefined
                     }
                   >
                     {header.isPlaceholder ? null : canSort ? (
@@ -321,7 +306,9 @@ export function DataTable<TData>({
                         onClick={header.column.getToggleSortingHandler()}
                         className="-mx-1 inline-flex items-center gap-1 rounded px-1 py-0.5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
                       >
-                        <span>{flexRender(header.column.columnDef.header, header.getContext())}</span>
+                        <span>
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                        </span>
                         {sorted === 'asc' ? (
                           <ArrowUp className="h-3 w-3" aria-hidden="true" />
                         ) : sorted === 'desc' ? (
@@ -380,9 +367,7 @@ export function DataTable<TData>({
               <TableRow
                 key={row.id}
                 selected={row.getIsSelected()}
-                onClick={
-                  onRowClick === undefined ? undefined : (e) => onRowClick(row.original, e)
-                }
+                onClick={onRowClick === undefined ? undefined : (e) => onRowClick(row.original, e)}
                 className={onRowClick !== undefined ? 'cursor-pointer' : undefined}
               >
                 {row.getVisibleCells().map((cell) => (
@@ -427,8 +412,7 @@ function ColumnVisibilityMenu<TData>({ table }: { table: TanstackTable<TData> })
         <DropdownMenuSeparator />
         {hideable.map((col) => {
           const header = col.columnDef.header;
-          const label =
-            typeof header === 'string' && header.length > 0 ? header : col.id;
+          const label = typeof header === 'string' && header.length > 0 ? header : col.id;
           return (
             <DropdownMenuCheckboxItem
               key={col.id}

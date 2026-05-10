@@ -18,7 +18,14 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement>, VariantProps<
 }
 
 export function Card({ ref, className, variant, ...rest }: CardProps) {
-  return <div ref={ref} data-print-block="" className={cn(cardStyles({ variant }), className)} {...rest} />;
+  return (
+    <div
+      ref={ref}
+      data-print-block=""
+      className={cn(cardStyles({ variant }), className)}
+      {...rest}
+    />
+  );
 }
 
 export interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {

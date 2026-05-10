@@ -112,8 +112,7 @@ export function TabsList({ ref, className, children, ...rest }: TabsListProps) {
               ? 'border-b border-border'
               : 'flex-col border-r border-border'),
           ctx.variant === 'pills' && 'gap-1',
-          ctx.variant === 'segmented' &&
-            'gap-1 rounded-md bg-surface-muted p-1',
+          ctx.variant === 'segmented' && 'gap-1 rounded-md bg-surface-muted p-1',
           ctx.orientation === 'vertical' && ctx.variant !== 'underline' && 'flex-col',
           className,
         )}

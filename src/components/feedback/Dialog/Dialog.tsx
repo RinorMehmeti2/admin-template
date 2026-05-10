@@ -104,7 +104,16 @@ export function Dialog({ open, defaultOpen, onOpenChange, children }: DialogProp
       registerDescription,
       triggerRef,
     }),
-    [isOpen, setOpen, titleId, descriptionId, hasTitle, hasDescription, registerTitle, registerDescription],
+    [
+      isOpen,
+      setOpen,
+      titleId,
+      descriptionId,
+      hasTitle,
+      hasDescription,
+      registerTitle,
+      registerDescription,
+    ],
   );
 
   return <DialogContext.Provider value={value}>{children}</DialogContext.Provider>;
@@ -260,7 +269,10 @@ export function DialogHeader({
   return (
     <div
       ref={ref}
-      className={cn('flex items-start justify-between gap-4 border-b border-border px-6 py-4', className)}
+      className={cn(
+        'flex items-start justify-between gap-4 border-b border-border px-6 py-4',
+        className,
+      )}
       {...rest}
     >
       <div className="min-w-0 flex-1">{children}</div>
@@ -322,13 +334,7 @@ export function DialogBody({
   className,
   ...rest
 }: HTMLAttributes<HTMLDivElement> & { ref?: Ref<HTMLDivElement> }) {
-  return (
-    <div
-      ref={ref}
-      className={cn('flex-1 overflow-auto px-6 py-4', className)}
-      {...rest}
-    />
-  );
+  return <div ref={ref} className={cn('flex-1 overflow-auto px-6 py-4', className)} {...rest} />;
 }
 
 export function DialogFooter({
@@ -339,7 +345,10 @@ export function DialogFooter({
   return (
     <div
       ref={ref}
-      className={cn('flex items-center justify-end gap-2 border-t border-border px-6 py-4', className)}
+      className={cn(
+        'flex items-center justify-end gap-2 border-t border-border px-6 py-4',
+        className,
+      )}
       {...rest}
     />
   );
@@ -349,20 +358,13 @@ interface DialogCloseChildProps {
   onClick?: (e: ReactMouseEvent) => void;
 }
 
-export interface DialogCloseProps
-  extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface DialogCloseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   ref?: Ref<HTMLButtonElement>;
   asChild?: boolean;
   children?: ReactNode;
 }
 
-export function DialogClose({
-  ref,
-  asChild,
-  children,
-  onClick,
-  ...rest
-}: DialogCloseProps) {
+export function DialogClose({ ref, asChild, children, onClick, ...rest }: DialogCloseProps) {
   const ctx = useDialogContext('DialogClose');
   const close = (e: ReactMouseEvent) => {
     onClick?.(e as ReactMouseEvent<HTMLButtonElement>);
