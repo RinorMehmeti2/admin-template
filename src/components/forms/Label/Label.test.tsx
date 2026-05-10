@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { Label } from './Label';
 
 describe('Label', () => {
@@ -35,5 +36,17 @@ describe('Label', () => {
   it('merges className', () => {
     render(<Label className="custom">x</Label>);
     expect(screen.getByText('x').closest('label')).toHaveClass('custom');
+  });
+
+  it('has no a11y violations (label + required associated)', async () => {
+    const { container } = render(
+      <div>
+        <Label htmlFor="x" required>
+          Email
+        </Label>
+        <input id="x" />
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

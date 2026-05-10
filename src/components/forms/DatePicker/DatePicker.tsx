@@ -245,8 +245,6 @@ export function DatePicker({
         placeholder={placeholder}
         value={text}
         aria-label={ariaLabel}
-        aria-haspopup="dialog"
-        aria-expanded={isOpen}
         {...(error ? { 'aria-invalid': true as const, variant: 'error' as const } : {})}
         onChange={handleTextChange}
         onBlur={() => {

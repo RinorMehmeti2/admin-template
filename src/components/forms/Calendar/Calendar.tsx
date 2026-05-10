@@ -204,7 +204,7 @@ export function Calendar({
       className={cn('inline-block select-none rounded-md bg-surface text-foreground', className)}
       {...rest}
     >
-      <header className="flex items-center justify-between gap-2 px-2 pt-2">
+      <div className="flex items-center justify-between gap-2 px-2 pt-2">
         <IconButton
           variant="ghost"
           size="sm"
@@ -224,7 +224,7 @@ export function Calendar({
         >
           <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </IconButton>
-      </header>
+      </div>
 
       <RovingFocusGrid
         loop={false}

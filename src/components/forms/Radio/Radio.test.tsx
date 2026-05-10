@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { Radio } from './Radio';
 import { RadioGroup } from '@/components/forms/RadioGroup';
 
@@ -51,5 +52,15 @@ describe('Radio', () => {
     const ref = createRef<HTMLInputElement>();
     render(<Radio name="x" value="a" ref={ref}>A</Radio>);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
+  });
+
+  it('has no a11y violations (inside group)', async () => {
+    const { container } = render(
+      <RadioGroup name="g" defaultValue="a" aria-label="Pick one">
+        <Radio value="a">A</Radio>
+        <Radio value="b">B</Radio>
+      </RadioGroup>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

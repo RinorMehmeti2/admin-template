@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { Select } from './Select';
 
 function Demo(props: React.ComponentProps<typeof Select>) {
@@ -56,5 +57,15 @@ describe('Select', () => {
     render(<Demo defaultValue="a" />);
     await userEvent.selectOptions(screen.getByRole('combobox'), 'b');
     expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('b');
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <div>
+        <label htmlFor="s1">Choice</label>
+        <Demo aria-label="Choice" />
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

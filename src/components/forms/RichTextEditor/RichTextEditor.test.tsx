@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { RichTextEditor } from './RichTextEditor';
 import type { RichTextEditorHandle } from './RichTextEditor.types';
 import { TooltipProvider } from '@/components/feedback/Tooltip';
+import { runAxe } from '@/test-utils/a11y';
 
 function renderEditor(props: Parameters<typeof RichTextEditor>[0]) {
   // BubbleMenu uses Floating UI + selection coords that jsdom doesn't model.
@@ -229,5 +230,24 @@ describe('RichTextEditor', () => {
     expect(ref.current?.getEditor()).not.toBeNull();
     act(() => ref.current?.clear());
     expect(ref.current?.getHTML()).toBe('<p></p>');
+  });
+
+  it('has no a11y violations (default + readOnly)', async () => {
+    const { container, rerender } = renderEditor({
+      defaultValue: '<p>Hello <strong>world</strong></p>',
+      'aria-label': 'Note body',
+    });
+    expect(await runAxe(container)).toHaveNoViolations();
+    rerender(
+      <TooltipProvider delayDuration={0}>
+        <RichTextEditor
+          bubbleMenu={false}
+          readOnly
+          defaultValue="<p>frozen</p>"
+          aria-label="Note body"
+        />
+      </TooltipProvider>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

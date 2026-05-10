@@ -442,7 +442,7 @@ export function ComboboxTrigger({
         aria-expanded={ctx.isOpen}
         aria-controls={lb.id}
         aria-haspopup="listbox"
-        aria-activedescendant={lb['aria-activedescendant']}
+        aria-activedescendant={ctx.isOpen ? lb['aria-activedescendant'] : undefined}
         aria-disabled={ctx.disabled || undefined}
         disabled={ctx.disabled}
         placeholder={placeholder}

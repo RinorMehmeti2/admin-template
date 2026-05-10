@@ -269,8 +269,6 @@ export function DateRangePicker({
           disabled={disabled}
           placeholder={placeholderFrom}
           value={fromText}
-          aria-haspopup="dialog"
-          aria-expanded={isOpen}
           {...(error ? { 'aria-invalid': true as const, variant: 'error' as const } : {})}
           onClick={onTriggerClick}
           className="cursor-pointer pr-10"
@@ -292,8 +290,6 @@ export function DateRangePicker({
           disabled={disabled}
           placeholder={placeholderTo}
           value={toText}
-          aria-haspopup="dialog"
-          aria-expanded={isOpen}
           {...(error ? { 'aria-invalid': true as const, variant: 'error' as const } : {})}
           onClick={onTriggerClick}
           className="cursor-pointer pr-10"

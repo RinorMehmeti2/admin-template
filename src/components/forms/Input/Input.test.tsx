@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { Input } from './Input';
 
 describe('Input', () => {
@@ -73,5 +74,17 @@ describe('Input', () => {
     const input = screen.getByPlaceholderText('x');
     await userEvent.type(input, 'hello');
     expect(input).toHaveValue('hello');
+  });
+
+  it('has no a11y violations (default + error + with affixes)', async () => {
+    const { container } = render(
+      <div>
+        <label htmlFor="i1">Email</label>
+        <Input id="i1" placeholder="Email" />
+        <label htmlFor="i2">Amount</label>
+        <Input id="i2" variant="error" placeholder="Amount" prefix="$" suffix="USD" />
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

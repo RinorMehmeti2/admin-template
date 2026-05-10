@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Form, useForm } from './Form';
 import { Input } from '@/components/forms/Input';
+import { runAxe } from '@/test-utils/a11y';
 
 function Demo({ onSubmit }: { onSubmit: (v: { email: string }) => void }) {
   const form = useForm<{ email: string }>({ defaultValues: { email: '' } });
@@ -30,5 +31,11 @@ describe('Form', () => {
     const onSubmit = vi.fn();
     const { container } = render(<Demo onSubmit={onSubmit} />);
     expect(container.querySelector('form')).toHaveAttribute('novalidate');
+  });
+
+  it('has no a11y violations', async () => {
+    const onSubmit = vi.fn();
+    const { container } = render(<Demo onSubmit={onSubmit} />);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

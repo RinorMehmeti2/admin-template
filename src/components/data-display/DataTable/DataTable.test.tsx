@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from './DataTable';
+import { runAxe } from '@/test-utils/a11y';
 
 interface Row {
   id: number;
@@ -130,5 +131,17 @@ describe('DataTable', () => {
     const item = await screen.findByRole('menuitemcheckbox', { name: 'Email' });
     await user.click(item);
     expect(screen.queryByText('ada@x.com')).toBeNull();
+  });
+
+  it('has no a11y violations (rows + selection enabled)', async () => {
+    const { container } = render(
+      <DataTable columns={COLUMNS} data={ROWS} enableRowSelection="multi" />,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
+  });
+
+  it('has no a11y violations (empty state)', async () => {
+    const { container } = render(<DataTable columns={COLUMNS} data={[]} />);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

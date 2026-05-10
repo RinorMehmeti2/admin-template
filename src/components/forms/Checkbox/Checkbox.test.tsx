@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { Checkbox } from './Checkbox';
 
 describe('Checkbox', () => {
@@ -55,5 +56,17 @@ describe('Checkbox', () => {
     render(<Checkbox aria-label="x" className="custom" />);
     const cb = screen.getByRole('checkbox');
     expect(cb.parentElement).toHaveClass('custom');
+  });
+
+  it('has no a11y violations (unchecked + checked + indeterminate + disabled)', async () => {
+    const { container } = render(
+      <div>
+        <Checkbox aria-label="agree" />
+        <Checkbox aria-label="signed" checked readOnly />
+        <Checkbox aria-label="some" indeterminate />
+        <Checkbox aria-label="off" disabled />
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

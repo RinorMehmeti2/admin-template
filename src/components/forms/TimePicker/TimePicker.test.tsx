@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { useState } from 'react';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { TimePicker } from './TimePicker';
 
 describe('TimePicker — rendering', () => {
@@ -217,6 +218,18 @@ describe('TimePicker — keyboard', () => {
     await waitFor(() => expect(document.activeElement).toBe(hours[10]));
     await user.keyboard('{ArrowDown}');
     expect(document.activeElement).toBe(hours[11]);
+  });
+});
+
+describe('TimePicker — a11y', () => {
+  it('has no a11y violations (closed + open)', async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <TimePicker placeholder="Pick time" aria-label="Time" defaultValue="10:00" />,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
+    await user.click(screen.getByRole('textbox'));
+    expect(await runAxe(document.body)).toHaveNoViolations();
   });
 });
 

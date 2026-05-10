@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { useState } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { DateRangePicker, type DateRange } from './DateRangePicker';
 
 function ControlledRange({ onChange }: { onChange?: (r: DateRange) => void }) {
@@ -157,6 +158,18 @@ describe('DateRangePicker — presets', () => {
     await user.click(screen.getByPlaceholderText('From'));
     expect(screen.getByRole('button', { name: 'Q1 2026' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Today' })).toBeNull();
+  });
+});
+
+describe('DateRangePicker — a11y', () => {
+  it('has no a11y violations (closed + open)', async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <DateRangePicker placeholderFrom="From" placeholderTo="To" />,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
+    await user.click(screen.getByPlaceholderText('From'));
+    expect(await runAxe(document.body)).toHaveNoViolations();
   });
 });
 

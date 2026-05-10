@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RadioGroup } from './RadioGroup';
 import { Radio } from '@/components/forms/Radio';
+import { runAxe } from '@/test-utils/a11y';
 
 function Demo(props: Partial<React.ComponentProps<typeof RadioGroup>>) {
   return (
@@ -53,5 +54,10 @@ describe('RadioGroup', () => {
   it('exposes aria-label when provided', () => {
     render(<Demo aria-label="Theme" />);
     expect(screen.getByRole('radiogroup')).toHaveAttribute('aria-label', 'Theme');
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(<Demo aria-label="Theme" defaultValue="light" />);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

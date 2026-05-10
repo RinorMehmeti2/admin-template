@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { Switch } from './Switch';
 
 describe('Switch', () => {
@@ -42,5 +43,16 @@ describe('Switch', () => {
     const ref = createRef<HTMLInputElement>();
     render(<Switch aria-label="x" ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
+  });
+
+  it('has no a11y violations (off + on + disabled)', async () => {
+    const { container } = render(
+      <div>
+        <Switch aria-label="notifications" />
+        <Switch aria-label="newsletter" checked readOnly />
+        <Switch aria-label="off" disabled />
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

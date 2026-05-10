@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { FormField } from './FormField';
 import { Input } from '@/components/forms/Input';
 import { Checkbox } from '@/components/forms/Checkbox';
+import { runAxe } from '@/test-utils/a11y';
 
 describe('FormField', () => {
   it('renders label and links it to the input via htmlFor/id', () => {
@@ -101,5 +102,19 @@ describe('FormField', () => {
     );
     const label = screen.getByText('hidden-label').closest('label')!;
     expect(label).toHaveClass('sr-only');
+  });
+
+  it('has no a11y violations (label + description + error)', async () => {
+    const { container } = render(
+      <div>
+        <FormField label="Email" description="Where you sign in." required>
+          <Input placeholder="x" />
+        </FormField>
+        <FormField label="Pass" error="Required">
+          <Input placeholder="y" />
+        </FormField>
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

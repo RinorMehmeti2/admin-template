@@ -10,6 +10,7 @@ import {
   TableCaption,
   TableFooter,
 } from './Table';
+import { runAxe } from '@/test-utils/a11y';
 
 function renderTable(props: Parameters<typeof Table>[0] = {}) {
   return render(
@@ -94,5 +95,10 @@ describe('Table', () => {
       </Table>,
     );
     expect(screen.getByTestId('cell')).toHaveClass('py-1.5');
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = renderTable();
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

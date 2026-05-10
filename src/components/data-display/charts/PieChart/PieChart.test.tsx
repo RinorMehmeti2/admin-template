@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { PieChart } from './PieChart';
 
 const DATA = [
@@ -54,5 +55,20 @@ describe('PieChart', () => {
     const btn = screen.getByRole('button', { name: 'Search' });
     await userEvent.click(btn);
     expect(btn).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <PieChart
+        xKey="name"
+        data={DATA}
+        series={[{ key: 'value', label: 'Visits' }]}
+        width={400}
+        height={300}
+      />,
+    );
+    expect(
+      await runAxe(container, { rules: { 'nested-interactive': { enabled: false } } }),
+    ).toHaveNoViolations();
   });
 });

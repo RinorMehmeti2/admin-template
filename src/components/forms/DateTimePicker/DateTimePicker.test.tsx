@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { useState } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { DateTimePicker } from './DateTimePicker';
 
 describe('DateTimePicker', () => {
@@ -72,5 +73,12 @@ describe('DateTimePicker', () => {
     render(<DateTimePicker disabled datePlaceholder="Date" timePlaceholder="Time" />);
     await user.click(screen.getByPlaceholderText('Date'));
     expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <DateTimePicker datePlaceholder="Date" timePlaceholder="Time" />,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

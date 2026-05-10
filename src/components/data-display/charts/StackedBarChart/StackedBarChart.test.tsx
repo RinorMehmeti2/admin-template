@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { StackedBarChart } from './StackedBarChart';
 
 const DATA = [
@@ -42,5 +43,23 @@ describe('StackedBarChart', () => {
     );
     expect(screen.getByRole('button', { name: 'Apples' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Bananas' })).toBeInTheDocument();
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <StackedBarChart
+        xKey="month"
+        data={DATA}
+        series={[
+          { key: 'a', label: 'A', color: 'primary' },
+          { key: 'b', label: 'B', color: 'success' },
+        ]}
+        width={400}
+        height={200}
+      />,
+    );
+    expect(
+      await runAxe(container, { rules: { 'nested-interactive': { enabled: false } } }),
+    ).toHaveNoViolations();
   });
 });

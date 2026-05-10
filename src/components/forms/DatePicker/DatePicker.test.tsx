@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { useState } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { DatePicker } from './DatePicker';
 
 const may2026 = new Date(2026, 4, 9);
@@ -68,6 +69,16 @@ describe('DatePicker — base', () => {
     render(<DatePicker placeholder="Pick" disabled />);
     await user.click(screen.getByPlaceholderText('Pick'));
     expect(screen.queryByRole('dialog')).toBeNull();
+  });
+});
+
+describe('DatePicker — a11y', () => {
+  it('has no a11y violations (closed + open dialog)', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<DatePicker placeholder="Pick a date" aria-label="Date" />);
+    expect(await runAxe(container)).toHaveNoViolations();
+    await user.click(screen.getByPlaceholderText('Pick a date'));
+    expect(await runAxe(document.body)).toHaveNoViolations();
   });
 });
 

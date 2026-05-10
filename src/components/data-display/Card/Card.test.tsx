@@ -9,6 +9,7 @@ import {
   CardContent,
   CardFooter,
 } from './Card';
+import { runAxe } from '@/test-utils/a11y';
 
 describe('Card', () => {
   it('renders with default variant', () => {
@@ -60,5 +61,19 @@ describe('Card', () => {
     expect(screen.getByText('Desc')).toBeInTheDocument();
     expect(screen.getByText('Body')).toBeInTheDocument();
     expect(screen.getByText('Foot')).toBeInTheDocument();
+  });
+
+  it('has no a11y violations (composed)', async () => {
+    const { container } = render(
+      <Card>
+        <CardHeader>
+          <CardTitle>Title</CardTitle>
+          <CardDescription>Desc</CardDescription>
+        </CardHeader>
+        <CardContent>Body</CardContent>
+        <CardFooter>Foot</CardFooter>
+      </Card>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

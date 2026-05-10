@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { DonutChart } from './DonutChart';
 
 const DATA = [
@@ -36,5 +37,20 @@ describe('DonutChart', () => {
     );
     expect(screen.getByText('700')).toBeInTheDocument();
     expect(screen.getByText('visits')).toBeInTheDocument();
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <DonutChart
+        xKey="name"
+        data={DATA}
+        series={[{ key: 'value', label: 'Visits' }]}
+        width={400}
+        height={300}
+      />,
+    );
+    expect(
+      await runAxe(container, { rules: { 'nested-interactive': { enabled: false } } }),
+    ).toHaveNoViolations();
   });
 });

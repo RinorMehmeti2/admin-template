@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
+import { runAxe } from '@/test-utils/a11y';
 import { Combobox, ComboboxContent, ComboboxTrigger } from './Combobox';
 
 interface Country {
@@ -272,6 +273,16 @@ describe('Combobox — creatable', () => {
     await user.click(input);
     await user.type(input, 'Canada');
     expect(screen.queryByRole('option', { name: /Create.*Canada/ })).toBeNull();
+  });
+});
+
+describe('Combobox — a11y', () => {
+  it('has no a11y violations (closed + open listbox)', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<SingleDemo />);
+    expect(await runAxe(container)).toHaveNoViolations();
+    await user.click(screen.getByRole('combobox'));
+    expect(await runAxe(document.body)).toHaveNoViolations();
   });
 });
 

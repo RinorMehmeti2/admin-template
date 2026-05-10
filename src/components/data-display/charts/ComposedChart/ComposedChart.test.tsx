@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { ComposedChart } from './ComposedChart';
 
 const DATA = [
@@ -67,5 +68,23 @@ describe('ComposedChart', () => {
     expect(growthBtn).toHaveAttribute('aria-pressed', 'false');
     const revenueBtn = screen.getByRole('button', { name: 'Revenue' });
     expect(revenueBtn).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <ComposedChart
+        xKey="quarter"
+        data={DATA}
+        series={[
+          { key: 'revenue', label: 'Revenue', color: 'primary', type: 'bar' },
+          { key: 'growth', label: 'Growth', color: 'success', type: 'line' },
+        ]}
+        width={500}
+        height={250}
+      />,
+    );
+    expect(
+      await runAxe(container, { rules: { 'nested-interactive': { enabled: false } } }),
+    ).toHaveNoViolations();
   });
 });

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { List, ListItem } from './List';
 
 describe('List', () => {
@@ -38,5 +39,15 @@ describe('List', () => {
     expect(screen.getByText('Primary text')).toBeInTheDocument();
     expect(screen.getByText('Secondary text')).toBeInTheDocument();
     expect(screen.getByTestId('trail')).toBeInTheDocument();
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <List variant="divided">
+        <ListItem primary="Alpha" secondary="One" />
+        <ListItem primary="Beta" secondary="Two" />
+      </List>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

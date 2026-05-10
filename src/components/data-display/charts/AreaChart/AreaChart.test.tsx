@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { AreaChart } from './AreaChart';
 
 const DATA = [
@@ -54,5 +55,20 @@ describe('AreaChart', () => {
     expect(btn).toHaveAttribute('aria-pressed', 'true');
     await userEvent.click(btn);
     expect(btn).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <AreaChart
+        xKey="month"
+        data={DATA}
+        series={[{ key: 'revenue', label: 'Revenue', color: 'success' }]}
+        width={400}
+        height={200}
+      />,
+    );
+    expect(
+      await runAxe(container, { rules: { 'nested-interactive': { enabled: false } } }),
+    ).toHaveNoViolations();
   });
 });

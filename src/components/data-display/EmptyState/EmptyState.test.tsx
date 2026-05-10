@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { EmptyState } from './EmptyState';
 
 describe('EmptyState', () => {
@@ -38,5 +39,16 @@ describe('EmptyState', () => {
       />,
     );
     expect(screen.getAllByRole('button')).toHaveLength(2);
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <EmptyState
+        title="No projects yet"
+        description="Get started by creating one."
+        action={<button type="button">Create</button>}
+      />,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

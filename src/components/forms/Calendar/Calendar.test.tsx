@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { useState } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { Calendar } from './Calendar';
 
 const may2026 = new Date(2026, 4, 1);
@@ -159,6 +160,13 @@ describe('Calendar — keyboard navigation through the grid', () => {
     cell.focus();
     await user.keyboard('{Enter}');
     expect(onChange).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('Calendar — a11y', () => {
+  it('has no a11y violations (default + selected)', async () => {
+    const { container } = render(<Calendar month={may2026} value={new Date(2026, 4, 9)} />);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });
 

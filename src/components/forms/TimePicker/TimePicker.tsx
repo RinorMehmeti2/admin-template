@@ -280,8 +280,6 @@ export function TimePicker({
         placeholder={placeholder}
         value={display}
         aria-label={ariaLabel}
-        aria-haspopup="dialog"
-        aria-expanded={isOpen}
         {...(error ? { 'aria-invalid': true as const, variant: 'error' as const } : {})}
         onClick={() => {
           if (!disabled && !isOpen) handleOpen();

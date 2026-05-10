@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { Stat } from './Stat';
 
 describe('Stat', () => {
@@ -50,5 +51,15 @@ describe('Stat', () => {
     const root = screen.getByTestId('stat');
     expect(root).toHaveClass('flex-row');
     expect(screen.getByTestId('ico')).toBeInTheDocument();
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <div>
+        <Stat label="Revenue" value="$12,400" delta={12.5} deltaLabel="vs last week" />
+        <Stat variant="compact" label="Users" value="1,200" />
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

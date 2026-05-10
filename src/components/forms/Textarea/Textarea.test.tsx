@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { Textarea } from './Textarea';
 
 describe('Textarea', () => {
@@ -48,5 +49,17 @@ describe('Textarea', () => {
     // wait a frame for rAF
     await new Promise((r) => setTimeout(r, 30));
     expect(ta.style.height).not.toBe('');
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <div>
+        <label htmlFor="t1">Bio</label>
+        <Textarea id="t1" placeholder="Bio" />
+        <label htmlFor="t2">Note</label>
+        <Textarea id="t2" variant="error" placeholder="Note" />
+      </div>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });
