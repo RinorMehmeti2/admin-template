@@ -25,9 +25,7 @@ export function ChartLegend({
   className,
 }: ChartLegendProps): ReactElement {
   return (
-    <ul
-      className={cn('flex flex-wrap items-center justify-center gap-1.5 px-2 pb-1', className)}
-    >
+    <ul className={cn('flex flex-wrap items-center justify-center gap-1.5 px-2 pb-1', className)}>
       {items.map((item) => {
         const isHidden = hidden.has(item.key);
         return (
@@ -45,7 +43,10 @@ export function ChartLegend({
               <span
                 aria-hidden="true"
                 className="inline-block h-2 w-2 rounded-full"
-                style={{ backgroundColor: isHidden ? 'transparent' : item.color, outline: isHidden ? `1px solid ${item.color}` : 'none' }}
+                style={{
+                  backgroundColor: isHidden ? 'transparent' : item.color,
+                  outline: isHidden ? `1px solid ${item.color}` : 'none',
+                }}
               />
               <span className={cn('text-foreground', isHidden && 'line-through')}>
                 {item.label}

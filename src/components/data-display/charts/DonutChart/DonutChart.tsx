@@ -11,17 +11,8 @@ export interface DonutChartProps extends SliceChartCommonProps {
   centerLabel?: { value: string; sub?: string };
 }
 
-export function DonutChart({
-  innerRadius = 60,
-  outerRadius = 100,
-  ...rest
-}: DonutChartProps) {
+export function DonutChart({ innerRadius = 60, outerRadius = 100, ...rest }: DonutChartProps) {
   return (
-    <PieChartImpl
-      {...rest}
-      innerRadius={innerRadius}
-      outerRadius={outerRadius}
-      variant="donut"
-    />
+    <PieChartImpl {...rest} innerRadius={innerRadius} outerRadius={outerRadius} variant="donut" />
   );
 }

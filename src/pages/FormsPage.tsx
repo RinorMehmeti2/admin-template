@@ -112,11 +112,9 @@ const settingsSchema = z.object({
   theme: z.enum(['light', 'dark', 'system']),
   active: z.boolean(),
   bio: z.string().max(280, 'Max 280 characters').optional(),
-  description: z
-    .string()
-    .refine((html) => html.replace(/<[^>]*>/g, '').trim().length > 0, {
-      message: 'Description is required',
-    }),
+  description: z.string().refine((html) => html.replace(/<[^>]*>/g, '').trim().length > 0, {
+    message: 'Description is required',
+  }),
 });
 type SettingsValues = z.infer<typeof settingsSchema>;
 

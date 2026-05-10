@@ -1,9 +1,4 @@
-import {
-  useRef,
-  useState,
-  type KeyboardEvent as ReactKeyboardEvent,
-  type ReactNode,
-} from 'react';
+import { useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
 import { type Editor, useEditorState } from '@tiptap/react';
 import {
   Bold,
@@ -229,13 +224,7 @@ interface HeadingPickerProps {
 function HeadingPicker({ index, editor, state }: HeadingPickerProps) {
   const ref = useRef<HTMLButtonElement>(null);
   const { tabIndex, onKeyDown, onFocus } = useRovingFocusItem(index, ref);
-  const current = state.heading1
-    ? 'h1'
-    : state.heading2
-      ? 'h2'
-      : state.heading3
-        ? 'h3'
-        : 'p';
+  const current = state.heading1 ? 'h1' : state.heading2 ? 'h2' : state.heading3 ? 'h3' : 'p';
   const labelMap = { p: 'Paragraph', h1: 'Heading 1', h2: 'Heading 2', h3: 'Heading 3' } as const;
 
   const setBlock = (next: 'p' | 'h1' | 'h2' | 'h3') => {

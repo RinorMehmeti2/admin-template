@@ -21,10 +21,7 @@ describe('LineChart', () => {
       />,
     );
     const chart = screen.getByRole('img');
-    expect(chart).toHaveAttribute(
-      'aria-label',
-      expect.stringContaining('Line chart of Revenue'),
-    );
+    expect(chart).toHaveAttribute('aria-label', expect.stringContaining('Line chart of Revenue'));
     expect(chart).toHaveAttribute('data-chart-type', 'line');
   });
 

@@ -1,12 +1,5 @@
 import type { Ref } from 'react';
-import {
-  Area,
-  AreaChart as RCAreaChart,
-  CartesianGrid,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Area, AreaChart as RCAreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import { useChart } from '../shared/useChart';
 import { ChartTooltipContent } from '../shared/ChartTooltip';
 import { ChartFrame } from '../shared/ChartFrame';

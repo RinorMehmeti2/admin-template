@@ -119,12 +119,7 @@ export function PieChartImpl({
             {visibleData.map((row) => {
               const name = String(row[xKey] ?? '');
               const slice = sliceRows.find((s) => s.name === name);
-              return (
-                <Cell
-                  key={`cell-${name}`}
-                  fill={slice?.color ?? colors.primary}
-                />
-              );
+              return <Cell key={`cell-${name}`} fill={slice?.color ?? colors.primary} />;
             })}
           </Pie>
           {variant === 'donut' && centerLabel !== undefined ? (

@@ -30,9 +30,7 @@ export const WithContent = {
         <div className="max-w-2xl space-y-3">
           <RichTextEditor value={html} onChange={setHtml} />
           <details className="rounded-md border border-border bg-surface-muted p-3 text-xs text-foreground-muted">
-            <summary className="cursor-pointer font-medium text-foreground">
-              Output HTML
-            </summary>
+            <summary className="cursor-pointer font-medium text-foreground">Output HTML</summary>
             <pre className="mt-2 whitespace-pre-wrap break-all">{html}</pre>
           </details>
         </div>
@@ -47,7 +45,16 @@ export const CustomToolbar = {
     <div className="max-w-2xl">
       <RichTextEditor
         defaultValue="<p>Only the basics here.</p>"
-        toolbar={['bold', 'italic', 'underline', 'separator', 'bulletList', 'orderedList', 'separator', 'link']}
+        toolbar={[
+          'bold',
+          'italic',
+          'underline',
+          'separator',
+          'bulletList',
+          'orderedList',
+          'separator',
+          'link',
+        ]}
         bubbleMenu={false}
       />
     </div>

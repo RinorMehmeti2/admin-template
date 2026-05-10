@@ -12,11 +12,7 @@ const total = plans.reduce((sum, p) => sum + p.value, 0);
 
 export const Default = {
   render: () => (
-    <DonutChart
-      xKey="name"
-      data={plans}
-      series={[{ key: 'value', label: 'Subscribers' }]}
-    />
+    <DonutChart xKey="name" data={plans} series={[{ key: 'value', label: 'Subscribers' }]} />
   ),
 };
 

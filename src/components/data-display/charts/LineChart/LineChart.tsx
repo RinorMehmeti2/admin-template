@@ -1,12 +1,5 @@
 import type { Ref } from 'react';
-import {
-  CartesianGrid,
-  Line,
-  LineChart as RCLineChart,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { CartesianGrid, Line, LineChart as RCLineChart, Tooltip, XAxis, YAxis } from 'recharts';
 import { useChart } from '../shared/useChart';
 import { ChartTooltipContent } from '../shared/ChartTooltip';
 import { ChartFrame } from '../shared/ChartFrame';
@@ -79,11 +72,7 @@ export function LineChart({
             <Tooltip
               cursor={{ stroke: colors.borderStrong, strokeDasharray: '4 4' }}
               content={(props) => (
-                <ChartTooltipContent
-                  {...props}
-                  yFormatter={yFormatter}
-                  xFormatter={xFormatter}
-                />
+                <ChartTooltipContent {...props} yFormatter={yFormatter} xFormatter={xFormatter} />
               )}
             />
           ) : null}

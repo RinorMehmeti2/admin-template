@@ -12,11 +12,7 @@ const sources = [
 
 export const Default = {
   render: () => (
-    <PieChart
-      xKey="name"
-      data={sources}
-      series={[{ key: 'value', label: 'Visits' }]}
-    />
+    <PieChart xKey="name" data={sources} series={[{ key: 'value', label: 'Visits' }]} />
   ),
 };
 

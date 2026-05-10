@@ -1,12 +1,7 @@
 import { Activity, DollarSign, ShoppingBag, Users } from 'lucide-react';
 import { Card } from '@/components/data-display/Card';
 import { Stat } from '@/components/data-display/Stat';
-import {
-  BarChart,
-  ChartContainer,
-  DonutChart,
-  LineChart,
-} from '@/components/data-display/charts';
+import { BarChart, ChartContainer, DonutChart, LineChart } from '@/components/data-display/charts';
 import { DataTable, type ColumnDef } from '@/components/data-display/DataTable';
 import { Badge } from '@/components/primitives/Badge';
 
@@ -50,14 +45,70 @@ const planMix = [
 ];
 
 const orders: ReadonlyArray<OrderRow> = [
-  { id: 'o-1042', customer: 'Acme Corp', channel: 'Direct', status: 'Paid', amount: 1290, createdAt: '2026-05-09' },
-  { id: 'o-1041', customer: 'Globex', channel: 'Search', status: 'Paid', amount: 459, createdAt: '2026-05-09' },
-  { id: 'o-1040', customer: 'Initech', channel: 'Social', status: 'Pending', amount: 199, createdAt: '2026-05-08' },
-  { id: 'o-1039', customer: 'Hooli', channel: 'Email', status: 'Paid', amount: 2_499, createdAt: '2026-05-08' },
-  { id: 'o-1038', customer: 'Soylent', channel: 'Direct', status: 'Refunded', amount: 89, createdAt: '2026-05-07' },
-  { id: 'o-1037', customer: 'Pied Piper', channel: 'Referral', status: 'Paid', amount: 749, createdAt: '2026-05-07' },
-  { id: 'o-1036', customer: 'Stark Industries', channel: 'Search', status: 'Paid', amount: 3_120, createdAt: '2026-05-06' },
-  { id: 'o-1035', customer: 'Wayne Enterprises', channel: 'Direct', status: 'Paid', amount: 920, createdAt: '2026-05-06' },
+  {
+    id: 'o-1042',
+    customer: 'Acme Corp',
+    channel: 'Direct',
+    status: 'Paid',
+    amount: 1290,
+    createdAt: '2026-05-09',
+  },
+  {
+    id: 'o-1041',
+    customer: 'Globex',
+    channel: 'Search',
+    status: 'Paid',
+    amount: 459,
+    createdAt: '2026-05-09',
+  },
+  {
+    id: 'o-1040',
+    customer: 'Initech',
+    channel: 'Social',
+    status: 'Pending',
+    amount: 199,
+    createdAt: '2026-05-08',
+  },
+  {
+    id: 'o-1039',
+    customer: 'Hooli',
+    channel: 'Email',
+    status: 'Paid',
+    amount: 2_499,
+    createdAt: '2026-05-08',
+  },
+  {
+    id: 'o-1038',
+    customer: 'Soylent',
+    channel: 'Direct',
+    status: 'Refunded',
+    amount: 89,
+    createdAt: '2026-05-07',
+  },
+  {
+    id: 'o-1037',
+    customer: 'Pied Piper',
+    channel: 'Referral',
+    status: 'Paid',
+    amount: 749,
+    createdAt: '2026-05-07',
+  },
+  {
+    id: 'o-1036',
+    customer: 'Stark Industries',
+    channel: 'Search',
+    status: 'Paid',
+    amount: 3_120,
+    createdAt: '2026-05-06',
+  },
+  {
+    id: 'o-1035',
+    customer: 'Wayne Enterprises',
+    channel: 'Direct',
+    status: 'Paid',
+    amount: 920,
+    createdAt: '2026-05-06',
+  },
 ];
 
 const fmtUSD = (n: number): string =>
@@ -192,11 +243,7 @@ export function ChartsPage() {
       <section className="space-y-2">
         <h2 className="text-lg font-semibold tracking-tight">Recent orders</h2>
         <Card className="overflow-hidden p-0">
-          <DataTable<OrderRow>
-            data={[...orders]}
-            columns={[...columns]}
-            getRowId={(r) => r.id}
-          />
+          <DataTable<OrderRow> data={[...orders]} columns={[...columns]} getRowId={(r) => r.id} />
         </Card>
       </section>
     </ChartContainer>

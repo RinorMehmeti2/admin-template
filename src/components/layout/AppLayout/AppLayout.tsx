@@ -1,8 +1,11 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
+  BarChart3,
   ChevronDown,
+  Columns2,
   Compass,
   FormInput,
+  Frame,
   LayoutDashboard,
   LogIn,
   LogOut,
@@ -12,6 +15,7 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
+  SquareDashedMousePointer,
   Table,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -47,8 +51,12 @@ const NAV_ITEMS: ReadonlyArray<NavItem> = [
   },
   { to: '/data', label: 'Data display', icon: <LayoutDashboard className="h-4 w-4" /> },
   { to: '/tables', label: 'Tables', icon: <Table className="h-4 w-4" /> },
+  { to: '/charts', label: 'Charts', icon: <BarChart3 className="h-4 w-4" /> },
   { to: '/positioning', label: 'Positioning', icon: <Move className="h-4 w-4" /> },
   { to: '/layout', label: 'Layout', icon: <PanelsTopLeft className="h-4 w-4" /> },
+  { to: '/split', label: 'Split', icon: <Columns2 className="h-4 w-4" /> },
+  { to: '/focus', label: 'Focus', icon: <SquareDashedMousePointer className="h-4 w-4" /> },
+  { to: '/workspace', label: 'Workspace', icon: <Frame className="h-4 w-4" /> },
   { to: '/admin', label: 'Admin', icon: <ShieldCheck className="h-4 w-4" /> },
 ];
 

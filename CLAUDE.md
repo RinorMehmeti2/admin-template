@@ -289,15 +289,36 @@ A component is complete only when ALL of these are true:
 ## Positioning — known limitations
 
 `usePosition` (and `usePositionAtPoint`) handle viewport flip + perpendicular
-shift, but explicitly do NOT handle:
+shift. The following edge cases are NOT handled — most don't apply today
+because we always portal to `document.body`:
 
-- Transformed ancestors of the portal container (we portal to document.body —
-  if a future change moves portals into a transformed subtree, coordinates
-  will be wrong).
-- Element-level scrollers without window resize (no ResizeObserver on
-  trigger/content — add one if a real case appears).
-- Arrow-glyph offset (`data-side` is exposed; no arrow component exists yet).
-- Split placement (we flip OR shift, not partial-place).
+1. Transformed ancestors of the portal container.
+2. position: fixed parents on the trigger (one-frame drift on scroll).
+3. transform: scale on trigger or ancestors (no cumulative transform divide).
+4. Element-level scrollers without window resize (no ResizeObserver on
+   trigger/content).
+5. Iframes (no ownerDocument traversal).
+6. Alignment fallback in flip (only does axis-flip, not bottom-start →
+   top-end).
+7. Arrow-glyph component (data-side exposed, no arrow renderer yet).
+8. Split placement (flip OR shift, never partial-place).
+9. pos.placement may lie when both sides overflow ("more room" tiebreaker
+   leaves data-side pointing at a clipped side).
 
-@floating-ui/react-dom was evaluated and deferred. Revisit when building
-Popover with arrows, virtual-trigger overlays, or if portaling targets change.
+### When to take @floating-ui/react-dom
+
+Evaluated and explicitly deferred at the Prompt 17 stage. Reconsider when any
+of these becomes real:
+
+1. Building a Popover with an arrow that points at the trigger after shift
+   (arrow middleware).
+2. Portaling into a transformed subtree (proper offset-parent walk + strategy
+   switch).
+3. Element-level scroll containers needing auto-update on inner scroll.
+4. Designers ask for alignment-fallback flip (bottom-start → top-end).
+5. A specific production bug in any of cases 1–9 above.
+
+Migration estimated at one day: rewrite resolvePosition body to call
+computePosition with [offset, flip, shift, arrow?] middleware, keep
+{ x, y, ready, placement } return shape stable, add ResizeObserver polyfill
+to setupTests.ts for jsdom.

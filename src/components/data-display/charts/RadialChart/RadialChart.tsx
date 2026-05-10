@@ -1,10 +1,5 @@
 import { useCallback, useMemo, useState, type Ref } from 'react';
-import {
-  RadialBar,
-  RadialBarChart as RCRadialBarChart,
-  Tooltip,
-  PolarAngleAxis,
-} from 'recharts';
+import { RadialBar, RadialBarChart as RCRadialBarChart, Tooltip, PolarAngleAxis } from 'recharts';
 import { useChartContext } from '../shared/ChartContext';
 import { useTokenColors } from '../shared/useTokenColors';
 import { ChartTooltipContent } from '../shared/ChartTooltip';
@@ -120,12 +115,7 @@ export function RadialChart({
           {...sizing}
         >
           {domainMax !== undefined ? (
-            <PolarAngleAxis
-              type="number"
-              domain={[0, domainMax]}
-              angleAxisId={0}
-              tick={false}
-            />
+            <PolarAngleAxis type="number" domain={[0, domainMax]} angleAxisId={0} tick={false} />
           ) : null}
           {showTooltip ? (
             <Tooltip

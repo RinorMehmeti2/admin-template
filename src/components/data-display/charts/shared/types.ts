@@ -50,8 +50,10 @@ export type SliceRow = Record<string, unknown> & {
   color?: ChartColorName;
 };
 
-export interface SliceChartCommonProps
-  extends Omit<ChartCommonProps, 'series' | 'data' | 'showGrid'> {
+export interface SliceChartCommonProps extends Omit<
+  ChartCommonProps,
+  'series' | 'data' | 'showGrid'
+> {
   data: ReadonlyArray<SliceRow>;
   /** Single series describing the value column. */
   series: ReadonlyArray<ChartSeries>;

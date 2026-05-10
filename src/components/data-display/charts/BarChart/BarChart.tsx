@@ -1,12 +1,5 @@
 import type { Ref } from 'react';
-import {
-  Bar,
-  BarChart as RCBarChart,
-  CartesianGrid,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Bar, BarChart as RCBarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import { useChart } from '../shared/useChart';
 import { ChartTooltipContent } from '../shared/ChartTooltip';
 import { ChartFrame } from '../shared/ChartFrame';
@@ -59,7 +52,11 @@ export function BarChart({
       dataChartType={stacked ? 'stacked-bar' : 'bar'}
     >
       {(sizing) => (
-        <RCBarChart data={data as never} layout={isHorizontal ? 'horizontal' : 'vertical'} {...sizing}>
+        <RCBarChart
+          data={data as never}
+          layout={isHorizontal ? 'horizontal' : 'vertical'}
+          {...sizing}
+        >
           {showGrid ? (
             <CartesianGrid
               stroke={colors.border}

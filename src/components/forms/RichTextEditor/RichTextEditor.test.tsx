@@ -127,7 +127,9 @@ describe('RichTextEditor', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Add link' }));
 
     await waitFor(() => {
-      expect(ref.current?.getHTML()).toMatch(/<a [^>]*href="https:\/\/example\.com"[^>]*>anchor<\/a>/);
+      expect(ref.current?.getHTML()).toMatch(
+        /<a [^>]*href="https:\/\/example\.com"[^>]*>anchor<\/a>/,
+      );
     });
 
     // Re-open dialog (now in edit mode) and remove the link.

@@ -14,6 +14,10 @@ import { DataPage } from '@/pages/DataPage';
 import { TablesPage } from '@/pages/TablesPage';
 import { PositioningPage } from '@/pages/PositioningPage';
 import { ShowcasePage } from '@/pages/ShowcasePage';
+import { ChartsPage } from '@/pages/ChartsPage';
+import { SplitDemoPage } from '@/pages/SplitDemoPage';
+import { FocusDemoPage } from '@/pages/FocusDemoPage';
+import { WorkspaceDemoPage } from '@/pages/WorkspaceDemoPage';
 import { DashboardPage, LayoutDemo, SettingsPage, UsersPage } from '@/pages/layout-demo';
 import { ToastProvider } from '@/context/ToastProvider';
 import { ThemeProvider, useTheme } from '@/context/ThemeProvider';
@@ -35,8 +39,12 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
   { to: '/feedback', label: 'Feedback', keywords: ['toast', 'alert', 'dialog'] },
   { to: '/data', label: 'Data display', keywords: ['card', 'stat', 'list'] },
   { to: '/tables', label: 'Tables', keywords: ['datatable', 'rows'] },
+  { to: '/charts', label: 'Charts', keywords: ['line', 'bar', 'pie', 'recharts'] },
   { to: '/positioning', label: 'Positioning', keywords: ['flip', 'shift', 'boundary', 'tooltip'] },
   { to: '/layout', label: 'Layout demo', keywords: ['sidebar', 'topbar', 'shell'] },
+  { to: '/split', label: 'Split layout', keywords: ['inbox', 'master', 'detail', 'pane', 'resize'] },
+  { to: '/focus', label: 'Focus mode', keywords: ['fullscreen', 'editor', 'distraction'] },
+  { to: '/workspace', label: 'Workspace', keywords: ['canvas', 'panels', 'editor', 'design'] },
 ];
 
 function RootShell() {
@@ -158,6 +166,10 @@ const router = createBrowserRouter([
             ),
           },
           { path: 'positioning', element: <PositioningPage /> },
+          { path: 'charts', element: <ChartsPage /> },
+          { path: 'split', element: <SplitDemoPage /> },
+          { path: 'focus', element: <FocusDemoPage /> },
+          { path: 'workspace', element: <WorkspaceDemoPage /> },
           {
             path: 'admin',
             element: (
