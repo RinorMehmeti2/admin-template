@@ -220,7 +220,7 @@ export function WorkspacePanel({
         className,
       )}
     >
-      <header
+      <div
         role="toolbar"
         aria-label={dragHandleLabel ?? `Move ${titleText}`}
         onPointerDown={drag.onPointerDown}
@@ -261,7 +261,7 @@ export function WorkspacePanel({
             <X className="h-3.5 w-3.5" />
           </IconButton>
         ) : null}
-      </header>
+      </div>
       {body.isOpen ? (
         <div className="min-h-0 flex-1 overflow-auto p-3 text-sm text-foreground">{children}</div>
       ) : null}

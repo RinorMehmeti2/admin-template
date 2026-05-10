@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FullscreenWorkspace, WorkspaceCanvas, WorkspacePanel } from './FullscreenWorkspace';
+import { runAxe } from '@/test-utils/a11y';
 
 interface Box {
   x: number;
@@ -276,5 +277,16 @@ describe('FullscreenWorkspace', () => {
       ),
     ).toThrow(/WorkspaceCanvas/);
     spy.mockRestore();
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <FullscreenWorkspace>
+        <WorkspaceCanvas>
+          <WorkspacePanel title="Layers">layers body</WorkspacePanel>
+        </WorkspaceCanvas>
+      </FullscreenWorkspace>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

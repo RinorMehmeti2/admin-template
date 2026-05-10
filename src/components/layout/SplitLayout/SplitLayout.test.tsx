@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { runAxe } from '@/test-utils/a11y';
 import { SplitLayout } from './SplitLayout';
 
 function renderSplit(props?: Partial<Parameters<typeof SplitLayout>[0]>) {
@@ -147,5 +148,15 @@ describe('SplitLayout', () => {
     });
     // Falls back to default width.
     expect(screen.getByRole('separator')).toHaveAttribute('aria-valuenow', '320');
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = renderSplit();
+    // The window-splitter pattern (WAI-ARIA APG) puts a collapse button inside
+    // the focusable separator. axe's nested-interactive doesn't model this
+    // pattern. See CONTRIBUTING.md "A11y exceptions".
+    expect(
+      await runAxe(container, { rules: { 'nested-interactive': { enabled: false } } }),
+    ).toHaveNoViolations();
   });
 });

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { PageHeader } from './PageHeader';
 
 describe('PageHeader', () => {
@@ -22,5 +23,16 @@ describe('PageHeader', () => {
   it('renders actions slot', () => {
     render(<PageHeader title="x" actions={<button>Save</button>} />);
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <PageHeader
+        title="Dashboard"
+        description="Overview of your account"
+        actions={<button type="button">New</button>}
+      />,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

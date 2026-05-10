@@ -7,6 +7,7 @@ import {
   SidebarMobileToggle,
   SidebarProvider,
 } from './Sidebar';
+import { runAxe } from '@/test-utils/a11y';
 
 function mockMatchMedia(matches: boolean) {
   Object.defineProperty(window, 'matchMedia', {
@@ -89,5 +90,19 @@ describe('Sidebar', () => {
     );
     // Renders nothing
     expect(container.querySelector('button')).toBeNull();
+  });
+
+  it('has no a11y violations (desktop)', async () => {
+    const { container } = render(
+      <SidebarProvider>
+        <Sidebar header={<div>Brand</div>}>
+          <nav aria-label="Sidebar">
+            <a href="/">Home</a>
+          </nav>
+        </Sidebar>
+        <SidebarCollapseToggle />
+      </SidebarProvider>,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

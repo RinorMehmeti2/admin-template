@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
+import { runAxe } from '@/test-utils/a11y';
 import { Portal } from './Portal';
 
 describe('Portal', () => {
@@ -51,5 +52,14 @@ describe('Portal', () => {
     expect(document.body.querySelector('[data-testid="z"]')).not.toBeNull();
     unmount();
     expect(document.body.querySelector('[data-testid="z"]')).toBeNull();
+  });
+
+  it('has no a11y violations (portaled content)', async () => {
+    render(
+      <Portal>
+        <button type="button" aria-label="Portaled">ok</button>
+      </Portal>,
+    );
+    expect(await runAxe(document.body)).toHaveNoViolations();
   });
 });

@@ -97,7 +97,7 @@ function AuthMenu() {
           ) : null}
           <DropdownMenuItem
             onSelect={() => {
-              void logout();
+              void logout().then(() => navigate('/login'));
             }}
           >
             <LogOut className="mr-2 h-4 w-4" /> Log out

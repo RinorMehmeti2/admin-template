@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './Tabs';
+import { runAxe } from '@/test-utils/a11y';
 
 function Demo({ onValueChange }: { onValueChange?: (v: string) => void }) {
   return (
@@ -81,5 +82,10 @@ describe('Tabs', () => {
       </Tabs>,
     );
     expect(screen.getByRole('tab', { name: 'B' })).toBeDisabled();
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(<Demo />);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

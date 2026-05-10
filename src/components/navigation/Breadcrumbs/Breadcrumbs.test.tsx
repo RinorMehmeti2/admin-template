@@ -7,6 +7,7 @@ import {
   BreadcrumbLink,
   Breadcrumbs,
 } from './Breadcrumbs';
+import { runAxe } from '@/test-utils/a11y';
 
 function Demo() {
   return (
@@ -59,5 +60,10 @@ describe('Breadcrumbs', () => {
     render(<Demo />);
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
     expect(screen.getByRole('link', { name: 'Users' })).toHaveAttribute('href', '/users');
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(<Demo />);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

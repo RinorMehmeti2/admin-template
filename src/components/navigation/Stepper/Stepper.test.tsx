@@ -7,6 +7,7 @@ import {
   StepLabel,
   Stepper,
 } from './Stepper';
+import { runAxe } from '@/test-utils/a11y';
 
 function Demo() {
   return (
@@ -79,5 +80,10 @@ describe('Stepper', () => {
       </Stepper>,
     );
     expect(container.querySelector('ol')).toHaveClass('flex-col');
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(<Demo />);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

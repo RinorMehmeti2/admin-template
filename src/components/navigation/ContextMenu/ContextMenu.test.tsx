@@ -7,6 +7,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from './ContextMenu';
+import { runAxe } from '@/test-utils/a11y';
 
 function Demo({ onSelect }: { onSelect?: (v: string) => void }) {
   return (
@@ -56,5 +57,11 @@ describe('ContextMenu', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: 'Copy' }));
     expect(onSelect).toHaveBeenCalledWith('copy');
     expect(screen.queryByRole('menu')).toBeNull();
+  });
+
+  it('has no a11y violations (open)', async () => {
+    render(<Demo />);
+    fireEvent.contextMenu(screen.getByTestId('target'));
+    expect(await runAxe(document.body)).toHaveNoViolations();
   });
 });

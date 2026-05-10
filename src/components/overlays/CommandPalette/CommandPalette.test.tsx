@@ -10,6 +10,7 @@ import {
   type Command,
 } from './';
 import { fuzzyMatch, scoreCommand } from './fuzzyMatch';
+import { runAxe } from '@/test-utils/a11y';
 
 function Opener() {
   const { openPalette } = useCommandRegistry();
@@ -155,6 +156,12 @@ describe('CommandPalette', () => {
     await userEvent.click(screen.getByRole('option', { name: /Run X/ }));
     await waitFor(() => expect(perform).toHaveBeenCalled());
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+  });
+
+  it('has no a11y violations (open with grouped commands)', async () => {
+    render(<Harness commands={baseCommands} autoOpen />);
+    await waitFor(() => expect(screen.getByRole('dialog')).toBeInTheDocument());
+    expect(await runAxe(document.body)).toHaveNoViolations();
   });
 
   it('useRegisterCommands cleans up on unmount', async () => {

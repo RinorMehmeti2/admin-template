@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { Menu, MenuGroup, MenuItem } from './Menu';
+import { runAxe } from '@/test-utils/a11y';
 
 function Demo({ iconOnly = false }: { iconOnly?: boolean }) {
   return (
@@ -57,5 +58,10 @@ describe('Menu', () => {
     expect(screen.queryByText('Settings')).toBeNull();
     // group children are not rendered in iconOnly mode
     expect(screen.queryByRole('link', { name: 'Products' })).toBeNull();
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(<Demo />);
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

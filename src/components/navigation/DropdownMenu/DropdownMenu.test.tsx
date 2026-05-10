@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from './DropdownMenu';
 import { Button } from '@/components/primitives/Button';
+import { runAxe } from '@/test-utils/a11y';
 
 function Demo({ onSelect }: { onSelect?: (v: string) => void }) {
   return (
@@ -133,6 +134,13 @@ describe('DropdownMenu', () => {
     await userEvent.click(item);
     expect(screen.getByRole('menuitemcheckbox')).toHaveAttribute('aria-checked', 'true');
     expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+
+  it('has no a11y violations (closed + open)', async () => {
+    const { container } = render(<Demo />);
+    expect(await runAxe(container)).toHaveNoViolations();
+    await userEvent.click(screen.getByRole('button', { name: 'Open' }));
+    expect(await runAxe(document.body)).toHaveNoViolations();
   });
 
   it('RadioGroup updates value on item activation', async () => {

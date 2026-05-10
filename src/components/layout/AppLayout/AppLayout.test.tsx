@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/context/ThemeProvider';
 import { LocaleProvider } from '@/context/LocaleProvider';
 import { CommandRegistryProvider } from '@/components/overlays/CommandPalette';
 import { AuthProvider } from '@/auth';
+import { runAxe } from '@/test-utils/a11y';
 
 function renderWithRouter(initialPath = '/primitives') {
   return render(
@@ -49,5 +50,10 @@ describe('AppLayout', () => {
   it('exposes the command palette opener with ⌘K hint', () => {
     renderWithRouter();
     expect(screen.getByRole('button', { name: /Open command palette/i })).toBeInTheDocument();
+  });
+
+  it('has no a11y violations (composed layout)', async () => {
+    const { container } = renderWithRouter();
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

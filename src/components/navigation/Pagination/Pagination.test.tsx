@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Pagination } from './Pagination';
 import { usePagination } from './usePagination';
+import { runAxe } from '@/test-utils/a11y';
 
 describe('usePagination', () => {
   it('returns just the pages when total is small', () => {
@@ -72,5 +73,12 @@ describe('Pagination', () => {
     expect(onPageChange).toHaveBeenCalledWith(4);
     await userEvent.click(screen.getByRole('button', { name: 'Previous page' }));
     expect(onPageChange).toHaveBeenCalledWith(2);
+  });
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <Pagination page={3} totalPages={20} onPageChange={() => undefined} />,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
   });
 });

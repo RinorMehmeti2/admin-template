@@ -179,6 +179,7 @@ export function SplitLayout({
       className={cn('relative flex h-full min-h-0 w-full overflow-hidden bg-background', className)}
     >
       <aside
+        id="split-layout-left"
         className={cn(
           'relative flex h-full min-h-0 shrink-0 flex-col overflow-hidden border-r border-border bg-surface transition-[width] duration-150 ease-out',
           isCollapsed && collapsedLeftWidth === 0 && 'border-r-0',
