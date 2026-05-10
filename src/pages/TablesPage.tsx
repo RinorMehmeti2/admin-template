@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { Copy, Eye, MoreHorizontal, Plus, Receipt, Trash2 } from 'lucide-react';
+import { Copy, Eye, MoreHorizontal, Plus, Receipt, Trash2, Users as UsersIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import {
@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
   DataTable,
+  EmptyState,
   Table,
   TableBody,
   TableCaption,
@@ -21,6 +22,7 @@ import { Avatar } from '@/components/primitives/Avatar';
 import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
+import { Alert } from '@/components/feedback/Alert';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import {
   DropdownMenu,
@@ -30,13 +32,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/navigation/DropdownMenu';
+import { api, keys, useApiQuery } from '@/data';
 
 /* -------------------------------------------------------------------------- */
 /*  Mock data                                                                 */
 /* -------------------------------------------------------------------------- */
 
 interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: 'Admin' | 'Member' | 'Viewer';
@@ -44,46 +47,11 @@ interface User {
   lastSeenDays: number;
 }
 
-const ROLES: User['role'][] = ['Admin', 'Member', 'Viewer'];
-const STATUSES: User['status'][] = ['Active', 'Invited', 'Suspended'];
-
-function makeUsers(n: number): User[] {
-  const first = [
-    'Ada',
-    'Grace',
-    'Linus',
-    'Margaret',
-    'Alan',
-    'Edsger',
-    'Donald',
-    'Barbara',
-    'Niklaus',
-    'Bjarne',
-  ];
-  const last = [
-    'Lovelace',
-    'Hopper',
-    'Torvalds',
-    'Hamilton',
-    'Turing',
-    'Dijkstra',
-    'Knuth',
-    'Liskov',
-    'Wirth',
-    'Stroustrup',
-  ];
-  return Array.from({ length: n }).map((_, i) => {
-    const f = first[i % first.length]!;
-    const l = last[(i * 7) % last.length]!;
-    return {
-      id: i + 1,
-      name: `${f} ${l}`,
-      email: `${f.toLowerCase()}.${l.toLowerCase()}${i + 1}@example.com`,
-      role: ROLES[i % ROLES.length]!,
-      status: STATUSES[i % STATUSES.length]!,
-      lastSeenDays: (i * 13) % 60,
-    };
-  });
+interface UsersResponse {
+  data: User[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
 
 interface Order {
@@ -120,7 +88,6 @@ function makeOrders(n: number): Order[] {
   });
 }
 
-const USERS = makeUsers(50);
 const ORDERS = makeOrders(40);
 
 /* -------------------------------------------------------------------------- */
@@ -236,26 +203,57 @@ function UsersTableSection() {
   const [selected, setSelected] = useState<User[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
+  // Fetch the full list once. The DataTable handles client-side pagination,
+  // sort, and search — so we ask the API for everything in one shot. For a
+  // server-paginated demo, lift page/search to local state and pass them in
+  // both the queryKey and the request query string.
+  const filters = useMemo(() => ({ pageSize: 1000 }), []);
+  const { data, isLoading, isError, error, refetch, isFetching } = useApiQuery<UsersResponse>(
+    keys.users.list(filters),
+    () => api<UsersResponse>('/api/users', { query: filters }),
+  );
+
   return (
     <Card variant="outlined">
       <CardHeader className="flex-row items-start justify-between gap-4">
         <div className="space-y-1">
           <CardTitle>Users</CardTitle>
           <CardDescription>
-            50 mock users — sortable, searchable, paginated, selectable.
+            Fetched from a mocked /api/users endpoint via MSW — sortable, searchable, paginated,
+            selectable.
           </CardDescription>
         </div>
         <Button leftIcon={<Plus className="h-4 w-4" />}>Invite user</Button>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-3">
+        {isError ? (
+          <Alert
+            variant="danger"
+            title="Couldn't load users"
+            description={error.message}
+            actions={
+              <Button size="sm" variant="outline" onClick={() => void refetch()}>
+                Retry
+              </Button>
+            }
+          />
+        ) : null}
         <DataTable<User>
           columns={userColumns}
-          data={USERS}
-          getRowId={(row) => String(row.id)}
+          data={data?.data ?? []}
+          getRowId={(row) => row.id}
           enableRowSelection="multi"
           onRowSelectionChange={setSelected}
           searchPlaceholder="Search users by name, email…"
           pageSize={10}
+          isLoading={isLoading || isFetching}
+          emptyState={
+            <EmptyState
+              icon={<UsersIcon className="h-6 w-6" />}
+              title="No users yet"
+              description="Invite a teammate to get started."
+            />
+          }
           toolbar={{
             right:
               selected.length > 0 ? (

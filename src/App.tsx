@@ -30,6 +30,12 @@ import {
   useRegisterCommands,
 } from '@/components/overlays/CommandPalette';
 import { AuthProvider, ProtectedRoute, PublicOnlyRoute, RoleGate } from '@/auth';
+import { ApiAuthBridge, QueryProvider } from '@/data';
+import {
+  RootRouterErrorElement,
+  RouterErrorElement,
+} from '@/components/feedback/ErrorBoundary';
+import { ErrorsDemoPage } from '@/pages/errors';
 import { LoginPage } from '@/pages/auth/login';
 import { AdminPage } from '@/pages/admin';
 
@@ -50,6 +56,7 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
   },
   { to: '/focus', label: 'Focus mode', keywords: ['fullscreen', 'editor', 'distraction'] },
   { to: '/workspace', label: 'Workspace', keywords: ['canvas', 'panels', 'editor', 'design'] },
+  { to: '/errors', label: 'Error boundaries', keywords: ['error', 'boundary', 'crash', 'fallback'] },
 ];
 
 function RootShell() {
@@ -136,6 +143,7 @@ function RootShell() {
 const router = createBrowserRouter([
   {
     element: <RootShell />,
+    errorElement: <RootRouterErrorElement />,
     children: [
       {
         path: '/login',
@@ -154,6 +162,7 @@ const router = createBrowserRouter([
           { path: 'primitives', element: <PrimitivesPage /> },
           { path: 'forms', element: <FormsPage /> },
           { path: 'feedback', element: <FeedbackPage /> },
+          { path: 'errors', element: <ErrorsDemoPage /> },
           {
             path: 'data',
             element: (
@@ -169,9 +178,14 @@ const router = createBrowserRouter([
                 <TablesPage />
               </ProtectedRoute>
             ),
+            errorElement: <RouterErrorElement source="route:/tables" />,
           },
           { path: 'positioning', element: <PositioningPage /> },
-          { path: 'charts', element: <ChartsPage /> },
+          {
+            path: 'charts',
+            element: <ChartsPage />,
+            errorElement: <RouterErrorElement source="route:/charts" />,
+          },
           { path: 'split', element: <SplitDemoPage /> },
           { path: 'focus', element: <FocusDemoPage /> },
           { path: 'workspace', element: <WorkspaceDemoPage /> },
@@ -191,6 +205,7 @@ const router = createBrowserRouter([
                 </RoleGate>
               </ProtectedRoute>
             ),
+            errorElement: <RouterErrorElement source="route:/admin" />,
           },
         ],
       },
@@ -216,15 +231,18 @@ export function App() {
   return (
     <ThemeProvider>
       <LocaleProvider>
-        <AuthProvider>
-          <CommandRegistryProvider>
-            <ToastProvider position="top-right">
-              <TooltipProvider delayDuration={300}>
-                <RouterProvider router={router} />
-              </TooltipProvider>
-            </ToastProvider>
-          </CommandRegistryProvider>
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <ApiAuthBridge />
+            <CommandRegistryProvider>
+              <ToastProvider position="top-right">
+                <TooltipProvider delayDuration={300}>
+                  <RouterProvider router={router} />
+                </TooltipProvider>
+              </ToastProvider>
+            </CommandRegistryProvider>
+          </AuthProvider>
+        </QueryProvider>
       </LocaleProvider>
     </ThemeProvider>
   );

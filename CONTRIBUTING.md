@@ -377,6 +377,213 @@ const price = new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD'
 4. If RTL, add the language code to `RTL_LOCALES` in `src/i18n/index.ts` —
    the provider sets `<html dir>` accordingly.
 
+## Data fetching
+
+Server state lives in `@tanstack/react-query`. The data layer is `src/data/`:
+
+```
+src/data/
+  api.ts                 # fetch wrapper + ApiError + 401 retry
+  queryClient.ts         # QueryClient factory + default options
+  QueryProvider.tsx      # mounts QueryClientProvider + dev devtools
+  ApiAuthBridge.tsx      # wires useAuth() ↔ api singleton (getToken/refresh/logout)
+  keys.ts                # query key factory (users, …)
+  useApiQuery.ts         # typed useQuery wrapper (TError = ApiError)
+  useApiMutation.ts      # typed useMutation wrapper (TError = ApiError)
+  useInvalidate.ts       # invalidate-by-prefix helper
+  __tests__/             # queryClient defaults, ApiError, 401 retry, hook inference
+```
+
+### Reading from the API
+
+```tsx
+import { api, keys, useApiQuery } from '@/data';
+
+interface UsersResponse { data: User[]; total: number }
+
+function UsersTable() {
+  const filters = { page: 1, search: '' };
+  const { data, isLoading, isError, error, refetch } = useApiQuery<UsersResponse>(
+    keys.users.list(filters),
+    () => api<UsersResponse>('/api/users', { query: filters }),
+  );
+  // …
+}
+```
+
+The fetcher returns whatever the endpoint produces; `useApiQuery` infers
+`TData` from it. Errors are always `ApiError` — read `error.status` and
+`error.code` directly.
+
+### Writing (mutations + optimistic updates)
+
+```tsx
+import { api, keys, useApiMutation, useInvalidate } from '@/data';
+
+function useUpdateUser() {
+  const invalidate = useInvalidate();
+  const queryClient = useQueryClient();
+  return useApiMutation<User, { id: string; patch: Partial<User> }>(
+    ({ id, patch }) => api<User>(`/api/users/${id}`, { method: 'PATCH', json: patch }),
+    {
+      onMutate: async ({ id, patch }) => {
+        // 1. Cancel any in-flight reads for this key.
+        await queryClient.cancelQueries({ queryKey: keys.users.detail(id) });
+        // 2. Snapshot previous value.
+        const previous = queryClient.getQueryData<User>(keys.users.detail(id));
+        // 3. Optimistically apply.
+        if (previous) {
+          queryClient.setQueryData<User>(keys.users.detail(id), { ...previous, ...patch });
+        }
+        return { previous };
+      },
+      onError: (_err, { id }, context) => {
+        // 4. Roll back.
+        if (context?.previous) queryClient.setQueryData(keys.users.detail(id), context.previous);
+      },
+      onSettled: (_data, _err, { id }) => {
+        // 5. Refetch to reconcile.
+        void invalidate(keys.users.detail(id));
+        void invalidate(keys.users.lists());
+      },
+    },
+  );
+}
+```
+
+### Query key conventions
+
+- Keys come from the `keys` factory in `src/data/keys.ts` — never hand-roll
+  string-array keys at call sites.
+- Each resource exposes a hierarchy: `keys.users.all` → `keys.users.lists()`
+  → `keys.users.list(filters)` and `keys.users.details()` →
+  `keys.users.detail(id)`.
+- Lists carry their full filter object as the trailing segment so different
+  filter combinations cache independently.
+
+### Invalidation rules
+
+- After a mutation, invalidate the **smallest correct prefix**: a detail
+  patch invalidates that detail + its lists; a "create user" invalidates
+  only the lists.
+- Use `useInvalidate()` for the common case — it calls
+  `invalidateQueries({ exact: false })` so any descendant key matches.
+- Reach for `queryClient.removeQueries` (not invalidate) only when a record
+  has been deleted and you do not want a refetch.
+
+### Error handling
+
+- `ApiError` carries `status`, `code`, `message`, `payload`. Render
+  user-facing copy from `error.message`; switch on `error.status` /
+  `error.code` for branching (e.g., 422 → show inline form errors).
+- Network failures (no response) come back with `status: 0` and
+  `code: 'network'`.
+- `queryClient` defaults skip retries for 4xx and retry once on 5xx /
+  network. Mutations never retry.
+
+### Auth integration
+
+`<ApiAuthBridge>` is mounted in `App.tsx` inside `<AuthProvider>`. It calls
+`configureApi()` whenever the auth user changes, wiring:
+
+- `getToken` — reads `user.token` if your `User` type carries one (the
+  shipped mock `User` doesn't, so no `Authorization` header is sent).
+- `refresh` — delegates to `AuthClient.refresh()` for the one-shot retry
+  on 401.
+- `onAuthFailure` — calls `logout()` after the retry also fails, flipping
+  the UI back to `/login`.
+
+Swapping in a real backend usually means: extend `User` with `token`,
+implement your own `AuthClient`, and pass it to both `<AuthProvider client>`
+and `<ApiAuthBridge client>`.
+
+### Mocking with MSW
+
+The dev server and tests both use [MSW](https://mswjs.io). Handlers live in
+`src/mocks/handlers.ts`; a browser worker is in `src/mocks/browser.ts` and a
+node server (for tests) in `src/mocks/node.ts`. The worker script is at
+`public/mockServiceWorker.js` (generated by `pnpm dlx msw init public/`).
+
+- **Dev server (opt-in).** `VITE_USE_MSW=true pnpm dev` mounts the worker
+  via `src/main.tsx`. Default off — most contributors hit the real backend.
+- **Tests.** Suites that need network mocking import `server` from
+  `@/mocks/node` and call `server.listen()` / `server.resetHandlers()` /
+  `server.close()` in `beforeAll` / `afterEach` / `afterAll`. The data-layer
+  unit tests don't use MSW because they stub `fetch` directly via
+  `createApiClient({ fetchImpl })`.
+- **Storybook.** Not wired yet — add the `msw-storybook-addon` if needed.
+
+To add a handler, write it in `handlers.ts`. Both worker and server pick it
+up automatically.
+
+## Error boundaries
+
+`src/components/feedback/ErrorBoundary/` ships a class-based React error
+boundary plus two fallbacks and a router adapter. Catches happen at three
+levels:
+
+1. **App root** — `<ErrorBoundary>` wraps `<App>` in `main.tsx`. Last line
+   of defense. Renders `<DefaultErrorFallback>` (full-page chrome).
+2. **Router root + per-route** — `errorElement: <RootRouterErrorElement />`
+   on the router's root and `<RouterErrorElement />` on data-heavy routes
+   (`/tables`, `/charts`, `/admin`). React Router intercepts before the
+   class boundary fires.
+3. **Per-feature** — wrap any subtree in `<ErrorBoundary fallback={…}>`.
+   See `src/pages/errors/ErrorsDemoPage.tsx` for three side-by-side
+   feature-level boundaries.
+
+### What boundaries DO NOT catch
+
+- Event handler errors
+- Async errors (promises, `setTimeout`, fetch chains)
+- Server-rendering errors
+- Errors thrown inside the boundary itself
+
+For event/async errors, bridge through `useErrorHandler` from
+`@/hooks/useErrorHandler`:
+
+```tsx
+const handleError = useErrorHandler();
+async function onClick() {
+  try {
+    await doThing();
+  } catch (err) {
+    handleError(err);
+  }
+}
+```
+
+The hook re-throws the error during the next render, which the nearest
+ancestor boundary then catches normally.
+
+### Resetting
+
+- `reset` (passed to render-prop fallbacks) clears the boundary's error
+  state. Pair with state changes that fix the underlying cause.
+- `resetKeys` auto-resets when any value identity-changes — typically
+  `[location.pathname]` for route boundaries.
+- `<RouterErrorElement>`'s reset reloads the page; React Router has no
+  first-class API to clear a route error in place.
+
+### Reporting
+
+`src/lib/errorReporter.ts` exports a single `reportError(error, context)`
+function called by every caught error (boundary + router-element).
+Production deployments must swap the body of `reportError` for a real
+reporter (Sentry, Bugsnag, Datadog). The `context` shape is:
+
+```ts
+interface ErrorContext {
+  componentStack?: string; // present for boundary catches
+  source?: string;         // 'app-root', 'route:/tables', 'event:invite-user', …
+  extra?: Record<string, unknown>;
+}
+```
+
+Keep the structured payload shape (`{ name, message, stack,
+componentStack, source, extra, timestamp }`) so log search stays
+consistent across the swap.
+
 ## Pragmatic carve-outs
 
 A small set of lint rules are scoped or downgraded from their out-of-the-box
