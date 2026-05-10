@@ -24,6 +24,7 @@ import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
 import { Alert } from '@/components/feedback/Alert';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
+import { LoadingBoundary, SkeletonTable } from '@/components/feedback/LoadingBoundary';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,7 +33,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/navigation/DropdownMenu';
-import { api, keys, useApiQuery } from '@/data';
+import { api, keys, useApiSuspenseQuery } from '@/data';
 
 /* -------------------------------------------------------------------------- */
 /*  Mock data                                                                 */
@@ -199,19 +200,108 @@ const userColumns: ColumnDef<User, unknown>[] = [
   },
 ];
 
+/*
+ * --- BEFORE (kept for reference) ---------------------------------------
+ * The previous version called `useApiQuery` and rendered three states by
+ * hand: a render-time `isLoading` skeleton inside <DataTable>, an
+ * `isError` <Alert> with a Retry button, and the resolved data path. That
+ * pattern still applies — see useApiQuery in src/data and the OrdersTable
+ * section below. The decision tree lives in CONTRIBUTING.md § "Data
+ * fetching".
+ *
+ *   const { data, isLoading, isError, error, refetch } =
+ *     useApiQuery<UsersResponse>(keys.users.list(filters), fetcher);
+ *   if (isError) return <Alert title="Couldn't load users" … />;
+ *   return <DataTable data={data?.data ?? []} isLoading={isLoading} … />;
+ *
+ * --- AFTER (this file) -------------------------------------------------
+ * UsersTableSection renders chrome (header, action bar, ConfirmDialog) and
+ * delegates the data leg to <UsersTableContent>, wrapped in
+ * <LoadingBoundary fallback={<SkeletonTable />}>. The boundary catches
+ * Suspense (skeleton) and ErrorBoundary (Alert) declaratively; the inner
+ * component calls `useApiSuspenseQuery` and renders the resolved
+ * `data` directly with no `isLoading` / `isError` branching.
+ *
+ * Trade-offs:
+ *   - The DataTable + selection state must live inside the boundary
+ *     because selection depends on resolved rows. Header chrome stays
+ *     outside so the Card structure and "Invite user" button render
+ *     immediately.
+ *   - On refetch, the boundary suspends again unless we adopt
+ *     useDeferredValue/startTransition. Acceptable for v1 — we'll add a
+ *     "soft refresh" pattern when the team needs it.
+ */
+
+function UsersErrorFallback({ error, reset }: { error: Error; reset: () => void }) {
+  return (
+    <Alert
+      variant="danger"
+      title="Couldn't load users"
+      description={error.message}
+      actions={
+        <Button size="sm" variant="outline" onClick={reset}>
+          Retry
+        </Button>
+      }
+    />
+  );
+}
+
+function UsersTableContent({
+  setSelected,
+  selectedCount,
+  onDelete,
+}: {
+  setSelected: (rows: User[]) => void;
+  selectedCount: number;
+  onDelete: () => void;
+}) {
+  const filters = useMemo(() => ({ pageSize: 1000 }), []);
+  /*
+   * useApiSuspenseQuery: throws a Promise while loading (caught by the
+   * outer LoadingBoundary's <Suspense>) and throws ApiError on failure
+   * (caught by its <ErrorBoundary>). `data` is always defined here.
+   */
+  const { data } = useApiSuspenseQuery<UsersResponse>(keys.users.list(filters), () =>
+    api<UsersResponse>('/api/users', { query: filters }),
+  );
+
+  return (
+    <DataTable<User>
+      columns={userColumns}
+      data={data.data}
+      getRowId={(row) => row.id}
+      enableRowSelection="multi"
+      onRowSelectionChange={setSelected}
+      searchPlaceholder="Search users by name, email…"
+      pageSize={10}
+      emptyState={
+        <EmptyState
+          icon={<UsersIcon className="h-6 w-6" />}
+          title="No users yet"
+          description="Invite a teammate to get started."
+        />
+      }
+      toolbar={{
+        right:
+          selectedCount > 0 ? (
+            <Button
+              variant="danger"
+              size="sm"
+              leftIcon={<Trash2 className="h-4 w-4" />}
+              onClick={onDelete}
+            >
+              Delete {selectedCount}
+            </Button>
+          ) : null,
+      }}
+    />
+  );
+}
+
 function UsersTableSection() {
   const [selected, setSelected] = useState<User[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
-
-  // Fetch the full list once. The DataTable handles client-side pagination,
-  // sort, and search — so we ask the API for everything in one shot. For a
-  // server-paginated demo, lift page/search to local state and pass them in
-  // both the queryKey and the request query string.
-  const filters = useMemo(() => ({ pageSize: 1000 }), []);
-  const { data, isLoading, isError, error, refetch, isFetching } = useApiQuery<UsersResponse>(
-    keys.users.list(filters),
-    () => api<UsersResponse>('/api/users', { query: filters }),
-  );
 
   return (
     <Card variant="outlined">
@@ -220,54 +310,24 @@ function UsersTableSection() {
           <CardTitle>Users</CardTitle>
           <CardDescription>
             Fetched from a mocked /api/users endpoint via MSW — sortable, searchable, paginated,
-            selectable.
+            selectable. Loading + error legs handled by &lt;LoadingBoundary&gt; +
+            useApiSuspenseQuery.
           </CardDescription>
         </div>
         <Button leftIcon={<Plus className="h-4 w-4" />}>Invite user</Button>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {isError ? (
-          <Alert
-            variant="danger"
-            title="Couldn't load users"
-            description={error.message}
-            actions={
-              <Button size="sm" variant="outline" onClick={() => void refetch()}>
-                Retry
-              </Button>
-            }
+      <CardContent>
+        <LoadingBoundary
+          fallback={<SkeletonTable count={8} columns={4} />}
+          errorFallback={(props) => <UsersErrorFallback {...props} />}
+          source="route:/tables#users"
+        >
+          <UsersTableContent
+            setSelected={setSelected}
+            selectedCount={selected.length}
+            onDelete={() => setConfirmOpen(true)}
           />
-        ) : null}
-        <DataTable<User>
-          columns={userColumns}
-          data={data?.data ?? []}
-          getRowId={(row) => row.id}
-          enableRowSelection="multi"
-          onRowSelectionChange={setSelected}
-          searchPlaceholder="Search users by name, email…"
-          pageSize={10}
-          isLoading={isLoading || isFetching}
-          emptyState={
-            <EmptyState
-              icon={<UsersIcon className="h-6 w-6" />}
-              title="No users yet"
-              description="Invite a teammate to get started."
-            />
-          }
-          toolbar={{
-            right:
-              selected.length > 0 ? (
-                <Button
-                  variant="danger"
-                  size="sm"
-                  leftIcon={<Trash2 className="h-4 w-4" />}
-                  onClick={() => setConfirmOpen(true)}
-                >
-                  Delete {selected.length}
-                </Button>
-              ) : null,
-          }}
-        />
+        </LoadingBoundary>
       </CardContent>
       <ConfirmDialog
         open={confirmOpen}

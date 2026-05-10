@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Step,
   StepDescription,
@@ -9,9 +10,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/navigatio
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Alert } from '@/components/feedback/Alert';
 import { Button } from '@/components/primitives/Button';
+import { FormField, Input } from '@/components/forms';
+import { useToast } from '@/context/ToastProvider';
 import { DemoBreadcrumbs } from './LayoutDemo';
 
 export function SettingsPage() {
+  const { toast } = useToast();
+  const [workspaceName, setWorkspaceName] = useState('Acme Inc.');
+  const [savedName, setSavedName] = useState(workspaceName);
+  const isDirty = workspaceName !== savedName;
+
   return (
     <div>
       <PageHeader
@@ -35,11 +43,33 @@ export function SettingsPage() {
           <div className="rounded-lg border border-border bg-surface p-6">
             <h2 className="text-base font-semibold">Workspace</h2>
             <p className="mt-1 text-sm text-foreground-muted">
-              Form fields would normally live here.
+              Update your workspace display name.
             </p>
+            <div className="mt-4 max-w-sm">
+              <FormField label="Workspace name">
+                <Input
+                  value={workspaceName}
+                  onChange={(e) => setWorkspaceName(e.currentTarget.value)}
+                />
+              </FormField>
+            </div>
             <div className="mt-4 flex justify-end gap-2">
-              <Button variant="ghost">Cancel</Button>
-              <Button>Save</Button>
+              <Button
+                variant="ghost"
+                onClick={() => setWorkspaceName(savedName)}
+                disabled={!isDirty}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  setSavedName(workspaceName);
+                  toast.success('Settings saved');
+                }}
+                disabled={!isDirty}
+              >
+                Save
+              </Button>
             </div>
           </div>
         </TabsContent>

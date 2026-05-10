@@ -12,6 +12,7 @@ export { createQueryClient, queryClient, DEFAULT_QUERY_OPTIONS } from './queryCl
 export { QueryProvider, type QueryProviderProps } from './QueryProvider';
 export { ApiAuthBridge, type ApiAuthBridgeProps } from './ApiAuthBridge';
 export { useApiQuery, type ApiQueryOptions } from './useApiQuery';
+export { useApiSuspenseQuery, type ApiSuspenseQueryOptions } from './useApiSuspenseQuery';
 export { useApiMutation, type ApiMutationOptions } from './useApiMutation';
 export { useInvalidate } from './useInvalidate';
 export * as keys from './keys';

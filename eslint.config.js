@@ -160,13 +160,14 @@ export default defineConfig([
     },
   },
 
-  // Config files (vite, vitest, storybook) — Node context, default exports allowed
+  // Config files (vite, vitest, storybook, playwright) — Node context, default exports allowed
   {
     files: [
       '*.config.{js,ts}',
       '.storybook/**/*.{js,ts,tsx}',
       'vite.config.ts',
       'vitest.config.ts',
+      'playwright.config.ts',
     ],
     languageOptions: {
       globals: { ...globals.node },
@@ -175,6 +176,20 @@ export default defineConfig([
       'no-restricted-syntax': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       'react-refresh/only-export-components': 'off',
+    },
+  },
+
+  // Playwright E2E specs — Node + browser-driver context, no React rules.
+  {
+    files: ['e2e/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: { ...globals.node },
+    },
+    rules: {
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
+      'react-refresh/only-export-components': 'off',
+      'react-hooks/rules-of-hooks': 'off',
     },
   },
 

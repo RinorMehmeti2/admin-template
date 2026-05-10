@@ -101,6 +101,95 @@ hook failure represents a real problem.
   [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) and
   extend our hooks. Do **not** reach for an external library.
 
+## Accessibility testing
+
+Every component test runs `axe-core` (via `vitest-axe`) against the rendered
+DOM. The runner is `runAxe(container, options?)` from
+`@/test-utils/a11y`, and the matcher is `toHaveNoViolations()` (extended onto
+`expect` in `src/setupTests.ts`).
+
+### When to add an axe assertion
+
+Add **one** axe assertion per component test file:
+
+- **Simple primitives / display components** — assert against the default
+  render with the most prop-rich combination you reasonably care about
+  (variants, with description, with required marker, etc.).
+- **Interactive / overlay components** — assert against **two** states:
+  default (closed) and the key interactive state (open dialog, expanded
+  combobox, opened menu, focused tooltip). Use `runAxe(document.body)` for
+  the open state because portaled overlays mount outside the test container.
+- **Composed components** (`AppLayout`, `PageShell`, `DataTable`, etc.) —
+  assert against the composed render, not just the leaf.
+
+Do **not** loop axe across every variant. Each axe run is the slowest part
+of a unit test (axe walks the DOM and applies ~70 rules); one or two
+representative renders catch real regressions without bloating CI.
+
+### How
+
+```tsx
+import { runAxe } from '@/test-utils/a11y';
+
+it('has no a11y violations (default + open)', async () => {
+  const { container } = render(<MyDialog />);
+  expect(await runAxe(container)).toHaveNoViolations();
+
+  await userEvent.click(screen.getByRole('button', { name: 'Open' }));
+  expect(await runAxe(document.body)).toHaveNoViolations();
+});
+```
+
+When a test uses **fake timers** (`vi.useFakeTimers()` — Toast, Tooltip),
+switch to real timers around the axe call. axe-core's internal scheduling
+does not co-operate with mocked time and the test will hang until timeout:
+
+```tsx
+it('has no a11y violations', async () => {
+  vi.useRealTimers();
+  // … render, trigger, assert …
+});
+```
+
+### A11y exceptions
+
+Two rules are disabled **globally** in `src/test-utils/a11y.ts`:
+
+- **`color-contrast`** — jsdom cannot compute layout, so every element
+  resolves to `rgba(0,0,0,0)` and the rule is a guaranteed false positive.
+  Contrast is enforced by the design tokens (which already meet WCAG AA)
+  and reviewed in Storybook with `@storybook/addon-a11y`.
+- **`region`** — landmark coverage is a page-level concern. Component
+  tests render a single primitive in isolation, so requiring it to sit
+  inside `<main>`/`<nav>`/etc. is a structural false positive. Whole-app
+  composition is verified by `AppLayout` and `PageShell` tests, where the
+  landmarks do exist.
+
+The following rules are disabled **per-test** (each call site has an inline
+comment pointing here):
+
+- **Charts** (`AreaChart`, `BarChart`, `ComposedChart`, `DonutChart`,
+  `LineChart`, `PieChart`, `RadialChart`, `StackedBarChart`) disable
+  `nested-interactive`. Charts intentionally place an interactive legend
+  inside a `role="img"` container — the chart is described by its
+  `aria-label`, the legend is supplemental. axe's rule does not model this
+  pattern; the design is the WAI-ARIA recommendation for accessible
+  charts.
+- **`SplitLayout`** disables `nested-interactive`. The window-splitter
+  pattern (WAI-ARIA APG) puts a collapse button inside a focusable
+  separator — axe's heuristic doesn't cover the documented pattern.
+- **`FocusMode`** disables `landmark-banner-is-top-level` and
+  `landmark-main-is-top-level`. `FocusMode` IS the top-level surface when
+  used (full-page takeover); the test container wraps it in a `<div>`,
+  which makes axe see its `<header>` + `<main>` as nested. Verified
+  correct in real composition.
+
+To add a new exception: prefer fixing the underlying DOM if reasonable.
+If the violation is genuinely a rule mismatch with a documented pattern,
+disable the rule **per-call** (`runAxe(container, { rules: { 'rule-id':
+{ enabled: false } } })`), add an inline comment explaining why, and add
+an entry to this section.
+
 ## How to add a component
 
 This is the workflow we want every contributor to follow.
@@ -197,6 +286,9 @@ export function Button({ ref, className, variant, size, ...rest }: ButtonProps) 
 4. Required ARIA attributes
 5. Disabled / loading / error states
 6. For overlays: focus trap, Escape, click-outside, focus return on close
+7. **One axe assertion** — `runAxe(container)` against the default render
+   (and a second one against the open/expanded state for overlays). See
+   [Accessibility testing](#accessibility-testing).
 
 Query order: **role → label → text**. Avoid querying by class name.
 **No snapshot tests.**
@@ -389,6 +481,7 @@ src/data/
   ApiAuthBridge.tsx      # wires useAuth() ↔ api singleton (getToken/refresh/logout)
   keys.ts                # query key factory (users, …)
   useApiQuery.ts         # typed useQuery wrapper (TError = ApiError)
+  useApiSuspenseQuery.ts # typed useSuspenseQuery wrapper (pairs with LoadingBoundary)
   useApiMutation.ts      # typed useMutation wrapper (TError = ApiError)
   useInvalidate.ts       # invalidate-by-prefix helper
   __tests__/             # queryClient defaults, ApiError, 401 retry, hook inference
@@ -417,6 +510,117 @@ function UsersTable() {
 The fetcher returns whatever the endpoint produces; `useApiQuery` infers
 `TData` from it. Errors are always `ApiError` — read `error.status` and
 `error.code` directly.
+
+### Reading from the API — suspense mode
+
+`useApiSuspenseQuery` is the suspense counterpart. While loading it throws
+a Promise (caught by the nearest `<Suspense>`); on failure it throws
+`ApiError` (caught by the surrounding `<ErrorBoundary>`). The component
+itself only ever sees the resolved data — no `isLoading` / `isError`
+branching.
+
+```tsx
+import { api, keys, useApiSuspenseQuery } from '@/data';
+import { LoadingBoundary, SkeletonTable } from '@/components/feedback/LoadingBoundary';
+
+function UsersTable() {
+  const { data } = useApiSuspenseQuery<UsersResponse>(keys.users.list({}), () =>
+    api<UsersResponse>('/api/users'),
+  );
+  return <DataTable data={data.data} columns={userColumns} />;
+}
+
+function UsersTableSection() {
+  return (
+    <LoadingBoundary fallback={<SkeletonTable count={8} columns={4} />}>
+      <UsersTable />
+    </LoadingBoundary>
+  );
+}
+```
+
+`<LoadingBoundary>` lives in `src/components/feedback/LoadingBoundary/` and
+composes `<Suspense>` + our `<ErrorBoundary>`. Its `fallback` prop defaults
+to `<PageLoader />` (full-area centered spinner). For content-shaped
+loading states it ships four skeleton presets — all take a `count` prop:
+
+- `<SkeletonGrid count columns={1|2|3|4} />` — card grid placeholder.
+- `<SkeletonList count />` — avatar + two-line list rows.
+- `<SkeletonTable count columns />` — table header + N rows.
+- `<SkeletonForm count />` — N labelled fields + a button row.
+
+Pass `errorFallback` to override the default error UI:
+
+```tsx
+<LoadingBoundary
+  fallback={<SkeletonTable count={8} columns={4} />}
+  errorFallback={({ error, reset }) => (
+    <Alert
+      variant="danger"
+      title="Couldn't load users"
+      description={error.message}
+      actions={
+        <Button size="sm" variant="outline" onClick={reset}>
+          Retry
+        </Button>
+      }
+    />
+  )}
+>
+  <UsersTable />
+</LoadingBoundary>
+```
+
+`<InlineLoader />` and `<PageLoader />` are also exported from the same
+folder for cases that don't need a boundary at all (e.g., a button's
+in-flight state).
+
+### useQuery vs useSuspenseQuery — which one?
+
+Use this decision tree:
+
+```
+Does this read need to render any UI BEFORE the data resolves?
+│
+├─ YES → useApiQuery
+│       (you'll branch on isLoading / isError yourself; the component
+│        keeps rendering chrome, error states, and previous data
+│        through refetches)
+│
+│   sub-cases that force useApiQuery:
+│     • You want `keepPreviousData` for paginated tables
+│       (suspense always suspends on key change).
+│     • You want manual `refetch()` UI without re-suspending.
+│     • Loading and error are inline (e.g., a small Alert above
+│       a still-rendered list).
+│     • The query is conditional / `enabled: false` is needed —
+│       suspense can't be conditionally disabled cleanly.
+│     • The fetcher is fire-and-forget telemetry the UI doesn't
+│       depend on.
+│
+└─ NO  → useApiSuspenseQuery + <LoadingBoundary>
+        (data is required to render; loading and error are handled
+         by the boundary, the component only sees resolved data)
+
+         sub-cases that favour useApiSuspenseQuery:
+           • Whole-route data dependency (the page can't render
+             without it).
+           • You want one declarative skeleton across multiple
+             child reads (parallel queries all suspend, the
+             boundary shows the skeleton until everything is
+             ready).
+           • The route already pairs with an ErrorBoundary at a
+             parent level.
+```
+
+Rule of thumb: **route segments suspense, leaf widgets useApiQuery**.
+
+The `/tables` route documents the pattern: `UsersTableSection` keeps
+header chrome + ConfirmDialog around a `<LoadingBoundary>` that wraps
+the suspending `<UsersTableContent>`. The `OrdersTableSection` on the
+same page still uses static data; when teammates touch a route they
+can migrate it incrementally — `useApiQuery` callsites continue to
+work unchanged.
 
 ### Writing (mutations + optimistic updates)
 
@@ -613,6 +817,122 @@ defaults. They are documented inline in `eslint.config.js`. Summary:
 If you hit one of these in new code, prefer fixing the underlying pattern
 over adding another disable. Disables should be the exception.
 
+## E2E tests
+
+End-to-end tests run a real browser against the running app via
+[Playwright](https://playwright.dev). Specs live in `e2e/`, the runner is
+configured in `playwright.config.ts`, and the shared fixtures
+(`loginAs(role)`, `gotoSignedIn(path, role?)`) are in `e2e/fixtures.ts`.
+
+### What's covered
+
+The initial suites cover the critical flows the unit tests can't:
+
+- `e2e/auth.spec.ts` — login success, login failure, validation,
+  ProtectedRoute redirect, RoleGate hide-from-non-admin, logout.
+- `e2e/forms.spec.ts` — settings form interaction, validation messages
+  in the active locale, locale-switch re-translation.
+- `e2e/tables.spec.ts` — DataTable sort, search, paginate, select rows,
+  bulk action.
+- `e2e/overlays.spec.ts` — Dialog focus trap + Escape + focus return,
+  Drawer same, Tooltip on hover/focus.
+- `e2e/keyboard.spec.ts` — Cmd/Ctrl+K opens the command palette,
+  filter + Enter navigates, "/" opens, Escape closes.
+- `e2e/theme-locale.spec.ts` — theme + locale persist across reload.
+
+### When to add an E2E test
+
+Add a new spec when you ship a **new top-level user flow** — anything that
+spans more than one component and needs a real navigation/network/storage
+round-trip to verify. Examples: a new auth flow (SSO, password reset),
+a new persisted setting, a new role gate, a new top-level route.
+
+Do **not** add an E2E test for variant coverage, render correctness, or
+hook behavior — that belongs in unit tests, which are an order of magnitude
+faster and less flaky.
+
+### Running locally
+
+```bash
+pnpm e2e:install   # one-time: download browser binaries (~700MB)
+pnpm e2e           # run the suite headless
+pnpm e2e:ui        # open the Playwright UI for interactive debugging
+pnpm e2e --project chromium                    # one project only
+pnpm e2e e2e/auth.spec.ts                      # one spec file only
+pnpm e2e --headed --project chromium --workers 1   # watch a browser
+```
+
+The config starts the app via `pnpm dev --port 5173 --strictPort` with
+`VITE_USE_MSW=true`, so `/api/users` is mocked. With `reuseExistingServer`
+enabled (everywhere except CI), an already-running dev server on 5173 is
+used as-is — saves a 5-second cold start every run.
+
+### Authoring a spec
+
+Use the fixtures, not raw `test` from `@playwright/test`:
+
+```ts
+import { test, expect } from './fixtures';
+
+test('admins can open /admin', async ({ gotoSignedIn, page }) => {
+  await gotoSignedIn('/admin', 'admin');
+  await expect(page.getByRole('heading', { name: /admin/i })).toBeVisible();
+});
+```
+
+`gotoSignedIn` seeds `localStorage` (the storage key the shipped
+`mockAuthClient` reads from) before the page loads, so the app boots
+already authenticated. There is no need to drive the login form unless
+you are testing the login form itself.
+
+### Debugging a failed CI trace
+
+CI uploads two artifacts on `e2e` failure:
+
+- **`playwright-report`** — the HTML report. Download it, unzip, open
+  `index.html`, click into the failing test. Each retry has its own
+  trace + screenshot section.
+- **`playwright-test-results`** — raw trace files (`*.zip`). Open
+  locally with:
+  ```bash
+  pnpm exec playwright show-trace <path-to-trace.zip>
+  ```
+  The trace viewer scrubs through every action, network request, console
+  log, and DOM snapshot.
+
+`trace: 'on-first-retry'` (in `playwright.config.ts`) means traces are
+only captured on the retry, not the initial attempt — that keeps the
+artifact size bounded but means a one-shot pass leaves no trace. If you
+need a trace for a passing run, set `trace: 'on'` locally.
+
+### Flake policy
+
+E2E suites are inherently flakier than unit tests (real browser, real
+timers, real network mocks, real fonts). The mitigations baked in:
+
+- **2 retries in CI.** Most flakes are first-attempt timing issues that
+  pass on retry. Locally, retries are off so flake is loud.
+- **Locator-first assertions** (`expect(locator).toBeVisible()`) over
+  manual `page.waitForSelector` — Playwright auto-waits up to the
+  expect timeout (5s).
+- **Role/label-first queries** (same convention as unit tests) — these
+  are the most stable across copy and DOM changes.
+
+If a test becomes consistently flaky (fails > 1 in 10 retries on
+unrelated PRs), **quarantine it** by adding `.fixme` to the title:
+
+```ts
+test.fixme('temporarily quarantined: investigating hover delay', async ({ page }) => {
+  // …
+});
+```
+
+`.fixme` skips the test in CI and prints a reminder. The PR that adds
+the `.fixme` MUST also open a bug ticket linking back to a recent
+failure trace, and unflake-or-delete is on whoever added it. **Do not
+add `.skip` for this — `.skip` is for genuinely-disabled-by-design
+specs, `.fixme` is for "this should pass and currently doesn't."**
+
 ## Pull request checklist
 
 Before opening a PR:
@@ -624,6 +944,10 @@ Before opening a PR:
 - [ ] `pnpm build-storybook` succeeds
 - [ ] New components have tests + stories + are exported from their
       category's `index.ts`
+- [ ] New tests include an axe assertion (`runAxe`) against the default
+      render and any key interactive state
+- [ ] If the PR introduces a new top-level user flow, an `e2e/*.spec.ts`
+      covers it
 - [ ] No new dependencies added (or they are flagged in the PR description)
 - [ ] Light + dark mode both look correct (no `dark:` variants needed if
       you used semantic tokens)
