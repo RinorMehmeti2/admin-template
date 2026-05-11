@@ -202,7 +202,7 @@ Pick the right folder under `src/components/`:
 - `forms/` — Calendar, Checkbox, ColorPicker, Combobox, DatePicker, DateRangePicker, DateTimePicker, Form, FormField, Input, Label, NumberInput, OtpInput, PhoneInput, Radio, RadioGroup, RangeSlider, Rating, RichTextEditor, Select, Slider, Switch, TagInput, Textarea, TimePicker
 - `feedback/` — Alert, ConfirmDialog, Dialog, Drawer, ErrorBoundary, LoadingBoundary, Progress, Toast, Tooltip
 - `navigation/` — Breadcrumbs, ContextMenu, DropdownMenu, Menu, Pagination, Stepper, Tabs
-- `data-display/` — Card, DataTable, EmptyState, List, Stat, Table, Timeline, TreeView (`charts/` subfolder for Recharts-backed chart components)
+- `data-display/` — Card, DataTable, EmptyState, Kanban, List, Stat, Table, Timeline, TreeView (`charts/` subfolder for Recharts-backed chart components)
 - `layout/` — AppLayout, Container, FocusMode, FullscreenWorkspace, LocaleSwitcher, PageHeader, PageShell, Sidebar, SplitLayout, ThemeToggle, Topbar
 - `overlays/` — CommandPalette, Portal
 

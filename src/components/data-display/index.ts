@@ -7,3 +7,4 @@ export * from './Table';
 export * from './DataTable';
 export * from './TreeView';
 export * from './Timeline';
+export * from './Kanban';

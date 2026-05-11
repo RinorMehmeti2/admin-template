@@ -36,6 +36,8 @@ import { VerifyPage } from '@/pages/auth/verify';
 import { PrintPreviewPage } from '@/pages/PrintPreviewPage';
 import { TreePage } from '@/pages/TreePage';
 import { TimelinePage } from '@/pages/TimelinePage';
+import { DragDropSandboxPage } from '@/pages/DragDropSandboxPage';
+import { KanbanPage } from '@/pages/KanbanPage';
 
 /*
  * Code splitting strategy.
@@ -81,6 +83,11 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
     keywords: ['inbox', 'master', 'detail', 'pane', 'resize'],
   },
   { to: '/focus', label: 'Focus mode', keywords: ['fullscreen', 'editor', 'distraction'] },
+  {
+    to: '/kanban',
+    label: 'Kanban',
+    keywords: ['kanban', 'board', 'drag', 'drop', 'dnd', 'tasks'],
+  },
   { to: '/workspace', label: 'Workspace', keywords: ['canvas', 'panels', 'editor', 'design'] },
   {
     to: '/errors',
@@ -234,6 +241,8 @@ const router = createBrowserRouter([
           { path: 'split', element: <SplitDemoPage /> },
           { path: 'print-preview', element: <PrintPreviewPage /> },
           { path: 'focus', element: <FocusDemoPage /> },
+          { path: 'dnd-sandbox', element: <DragDropSandboxPage /> },
+          { path: 'kanban', element: <KanbanPage /> },
           {
             path: 'workspace',
             lazy: async () => {

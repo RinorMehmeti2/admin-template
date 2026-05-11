@@ -42,7 +42,7 @@ src/
     feedback/         # Alert, ConfirmDialog, Dialog, Drawer, ErrorBoundary, LoadingBoundary,
                       # NotificationsCenter (Bell + Panel + Item), Progress, Toast, Tooltip
     navigation/       # Breadcrumbs, ContextMenu, DropdownMenu, Menu, Pagination, Stepper, Tabs
-    data-display/     # Card, DataTable, EmptyState, List, Stat, Table, Timeline, TreeView
+    data-display/     # Card, DataTable, EmptyState, Kanban, List, Stat, Table, Timeline, TreeView
       charts/         # AreaChart, BarChart, ChartContainer, ComposedChart, DonutChart,
                       # LineChart, PieChart, RadialChart, StackedBarChart  (Recharts-backed)
     forms/            # Calendar, Checkbox, ColorPicker, Combobox, DatePicker, DateRangePicker,
