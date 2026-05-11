@@ -21,6 +21,7 @@ import {
   PanelsTopLeft,
   Search,
   ShieldCheck,
+  SlidersHorizontal,
   Sparkles,
   SquareDashedMousePointer,
   Table,
@@ -72,6 +73,7 @@ const NAV_ITEMS: ReadonlyArray<NavItem> = [
   { to: '/layout', label: 'Layout', icon: <PanelsTopLeft className="h-4 w-4" /> },
   { to: '/split', label: 'Split', icon: <Columns2 className="h-4 w-4" /> },
   { to: '/focus', label: 'Focus', icon: <SquareDashedMousePointer className="h-4 w-4" /> },
+  { to: '/playground', label: 'Playground', icon: <SlidersHorizontal className="h-4 w-4" /> },
   { to: '/workspace', label: 'Workspace', icon: <Frame className="h-4 w-4" /> },
   { to: '/admin', label: 'Admin', icon: <ShieldCheck className="h-4 w-4" /> },
 ];

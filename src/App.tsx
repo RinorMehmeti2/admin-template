@@ -43,6 +43,7 @@ import { GalleryPage } from '@/pages/GalleryPage';
 import { WizardPage } from '@/pages/WizardPage';
 import { SearchPage } from '@/pages/SearchPage';
 import { MobilePreviewPage } from '@/pages/MobilePreviewPage';
+import { PlaygroundPage } from '@/pages/playground';
 
 /*
  * Code splitting strategy.
@@ -117,6 +118,11 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
     to: '/mobile-preview',
     label: 'Mobile preview',
     keywords: ['mobile', 'bottom-sheet', 'touch', 'swipe', 'responsive'],
+  },
+  {
+    to: '/playground',
+    label: 'Playground',
+    keywords: ['playground', 'props', 'controls', 'sandbox', 'tweak'],
   },
   { to: '/workspace', label: 'Workspace', keywords: ['canvas', 'panels', 'editor', 'design'] },
   {
@@ -278,6 +284,7 @@ const router = createBrowserRouter([
           { path: 'wizard', element: <WizardPage /> },
           { path: 'search', element: <SearchPage /> },
           { path: 'mobile-preview', element: <MobilePreviewPage /> },
+          { path: 'playground', element: <PlaygroundPage /> },
           {
             path: 'workspace',
             lazy: async () => {
