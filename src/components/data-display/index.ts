@@ -8,3 +8,5 @@ export * from './DataTable';
 export * from './TreeView';
 export * from './Timeline';
 export * from './Kanban';
+export * from './FileExplorer';
+export * from './ImageGallery';

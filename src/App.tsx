@@ -38,6 +38,8 @@ import { TreePage } from '@/pages/TreePage';
 import { TimelinePage } from '@/pages/TimelinePage';
 import { DragDropSandboxPage } from '@/pages/DragDropSandboxPage';
 import { KanbanPage } from '@/pages/KanbanPage';
+import { FileExplorerPage } from '@/pages/file-explorer';
+import { GalleryPage } from '@/pages/GalleryPage';
 
 /*
  * Code splitting strategy.
@@ -87,6 +89,16 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
     to: '/kanban',
     label: 'Kanban',
     keywords: ['kanban', 'board', 'drag', 'drop', 'dnd', 'tasks'],
+  },
+  {
+    to: '/files',
+    label: 'File explorer',
+    keywords: ['files', 'folder', 'tree', 'explorer', 'finder'],
+  },
+  {
+    to: '/gallery',
+    label: 'Image gallery',
+    keywords: ['gallery', 'images', 'lightbox', 'photos', 'media'],
   },
   { to: '/workspace', label: 'Workspace', keywords: ['canvas', 'panels', 'editor', 'design'] },
   {
@@ -243,6 +255,8 @@ const router = createBrowserRouter([
           { path: 'focus', element: <FocusDemoPage /> },
           { path: 'dnd-sandbox', element: <DragDropSandboxPage /> },
           { path: 'kanban', element: <KanbanPage /> },
+          { path: 'files', element: <FileExplorerPage /> },
+          { path: 'gallery', element: <GalleryPage /> },
           {
             path: 'workspace',
             lazy: async () => {
