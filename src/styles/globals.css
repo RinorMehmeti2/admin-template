@@ -186,7 +186,12 @@
   /* Headings consume the heading-font token. Defaults to var(--font-sans), so
      palettes that don't set a heading font behave like before. The Claude
      palette overrides to a serif stack. */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-heading);
   }
 

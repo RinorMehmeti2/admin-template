@@ -47,7 +47,7 @@ const SYSTEM_MONO =
 const GEORGIA_STACK =
   "Georgia, 'Iowan Old Style', 'Apple Garamond', Baskerville, 'Times New Roman', serif";
 const TIMES_STACK = "'Times New Roman', Times, serif";
-const VERDANA_STACK = "Verdana, Geneva, Tahoma, sans-serif";
+const VERDANA_STACK = 'Verdana, Geneva, Tahoma, sans-serif';
 const TREBUCHET_STACK = "'Trebuchet MS', 'Lucida Sans', sans-serif";
 const CONSOLAS_STACK = "Consolas, Menlo, Monaco, 'Courier New', monospace";
 

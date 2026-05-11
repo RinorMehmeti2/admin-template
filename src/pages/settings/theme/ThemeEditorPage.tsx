@@ -166,13 +166,28 @@ export function ThemeEditorPage() {
             />
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" size="sm" leftIcon={<FilePlus2 className="h-4 w-4" />} onClick={handleNew}>
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<FilePlus2 className="h-4 w-4" />}
+              onClick={handleNew}
+            >
               {t('theme.editor.new')}
             </Button>
-            <Button variant="outline" size="sm" leftIcon={<Copy className="h-4 w-4" />} onClick={handleDuplicate}>
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<Copy className="h-4 w-4" />}
+              onClick={handleDuplicate}
+            >
               {t('theme.editor.duplicate')}
             </Button>
-            <Button variant="outline" size="sm" leftIcon={<Download className="h-4 w-4" />} onClick={() => void handleExport()}>
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<Download className="h-4 w-4" />}
+              onClick={() => void handleExport()}
+            >
               {t('theme.editor.export')}
             </Button>
             <Button
@@ -235,10 +250,20 @@ export function ThemeEditorPage() {
         </TabsList>
 
         <TabsContent value="light" className="mt-4">
-          <TokenGrid palette={activePalette} mode="light" editable={editable} onChange={handleTokenChange} />
+          <TokenGrid
+            palette={activePalette}
+            mode="light"
+            editable={editable}
+            onChange={handleTokenChange}
+          />
         </TabsContent>
         <TabsContent value="dark" className="mt-4">
-          <TokenGrid palette={activePalette} mode="dark" editable={editable} onChange={handleTokenChange} />
+          <TokenGrid
+            palette={activePalette}
+            mode="dark"
+            editable={editable}
+            onChange={handleTokenChange}
+          />
         </TabsContent>
       </Tabs>
 
@@ -366,7 +391,9 @@ function TokenGrid({ palette, mode, editable, onChange }: TokenGridProps) {
               <div key={key} className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 flex-1 flex-col">
                   <span className="truncate text-sm">{TOKEN_LABELS[key]}</span>
-                  <span className="truncate font-mono text-[10px] text-foreground-subtle">{key}</span>
+                  <span className="truncate font-mono text-[10px] text-foreground-subtle">
+                    {key}
+                  </span>
                 </div>
                 <ColorPicker
                   value={tokens[key]}
@@ -427,4 +454,3 @@ function Preview() {
     </div>
   );
 }
-

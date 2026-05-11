@@ -116,11 +116,7 @@ export function TypographyEditorPage() {
             <label className="text-xs font-medium text-foreground-muted">
               {t('typography.editor.activeConfig')}
             </label>
-            <ConfigSelect
-              configs={typographies}
-              value={typographyId}
-              onChange={setTypographyId}
-            />
+            <ConfigSelect configs={typographies} value={typographyId} onChange={setTypographyId} />
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button

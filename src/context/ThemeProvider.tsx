@@ -56,10 +56,13 @@ interface ThemeContextValue {
 
   /** CRUD on custom palettes. Built-in palettes cannot be mutated. */
   createPalette: (name: string, source?: Palette) => Palette;
-  updatePalette: (id: string, patch: Partial<Pick<Palette, 'name'>> & {
-    light?: Partial<Record<ColorTokenKey, string>>;
-    dark?: Partial<Record<ColorTokenKey, string>>;
-  }) => void;
+  updatePalette: (
+    id: string,
+    patch: Partial<Pick<Palette, 'name'>> & {
+      light?: Partial<Record<ColorTokenKey, string>>;
+      dark?: Partial<Record<ColorTokenKey, string>>;
+    },
+  ) => void;
   duplicatePalette: (id: string, name?: string) => Palette | null;
   deletePalette: (id: string) => void;
   importPalette: (palette: Palette) => Palette;

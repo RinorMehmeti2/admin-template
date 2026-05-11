@@ -348,7 +348,13 @@ const CLAUDE_DARK: TokenMap = {
 };
 
 export const BUILT_IN_PALETTES: ReadonlyArray<Palette> = [
-  { id: 'default', name: 'Default (Indigo)', builtIn: true, light: DEFAULT_LIGHT, dark: DEFAULT_DARK },
+  {
+    id: 'default',
+    name: 'Default (Indigo)',
+    builtIn: true,
+    light: DEFAULT_LIGHT,
+    dark: DEFAULT_DARK,
+  },
   { id: 'teal', name: 'Teal', builtIn: true, light: TEAL_LIGHT, dark: TEAL_DARK },
   { id: 'rose', name: 'Rose', builtIn: true, light: ROSE_LIGHT, dark: ROSE_DARK },
   { id: 'claude', name: 'Claude', builtIn: true, light: CLAUDE_LIGHT, dark: CLAUDE_DARK },
