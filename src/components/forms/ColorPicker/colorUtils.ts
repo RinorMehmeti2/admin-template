@@ -143,8 +143,10 @@ export function formatColor(color: HSVA, format: ColorFormat, withAlpha: boolean
 const HEX_RE = /^#?([0-9a-fA-F]{3,8})$/;
 const RGB_RE =
   /^rgba?\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*(?:,\s*(-?\d+(?:\.\d+)?)\s*)?\)$/i;
+// Accepts both the legacy comma form `hsl(h, s%, l%[, a])` and the modern
+// space-separated form `hsl(h s% l% [/ a])` (CSS Color Level 4).
 const HSL_RE =
-  /^hsla?\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)%\s*,\s*(-?\d+(?:\.\d+)?)%\s*(?:,\s*(-?\d+(?:\.\d+)?)\s*)?\)$/i;
+  /^hsla?\(\s*(-?\d+(?:\.\d+)?)\s*[,\s]\s*(-?\d+(?:\.\d+)?)%\s*[,\s]\s*(-?\d+(?:\.\d+)?)%\s*(?:[,/]\s*(-?\d+(?:\.\d+)?)\s*)?\)$/i;
 
 export function parseColor(input: string): HSVA | null {
   const raw = input.trim();

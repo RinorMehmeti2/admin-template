@@ -43,7 +43,7 @@ showcase / demo pages.
 | **navigation/**   | `Breadcrumbs`, `ContextMenu`, `DropdownMenu`, `Menu`, `Pagination`, `Stepper`, `Tabs`                                                                                                                                                                                                                                                  |
 | **data-display/** | `Card`, `DataTable`, `EmptyState`, `FileExplorer`, `FilterableSearch`, `ImageGallery` (+ `Lightbox`), `Kanban`, `List`, `Stat`, `Table`, `Timeline`, `TreeView`, **charts/** (`AreaChart`, `BarChart`, `ChartContainer`, `ComposedChart`, `DonutChart`, `LineChart`, `PieChart`, `RadialChart`, `StackedBarChart`)                       |
 | **overlays/**     | `CommandPalette`, `Portal`                                                                                                                                                                                                                                                                                                 |
-| **layout/**       | `AppLayout`, `Container`, `FocusMode`, `FullscreenWorkspace`, `LocaleSwitcher`, `PageHeader`, `PageShell`, `Sidebar`, `SplitLayout`, `ThemeToggle`, `Topbar`                                                                                                                                                               |
+| **layout/**       | `AppLayout`, `Container`, `FocusMode`, `FullscreenWorkspace`, `LocaleSwitcher`, `PageHeader`, `PageShell`, `Sidebar`, `SplitLayout`, `ThemePicker`, `ThemeToggle`, `Topbar`, `TypographyPicker`                                                                                                                            |
 
 Every component lives in its own folder with the standard 5-file
 layout (`<Name>.tsx`, optional `<Name>.types.ts`, `<Name>.test.tsx`,
@@ -64,10 +64,26 @@ All hooks have test coverage in `src/hooks/__tests__/`.
 
 ### 2.3 Subsystems
 
-- **Theming.** `ThemeProvider` (`light`/`dark`/`system`) syncs with
-  `prefers-color-scheme`, persists to `localStorage`, and toggles a
-  `dark` class on `<html>`. All colors come from semantic tokens in
-  `src/styles/tokens.css` exposed to Tailwind v4 via `@theme`.
+- **Theming.** `ThemeProvider` owns three orthogonal concerns. (1) **Mode** —
+  `light`/`dark`/`system` syncs with `prefers-color-scheme`, persists to
+  `localStorage`, toggles a `dark` class on `<html>`. (2) **Palette** —
+  runtime-swappable color set defined in `src/lib/themeTokens.ts`. 22
+  semantic color tokens × {light, dark}. Built-in palettes:
+  `default`, `teal`, `rose`, `claude` (all full-tint — surface, border,
+  hover, accent all flip). Custom palettes are user-created at
+  `/settings/theme` and persisted to localStorage. Applied as inline
+  custom properties on `<html>` so they override the `:root` /
+  `html.dark` defaults in `tokens.css`. Topbar UI: `<ThemePicker>`
+  (palette dropdown) sits alongside `<ThemeToggle>` (mode dropdown).
+- **Typography.** Orthogonal to palette. `src/lib/typography.ts` defines
+  a `TypographyConfig = { fonts: FontMap, scale: number }` and 8
+  built-in presets (`system`, `compact`, `comfortable`, `serif-heading`,
+  `editorial`, `humanist`, `screen`, `mono`) using only OS-available
+  fonts (system stacks, Georgia, Trebuchet MS, Verdana, Consolas/Menlo)
+  so changes show up without any font install. The `scale` is a 0.85–
+  1.20 multiplier on root `font-size`; every rem-based Tailwind size
+  flexes proportionally (`text-sm` and `p-4` and `h-10` all scale).
+  Topbar UI: `<TypographyPicker>`. Editor at `/settings/typography`.
 - **Routing.** `react-router-dom` v7 with `createBrowserRouter`, a
   shared `RootShell`, and the `AppLayout` for chrome.
 - **Auth scaffolding.** `AuthProvider` + `useAuth`, a single
@@ -160,7 +176,8 @@ availableLocales, dir }`, a `LocaleSwitcher` in the topbar, and a
   `/data`, `/tables`, `/charts`, `/positioning`, `/layout`, `/split`,
   `/focus`, `/workspace`, `/admin`, `/timeline`, `/tree`, `/kanban`,
   `/files`, `/gallery`, `/wizard`, `/search`, `/mobile-preview`,
-  `/playground`, `/errors`, `/print-preview` plus the `/login` flow.
+  `/playground`, `/settings/theme`, `/settings/typography`, `/errors`,
+  `/print-preview` plus the `/login` flow.
 - **Playground.** `/playground` is a developer tool for tweaking any
   component's props live (searchable list, auto-generated controls,
   copy-code button, theme + locale toggles). Driven by an explicit
@@ -283,8 +300,11 @@ admin-template/
 │  │  ├─ cn.ts                       # clsx + tailwind-merge
 │  │  ├─ date.ts                     # date-fns wrappers
 │  │  ├─ date.test.ts
-│  │  └─ errorReporter.ts            # reportError(err, ctx) — swap body for Sentry/etc.
-│  ├─ pages/                         # demo / showcase pages (incl. playground/)
+│  │  ├─ errorReporter.ts            # reportError(err, ctx) — swap body for Sentry/etc.
+│  │  ├─ themeTokens.ts              # Palette schema, built-ins, apply/clear, storage
+│  │  └─ typography.ts               # TypographyConfig schema, presets, apply/clear, storage
+│  ├─ pages/                         # demo / showcase pages (incl. playground/,
+│  │                                 #   settings/theme, settings/typography)
 │  ├─ playground/                    # /playground registry + controls + codegen
 │  │  ├─ registry.tsx                # explicit component → propSchema map
 │  │  ├─ types.ts

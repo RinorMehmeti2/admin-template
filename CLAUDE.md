@@ -38,7 +38,8 @@ src/
     primitives/       # Avatar, AvatarGroup, Badge, Button, IconButton, Kbd, Separator,
                       # Skeleton, Spinner
     layout/           # AppLayout, Container, FocusMode, FullscreenWorkspace, LocaleSwitcher,
-                      # PageHeader, PageShell, Sidebar, SplitLayout, ThemeToggle, Topbar
+                      # PageHeader, PageShell, Sidebar, SplitLayout, ThemePicker, ThemeToggle,
+                      # Topbar, TypographyPicker
     feedback/         # Alert, BottomSheet, ConfirmDialog, Dialog, Drawer, ErrorBoundary,
                       # LoadingBoundary, NotificationsCenter (Bell + Panel + Item),
                       # Progress, Toast, Tooltip
@@ -65,9 +66,11 @@ src/
                       # useApiFormSubmit, useInvalidate  — see "Data fetching" in CONTRIBUTING.md
   mocks/              # MSW handlers + browser/node servers + fixtures
   i18n/               # i18next init + locales/<lng>.json — see "Internationalization" below
-  lib/                # cn.ts, date.ts, errorReporter.ts, formatters, validators, constants
+  lib/                # cn.ts, date.ts, errorReporter.ts, themeTokens.ts, typography.ts,
+                      # formatters, validators, constants
   styles/             # globals.css, tokens.css, print.css
-  pages/              # Demo / showcase pages (incl. playground/ for live prop tweaking)
+  pages/              # Demo / showcase pages (incl. playground/, settings/theme,
+                      # settings/typography for the in-app editors — see "Theming" below)
   playground/         # Registry + controls for the /playground route — see
                       # src/playground/README.md for how to add components
   test-utils/         # a11y.ts (runAxe + toHaveNoViolations matcher)
@@ -216,6 +219,36 @@ Defined in `src/styles/tokens.css`. Always reference these, never raw palette va
 **Accents (each with `-foreground` pair):** `--color-primary`, `--color-secondary`, `--color-success`, `--color-warning`, `--color-danger`, `--color-info`
 **Radii:** `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-xl`
 **Shadows:** `--shadow-sm`, `--shadow-md`, `--shadow-lg`
+**Fonts:** `--font-sans`, `--font-serif`, `--font-mono`, `--font-heading` (`--font-heading` defaults to `var(--font-sans)`; `h1–h6` consume it via `globals.css`).
+
+## Theming (palette + typography)
+
+The 22 color tokens above and the 4 font tokens are runtime-swappable.
+Two orthogonal subsystems own that swap; their state lives on
+`ThemeProvider` and is applied as inline custom properties on
+`<html>`.
+
+### Palette — colors only
+
+- Defined in `src/lib/themeTokens.ts`. `Palette = { id, name, builtIn, light: TokenMap, dark: TokenMap }` where `TokenMap` covers every `--color-*` token.
+- Built-ins: `default`, `teal`, `rose`, `claude`. The four are full-tint (every surface, border, hover, accent flipped) — not accent-only — so switching palette visibly changes the entire UI.
+- Custom palettes are user-created via the in-app editor at `/settings/theme` and persisted to `localStorage` under `admin-template-theme-palettes`. Active id under `admin-template-theme-palette`.
+- `applyPalette(palette, mode)` writes color custom props inline on `documentElement`. Inline wins over the `:root` / `html.dark` declarations in `tokens.css` on specificity tie. Palette code MUST NOT touch font tokens — that's typography's job.
+- Topbar UI: `<ThemePicker>` (dropdown) — separate from `<ThemeToggle>` (light/dark only).
+
+### Typography — fonts + size scale
+
+- Defined in `src/lib/typography.ts`. `TypographyConfig = { id, name, builtIn, fonts: FontMap, scale: number }` where `FontMap` keys are the four font tokens and `scale` is a multiplier on root `font-size` (clamped 0.85–1.20).
+- Built-ins: `system`, `compact`, `comfortable`, `serif-heading`, `editorial`, `humanist`, `screen`, `mono`. Every preset uses **OS-available fonts only** (system stacks, Georgia, Trebuchet MS, Verdana, Consolas/Menlo) so changes are visible without any font install or Google Fonts request.
+- Custom configs persist to `admin-template-typographies` (list) + `admin-template-typography` (active id).
+- `applyTypography(config)` writes the four font custom props **and** sets `html.style.fontSize = scale * 100 + '%'`. Because every Tailwind size token is rem-based, the scale flexes text + spacing together (`text-sm` AND `p-4` AND `h-10` all scale).
+- Topbar UI: `<TypographyPicker>` (dropdown). Editor at `/settings/typography`.
+
+### Rules
+
+- Built-in palettes / typographies are read-only. Duplicate to edit.
+- Palette and typography are **orthogonal** — picking one must NEVER reset the other. Concretely: do not loop font tokens inside palette code, and do not loop color tokens inside typography code. Each subsystem owns its own keys and its own `clear*` cleanup.
+- When extending: add color tokens to `COLOR_TOKEN_KEYS` + `TOKEN_GROUPS` in `themeTokens.ts`; add font tokens to `FONT_TOKEN_KEYS` in the same file (typography re-exports the type). New top-level token kinds (radii, shadows) follow the same pattern but pick a new owner module.
 
 ## Accessibility (non-negotiable)
 

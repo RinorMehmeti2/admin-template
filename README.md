@@ -36,6 +36,8 @@ pnpm analyze           # bundle treemap → dist/stats.html
 | `src/mocks/`                          | MSW handlers + browser/node servers + fixtures.                                                                                                                                |
 | `src/i18n/`                           | i18next init + `locales/<lng>.json`. EN + ES out of the box.                                                                                                                   |
 | `src/styles/`                         | `tokens.css` (semantic tokens, light + dark) + `globals.css` + `print.css`.                                                                                                    |
+| `src/lib/themeTokens.ts`              | Color palette schema + built-in palettes (Default / Teal / Rose / Claude) + apply/clear + localStorage CRUD. Editor at `/settings/theme`.                                      |
+| `src/lib/typography.ts`               | Typography config schema (font stacks + size scale) + 8 built-in presets using OS-available fonts. Editor at `/settings/typography`.                                           |
 | `src/test-utils/a11y.ts`              | `runAxe()` + `toHaveNoViolations` matcher. Call it in every test.                                                                                                              |
 | `e2e/`                                | Playwright specs + `loginAs` / `gotoSignedIn` fixtures.                                                                                                                        |
 

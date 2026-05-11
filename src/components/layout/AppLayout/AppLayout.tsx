@@ -18,7 +18,9 @@ import {
   LogOut,
   MessageSquareWarning,
   Move,
+  Palette as PaletteIcon,
   PanelsTopLeft,
+  Type as TypeIcon,
   Search,
   ShieldCheck,
   SlidersHorizontal,
@@ -28,6 +30,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { ThemePicker } from '@/components/layout/ThemePicker';
+import { TypographyPicker } from '@/components/layout/TypographyPicker';
 import { LocaleSwitcher } from '@/components/layout/LocaleSwitcher';
 import { Avatar } from '@/components/primitives/Avatar';
 import { Button } from '@/components/primitives/Button';
@@ -74,6 +78,8 @@ const NAV_ITEMS: ReadonlyArray<NavItem> = [
   { to: '/split', label: 'Split', icon: <Columns2 className="h-4 w-4" /> },
   { to: '/focus', label: 'Focus', icon: <SquareDashedMousePointer className="h-4 w-4" /> },
   { to: '/playground', label: 'Playground', icon: <SlidersHorizontal className="h-4 w-4" /> },
+  { to: '/settings/theme', label: 'Theme editor', icon: <PaletteIcon className="h-4 w-4" /> },
+  { to: '/settings/typography', label: 'Typography', icon: <TypeIcon className="h-4 w-4" /> },
   { to: '/workspace', label: 'Workspace', icon: <Frame className="h-4 w-4" /> },
   { to: '/admin', label: 'Admin', icon: <ShieldCheck className="h-4 w-4" /> },
 ];
@@ -207,6 +213,8 @@ export function AppLayout() {
           <div className="ml-auto flex items-center gap-2">
             <LocaleSwitcher />
             <NotificationsBell labels={notificationsLabels} locale={locale} />
+            <ThemePicker />
+            <TypographyPicker />
             <ThemeToggle />
             <AuthMenu />
           </div>

@@ -44,6 +44,8 @@ import { WizardPage } from '@/pages/WizardPage';
 import { SearchPage } from '@/pages/SearchPage';
 import { MobilePreviewPage } from '@/pages/MobilePreviewPage';
 import { PlaygroundPage } from '@/pages/playground';
+import { ThemeEditorPage } from '@/pages/settings/theme';
+import { TypographyEditorPage } from '@/pages/settings/typography';
 
 /*
  * Code splitting strategy.
@@ -123,6 +125,16 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
     to: '/playground',
     label: 'Playground',
     keywords: ['playground', 'props', 'controls', 'sandbox', 'tweak'],
+  },
+  {
+    to: '/settings/theme',
+    label: 'Theme editor',
+    keywords: ['theme', 'palette', 'colors', 'tokens', 'customize'],
+  },
+  {
+    to: '/settings/typography',
+    label: 'Typography editor',
+    keywords: ['typography', 'font', 'family', 'size', 'scale'],
   },
   { to: '/workspace', label: 'Workspace', keywords: ['canvas', 'panels', 'editor', 'design'] },
   {
@@ -285,6 +297,8 @@ const router = createBrowserRouter([
           { path: 'search', element: <SearchPage /> },
           { path: 'mobile-preview', element: <MobilePreviewPage /> },
           { path: 'playground', element: <PlaygroundPage /> },
+          { path: 'settings/theme', element: <ThemeEditorPage /> },
+          { path: 'settings/typography', element: <TypographyEditorPage /> },
           {
             path: 'workspace',
             lazy: async () => {
