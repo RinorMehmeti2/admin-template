@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/cn';
 import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
+import { useSwipe } from '@/hooks/useSwipe';
 import type { ToastItem } from '@/context/ToastProvider';
 
 const iconByType = {
@@ -48,18 +49,45 @@ export function Toast({ toast, onDismiss }: ToastProps) {
   const { Icon, color } = iconByType[toast.type];
   const role = toast.type === 'error' || toast.type === 'warning' ? 'alert' : 'status';
 
+  // Touch-only swipe-right to dismiss. Tracks live drag offset for visual
+  // feedback; fires onDismiss past threshold (or on a high-velocity flick).
+  const [dragX, setDragX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const swipe = useSwipe({
+    axis: 'x',
+    touchOnly: true,
+    dismissThreshold: 80,
+    onSwipeStart: () => setIsDragging(true),
+    onSwipeMove: ({ dx }) => setDragX(Math.max(0, dx)),
+    onSwipe: (direction) => {
+      if (direction === 'right') onDismiss();
+    },
+    onSwipeEnd: () => {
+      setIsDragging(false);
+      setDragX(0);
+    },
+  });
+
   return (
     <div
       role={role}
       data-testid="toast"
       data-print="hide"
+      onPointerDown={swipe.onPointerDown}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
+      style={{
+        transform: isDragging ? `translateX(${dragX}px)` : undefined,
+        opacity: isDragging ? Math.max(0.4, 1 - dragX / 200) : undefined,
+        transition: isDragging
+          ? 'none'
+          : 'transform 200ms cubic-bezier(0.22, 1, 0.36, 1), opacity 200ms',
+      }}
       className={cn(
         'pointer-events-auto flex w-80 max-w-[calc(100vw-2rem)] gap-3 rounded-lg border border-border bg-surface p-3 shadow-lg',
-        'motion-safe:animate-toast-in',
+        'motion-safe:animate-toast-in touch-pan-y',
       )}
     >
       <Icon className={cn('mt-0.5 h-5 w-5 shrink-0', color)} aria-hidden="true" />

@@ -10,6 +10,7 @@ import {
   CardTitle,
   DataTable,
   EmptyState,
+  FilterableSearch,
   Table,
   TableBody,
   TableCaption,
@@ -17,7 +18,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  type ActiveFilter,
+  type FilterDef,
 } from '@/components/data-display';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { Avatar } from '@/components/primitives/Avatar';
 import { AvatarGroup } from '@/components/primitives/AvatarGroup';
 import { Badge } from '@/components/primitives/Badge';
@@ -304,6 +308,53 @@ function UsersErrorFallback({ error, reset }: { error: Error; reset: () => void 
   );
 }
 
+const USER_FILTERS: ReadonlyArray<FilterDef> = [
+  {
+    id: 'status',
+    label: 'Status',
+    type: 'select',
+    options: [
+      { value: 'Active', label: 'Active' },
+      { value: 'Invited', label: 'Invited' },
+      { value: 'Suspended', label: 'Suspended' },
+    ],
+  },
+  {
+    id: 'role',
+    label: 'Role',
+    type: 'multi-select',
+    options: [
+      { value: 'Admin', label: 'Admin' },
+      { value: 'Member', label: 'Member' },
+      { value: 'Viewer', label: 'Viewer' },
+    ],
+  },
+  { id: 'email', label: 'Email', type: 'text', placeholder: 'contains…' },
+];
+
+function applyUserFilters(
+  rows: ReadonlyArray<User>,
+  query: string,
+  active: ReadonlyArray<ActiveFilter>,
+): User[] {
+  const q = query.trim().toLowerCase();
+  return rows.filter((u) => {
+    if (q !== '' && !u.name.toLowerCase().includes(q) && !u.email.toLowerCase().includes(q)) {
+      return false;
+    }
+    for (const af of active) {
+      if (af.id === 'status' && typeof af.value === 'string' && af.value !== '') {
+        if (u.status !== af.value) return false;
+      } else if (af.id === 'role' && Array.isArray(af.value) && af.value.length > 0) {
+        if (!af.value.includes(u.role)) return false;
+      } else if (af.id === 'email' && typeof af.value === 'string' && af.value !== '') {
+        if (!u.email.toLowerCase().includes(af.value.toLowerCase())) return false;
+      }
+    }
+    return true;
+  });
+}
+
 function UsersTableContent({
   setSelected,
   selectedCount,
@@ -324,36 +375,55 @@ function UsersTableContent({
   );
   const columns = useMemo(() => makeUserColumns(data.data), [data.data]);
 
+  const [query, setQuery] = useState('');
+  const debounced = useDebouncedValue(query, 200);
+  const [activeFilters, setActiveFilters] = useState<ReadonlyArray<ActiveFilter>>([]);
+
+  const filteredRows = useMemo(
+    () => applyUserFilters(data.data, debounced, activeFilters),
+    [data.data, debounced, activeFilters],
+  );
+
   return (
-    <DataTable<User>
-      columns={columns}
-      data={data.data}
-      getRowId={(row) => row.id}
-      enableRowSelection="multi"
-      onRowSelectionChange={setSelected}
-      searchPlaceholder="Search users by name, email…"
-      pageSize={10}
-      emptyState={
-        <EmptyState
-          icon={<UsersIcon className="h-6 w-6" />}
-          title="No users yet"
-          description="Invite a teammate to get started."
-        />
-      }
-      toolbar={{
-        right:
-          selectedCount > 0 ? (
-            <Button
-              variant="danger"
-              size="sm"
-              leftIcon={<Trash2 className="h-4 w-4" />}
-              onClick={onDelete}
-            >
-              Delete {selectedCount}
-            </Button>
-          ) : null,
-      }}
-    />
+    <div className="space-y-3">
+      <FilterableSearch
+        filters={USER_FILTERS}
+        query={query}
+        onQueryChange={setQuery}
+        activeFilters={activeFilters}
+        onActiveFiltersChange={setActiveFilters}
+        placeholder="Search users by name, email…"
+      />
+      <DataTable<User>
+        columns={columns}
+        data={filteredRows}
+        getRowId={(row) => row.id}
+        enableRowSelection="multi"
+        onRowSelectionChange={setSelected}
+        enableGlobalFilter={false}
+        pageSize={10}
+        emptyState={
+          <EmptyState
+            icon={<UsersIcon className="h-6 w-6" />}
+            title="No users match"
+            description="Try removing filters or clearing the search."
+          />
+        }
+        toolbar={{
+          right:
+            selectedCount > 0 ? (
+              <Button
+                variant="danger"
+                size="sm"
+                leftIcon={<Trash2 className="h-4 w-4" />}
+                onClick={onDelete}
+              >
+                Delete {selectedCount}
+              </Button>
+            ) : null,
+        }}
+      />
+    </div>
   );
 }
 
@@ -367,8 +437,8 @@ function UsersTableSection() {
         <div className="space-y-1">
           <CardTitle>Users</CardTitle>
           <CardDescription>
-            Fetched from a mocked /api/users endpoint via MSW — sortable, searchable, paginated,
-            selectable. Loading + error legs handled by &lt;LoadingBoundary&gt; +
+            Toolbar uses &lt;FilterableSearch&gt; — debounced query + add/remove filter chips for
+            Status / Role / Email. Loading + error legs handled by &lt;LoadingBoundary&gt; +
             useApiSuspenseQuery.
           </CardDescription>
         </div>

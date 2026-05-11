@@ -5,6 +5,7 @@ export * from './LoadingBoundary';
 export * from './NotificationsCenter';
 export * from './Dialog';
 export * from './Drawer';
+export * from './BottomSheet';
 export * from './Progress';
 export * from './Toast';
 export * from './Tooltip';

@@ -127,7 +127,12 @@ export function Sidebar({
 
   if (ctx.isMobile) {
     return (
-      <Drawer open={ctx.mobileOpen} onOpenChange={ctx.setMobileOpen} side="left">
+      <Drawer
+        open={ctx.mobileOpen}
+        onOpenChange={ctx.setMobileOpen}
+        side="left"
+        responsive={false}
+      >
         <DrawerContent className="w-72 max-w-[85vw]" data-print="hide">
           <DrawerHeader>
             <DrawerTitle>{mobileTitle}</DrawerTitle>

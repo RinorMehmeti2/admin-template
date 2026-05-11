@@ -278,6 +278,20 @@
    * animating even under reduced motion — they convey state, not decoration —
    * so they're explicitly re-enabled below per WCAG 2.3.3 guidance.
    */
+  /*
+   * Touch target sizing. Any element opted into [data-touch-target] is bumped
+   * to a 44×44 minimum hit area on coarse pointers (touch). Composition is
+   * preserved: visual size stays the same, only padding/min-size expands.
+   * Apply this attribute on interactive elements that ship with compact
+   * `sm` variants (IconButton, menu items, list-row trailing actions, etc.).
+   */
+  @media (pointer: coarse) {
+    [data-touch-target] {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

@@ -10,3 +10,4 @@ export * from './Timeline';
 export * from './Kanban';
 export * from './FileExplorer';
 export * from './ImageGallery';
+export * from './FilterableSearch';

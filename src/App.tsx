@@ -41,6 +41,8 @@ import { KanbanPage } from '@/pages/KanbanPage';
 import { FileExplorerPage } from '@/pages/file-explorer';
 import { GalleryPage } from '@/pages/GalleryPage';
 import { WizardPage } from '@/pages/WizardPage';
+import { SearchPage } from '@/pages/SearchPage';
+import { MobilePreviewPage } from '@/pages/MobilePreviewPage';
 
 /*
  * Code splitting strategy.
@@ -105,6 +107,16 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
     to: '/wizard',
     label: 'Form wizard',
     keywords: ['wizard', 'multistep', 'onboarding', 'form', 'stepper'],
+  },
+  {
+    to: '/search',
+    label: 'Search & filters',
+    keywords: ['search', 'filter', 'chips', 'query', 'facets'],
+  },
+  {
+    to: '/mobile-preview',
+    label: 'Mobile preview',
+    keywords: ['mobile', 'bottom-sheet', 'touch', 'swipe', 'responsive'],
   },
   { to: '/workspace', label: 'Workspace', keywords: ['canvas', 'panels', 'editor', 'design'] },
   {
@@ -264,6 +276,8 @@ const router = createBrowserRouter([
           { path: 'files', element: <FileExplorerPage /> },
           { path: 'gallery', element: <GalleryPage /> },
           { path: 'wizard', element: <WizardPage /> },
+          { path: 'search', element: <SearchPage /> },
+          { path: 'mobile-preview', element: <MobilePreviewPage /> },
           {
             path: 'workspace',
             lazy: async () => {

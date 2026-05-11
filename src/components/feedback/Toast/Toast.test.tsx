@@ -96,6 +96,34 @@ describe('Toast', () => {
     expect(toasts[1]).toHaveTextContent('Plain');
   });
 
+  it('swipe-right past threshold dismisses the toast (touch)', () => {
+    vi.useRealTimers();
+    render(<Harness />);
+    fireEvent.click(screen.getByRole('button', { name: 'success' }));
+    const toast = screen.getByTestId('toast');
+
+    const firePointer = (
+      el: Element | Window,
+      type: 'pointerdown' | 'pointermove' | 'pointerup',
+      opts: { clientX: number; clientY: number },
+    ) => {
+      const ev = new Event(type, { bubbles: true, cancelable: true }) as PointerEvent;
+      Object.defineProperty(ev, 'pointerId', { value: 1 });
+      Object.defineProperty(ev, 'pointerType', { value: 'touch' });
+      Object.defineProperty(ev, 'clientX', { value: opts.clientX });
+      Object.defineProperty(ev, 'clientY', { value: opts.clientY });
+      Object.defineProperty(ev, 'button', { value: 0 });
+      act(() => {
+        el.dispatchEvent(ev);
+      });
+    };
+
+    firePointer(toast, 'pointerdown', { clientX: 50, clientY: 0 });
+    firePointer(window, 'pointermove', { clientX: 200, clientY: 0 });
+    firePointer(window, 'pointerup', { clientX: 200, clientY: 0 });
+    expect(screen.queryByText('Saved!')).toBeNull();
+  });
+
   it('has no a11y violations (success + error toasts mounted)', async () => {
     // axe-core uses real microtasks/timeouts internally. Switch to real timers
     // for the assertion; the surrounding suite uses fake timers for the

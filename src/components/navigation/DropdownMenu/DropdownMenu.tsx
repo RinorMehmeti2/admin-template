@@ -473,6 +473,7 @@ export function DropdownMenuItem({
       ref={merged}
       role="menuitem"
       tabIndex={tabIndex}
+      data-touch-target=""
       data-disabled={isDisabled}
       onKeyDown={onKeyDown}
       onFocus={onFocus}
@@ -549,6 +550,7 @@ export function DropdownMenuCheckboxItem({
       role="menuitemcheckbox"
       aria-checked={checked}
       tabIndex={tabIndex}
+      data-touch-target=""
       data-disabled={isDisabled}
       onKeyDown={onKeyDown}
       onFocus={onFocus}
@@ -634,6 +636,7 @@ export function DropdownMenuRadioItem({
       role="menuitemradio"
       aria-checked={checked}
       tabIndex={tabIndex}
+      data-touch-target=""
       data-disabled={isDisabled}
       onKeyDown={onKeyDown}
       onFocus={onFocus}
@@ -751,6 +754,7 @@ export function DropdownMenuSubTrigger({
       aria-expanded={sub.open}
       aria-controls={sub.open ? sub.contentId : undefined}
       tabIndex={tabIndex}
+      data-touch-target=""
       data-disabled={isDisabled}
       onKeyDown={onKeyDownExtended}
       onFocus={onFocus}

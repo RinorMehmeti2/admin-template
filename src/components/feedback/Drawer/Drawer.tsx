@@ -26,6 +26,8 @@ import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useScrollLock } from '@/hooks/useScrollLock';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { useMergedRefs } from '@/hooks/useMergedRefs';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { useSwipe } from '@/hooks/useSwipe';
 import { Portal } from '@/components/overlays/Portal';
 import { IconButton } from '@/components/primitives/IconButton';
 
@@ -50,6 +52,7 @@ interface DrawerContextValue {
   registerDescription: () => () => void;
   triggerRef: RefObject<HTMLElement | null>;
   side: 'left' | 'right' | 'top' | 'bottom';
+  responsive: boolean;
 }
 
 const DrawerContext = createContext<DrawerContextValue | null>(null);
@@ -65,10 +68,25 @@ export interface DrawerProps {
   defaultOpen?: boolean | undefined;
   onOpenChange?: ((open: boolean) => void) | undefined;
   side?: 'left' | 'right' | 'top' | 'bottom';
+  /**
+   * When true (default), on viewports smaller than `md` the drawer renders
+   * as a bottom sheet (anchored to the bottom, grab handle, swipe-down
+   * dismiss) regardless of `side`. Set to false for navigation drawers and
+   * other cases where the desktop side anchoring should be preserved on
+   * mobile.
+   */
+  responsive?: boolean;
   children: ReactNode;
 }
 
-export function Drawer({ open, defaultOpen, onOpenChange, side = 'right', children }: DrawerProps) {
+export function Drawer({
+  open,
+  defaultOpen,
+  onOpenChange,
+  side = 'right',
+  responsive = true,
+  children,
+}: DrawerProps) {
   const [isOpen, setOpenInternal] = useControllableState<boolean>({
     value: open,
     defaultValue: defaultOpen ?? false,
@@ -102,6 +120,7 @@ export function Drawer({ open, defaultOpen, onOpenChange, side = 'right', childr
       registerDescription,
       triggerRef,
       side,
+      responsive,
     }),
     [
       isOpen,
@@ -113,6 +132,7 @@ export function Drawer({ open, defaultOpen, onOpenChange, side = 'right', childr
       registerTitle,
       registerDescription,
       side,
+      responsive,
     ],
   );
 
@@ -190,6 +210,8 @@ export function DrawerContent({
   const ctx = useDrawerContext('DrawerContent');
   const internal = useRef<HTMLDivElement>(null);
   const merged = useMergedRefs<HTMLDivElement>(internal, ref);
+  const isMobile = useMediaQuery('(max-width: 767px)');
+  const useBottomSheetMode = ctx.responsive && isMobile;
 
   useFocusReturn(ctx.open);
   useFocusTrap(internal, { active: ctx.open, returnFocus: false });
@@ -208,7 +230,64 @@ export function DrawerContent({
     { enabled: ctx.open },
   );
 
+  // Swipe-down to dismiss when in bottom-sheet mode.
+  const [dragDy, setDragDy] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const swipe = useSwipe({
+    axis: 'y',
+    enabled: useBottomSheetMode && ctx.open,
+    dismissThreshold: 80,
+    onSwipeStart: () => setIsDragging(true),
+    onSwipeMove: ({ dy }) => setDragDy(Math.max(0, dy)),
+    onSwipe: (direction) => {
+      if (direction === 'down') ctx.setOpen(false);
+    },
+    onSwipeEnd: () => {
+      setIsDragging(false);
+      setDragDy(0);
+    },
+  });
+
   if (!ctx.open) return null;
+
+  if (useBottomSheetMode) {
+    return (
+      <Portal>
+        <DrawerOverlay />
+        <div
+          ref={merged}
+          role="dialog"
+          aria-modal="true"
+          data-print="hide"
+          data-drawer-mode="bottom-sheet"
+          aria-labelledby={ctx.hasTitle ? ctx.titleId : undefined}
+          aria-describedby={ctx.hasDescription ? ctx.descriptionId : undefined}
+          tabIndex={-1}
+          style={{
+            transform: isDragging ? `translateY(${dragDy}px)` : undefined,
+            transition: isDragging ? 'none' : 'transform 220ms cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+          className={cn(
+            'fixed inset-x-0 bottom-0 z-50 flex max-h-[90vh] flex-col overflow-hidden rounded-t-2xl border-t border-border bg-surface shadow-2xl touch-none',
+            'motion-safe:animate-drawer-in-bottom',
+            className,
+          )}
+          {...rest}
+        >
+          <button
+            type="button"
+            aria-label="Drag to dismiss"
+            onPointerDown={swipe.onPointerDown}
+            className="mx-auto mt-2 inline-flex h-6 w-16 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            data-drawer-handle
+          >
+            <span className="block h-1.5 w-10 rounded-full bg-border" aria-hidden="true" />
+          </button>
+          {children}
+        </div>
+      </Portal>
+    );
+  }
 
   return (
     <Portal>

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
@@ -99,5 +99,51 @@ describe('Drawer', () => {
   it('has no a11y violations (open)', async () => {
     render(<Demo defaultOpen />);
     expect(await runAxe(document.body)).toHaveNoViolations();
+  });
+
+  describe('responsive prop (mobile)', () => {
+    const ORIGINAL_MATCH_MEDIA = window.matchMedia;
+    beforeEach(() => {
+      // Force "mobile" viewport via matchMedia mock.
+      window.matchMedia = ((query: string): MediaQueryList => {
+        const matches = query.includes('max-width: 767px');
+        return {
+          matches,
+          media: query,
+          onchange: null,
+          addListener: () => {},
+          removeListener: () => {},
+          addEventListener: () => {},
+          removeEventListener: () => {},
+          dispatchEvent: () => false,
+        } as unknown as MediaQueryList;
+      }) as typeof window.matchMedia;
+    });
+    afterEach(() => {
+      window.matchMedia = ORIGINAL_MATCH_MEDIA;
+    });
+
+    it('switches to bottom-sheet mode on mobile (default responsive=true)', () => {
+      render(<Demo defaultOpen />);
+      const dialog = screen.getByRole('dialog');
+      expect(dialog).toHaveAttribute('data-drawer-mode', 'bottom-sheet');
+      expect(screen.getByRole('button', { name: 'Drag to dismiss' })).toBeInTheDocument();
+    });
+
+    it('responsive={false} keeps the side anchoring', () => {
+      render(
+        <Drawer side="left" defaultOpen responsive={false}>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Nav</DrawerTitle>
+            </DrawerHeader>
+            <DrawerBody>x</DrawerBody>
+          </DrawerContent>
+        </Drawer>,
+      );
+      const dialog = screen.getByRole('dialog');
+      expect(dialog).not.toHaveAttribute('data-drawer-mode');
+      expect(screen.queryByRole('button', { name: 'Drag to dismiss' })).toBeNull();
+    });
   });
 });

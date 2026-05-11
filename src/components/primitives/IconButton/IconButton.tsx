@@ -53,6 +53,7 @@ export function IconButton({
     <button
       ref={ref}
       type={type}
+      data-touch-target=""
       className={cn(iconButtonStyles({ variant, size }), className)}
       disabled={disabled === true || isLoading === true}
       aria-busy={isLoading === true ? true : undefined}
