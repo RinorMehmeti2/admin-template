@@ -40,6 +40,7 @@ import { DragDropSandboxPage } from '@/pages/DragDropSandboxPage';
 import { KanbanPage } from '@/pages/KanbanPage';
 import { FileExplorerPage } from '@/pages/file-explorer';
 import { GalleryPage } from '@/pages/GalleryPage';
+import { WizardPage } from '@/pages/WizardPage';
 
 /*
  * Code splitting strategy.
@@ -99,6 +100,11 @@ const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[
     to: '/gallery',
     label: 'Image gallery',
     keywords: ['gallery', 'images', 'lightbox', 'photos', 'media'],
+  },
+  {
+    to: '/wizard',
+    label: 'Form wizard',
+    keywords: ['wizard', 'multistep', 'onboarding', 'form', 'stepper'],
   },
   { to: '/workspace', label: 'Workspace', keywords: ['canvas', 'panels', 'editor', 'design'] },
   {
@@ -257,6 +263,7 @@ const router = createBrowserRouter([
           { path: 'kanban', element: <KanbanPage /> },
           { path: 'files', element: <FileExplorerPage /> },
           { path: 'gallery', element: <GalleryPage /> },
+          { path: 'wizard', element: <WizardPage /> },
           {
             path: 'workspace',
             lazy: async () => {

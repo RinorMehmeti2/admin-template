@@ -7,6 +7,7 @@ export * from './DateRangePicker';
 export * from './DateTimePicker';
 export * from './Form';
 export * from './FormField';
+export * from './FormWizard';
 export * from './Input';
 export * from './Label';
 export * from './NumberInput';
