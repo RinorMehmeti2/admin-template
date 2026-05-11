@@ -38,10 +38,10 @@ showcase / demo pages.
 | Category          | Components                                                                                                                                                                                                                                                                                                                 |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **primitives/**   | `Avatar`, `AvatarGroup`, `Badge`, `Button`, `IconButton`, `Kbd`, `Separator`, `Skeleton`, `Spinner`                                                                                                                                                                                                                        |
-| **forms/**        | `Calendar`, `Checkbox`, `ColorPicker`, `Combobox`, `DatePicker`, `DateRangePicker`, `DateTimePicker`, `Form`, `FormField`, `Input`, `Label`, `NumberInput`, `OtpInput`, `PhoneInput`, `Radio`, `RadioGroup`, `RangeSlider`, `Rating`, `RichTextEditor`, `Select`, `Slider`, `Switch`, `TagInput`, `Textarea`, `TimePicker` |
-| **feedback/**     | `Alert`, `ConfirmDialog`, `Dialog`, `Drawer`, `ErrorBoundary`, `LoadingBoundary`, `NotificationsCenter` (`NotificationsBell` + `NotificationsPanel` + `NotificationItem`), `Progress`, `Toast`, `Tooltip`                                                                                                                  |
-| **navigation/**   | `Breadcrumbs`, `ContextMenu`, `DropdownMenu`, `Menu`, `Pagination`, `Stepper`, `Tabs`                                                                                                                                                                                                                                      |
-| **data-display/** | `Card`, `DataTable`, `EmptyState`, `FileExplorer`, `ImageGallery` (+ `Lightbox`), `Kanban`, `List`, `Stat`, `Table`, `Timeline`, `TreeView`, **charts/** (`AreaChart`, `BarChart`, `ChartContainer`, `ComposedChart`, `DonutChart`, `LineChart`, `PieChart`, `RadialChart`, `StackedBarChart`)                              |
+| **forms/**        | `Calendar`, `Checkbox`, `ColorPicker`, `Combobox`, `DatePicker`, `DateRangePicker`, `DateTimePicker`, `Form`, `FormField`, `FormWizard`, `Input`, `Label`, `NumberInput`, `OtpInput`, `PhoneInput`, `Radio`, `RadioGroup`, `RangeSlider`, `Rating`, `RichTextEditor`, `Select`, `Slider`, `Switch`, `TagInput`, `Textarea`, `TimePicker` |
+| **feedback/**     | `Alert`, `BottomSheet`, `ConfirmDialog`, `Dialog`, `Drawer`, `ErrorBoundary`, `LoadingBoundary`, `NotificationsCenter` (`NotificationsBell` + `NotificationsPanel` + `NotificationItem`), `Progress`, `Toast`, `Tooltip`                                                                                                                |
+| **navigation/**   | `Breadcrumbs`, `ContextMenu`, `DropdownMenu`, `Menu`, `Pagination`, `Stepper`, `Tabs`                                                                                                                                                                                                                                                  |
+| **data-display/** | `Card`, `DataTable`, `EmptyState`, `FileExplorer`, `FilterableSearch`, `ImageGallery` (+ `Lightbox`), `Kanban`, `List`, `Stat`, `Table`, `Timeline`, `TreeView`, **charts/** (`AreaChart`, `BarChart`, `ChartContainer`, `ComposedChart`, `DonutChart`, `LineChart`, `PieChart`, `RadialChart`, `StackedBarChart`)                       |
 | **overlays/**     | `CommandPalette`, `Portal`                                                                                                                                                                                                                                                                                                 |
 | **layout/**       | `AppLayout`, `Container`, `FocusMode`, `FullscreenWorkspace`, `LocaleSwitcher`, `PageHeader`, `PageShell`, `Sidebar`, `SplitLayout`, `ThemeToggle`, `Topbar`                                                                                                                                                               |
 
@@ -158,8 +158,14 @@ availableLocales, dir }`, a `LocaleSwitcher` in the topbar, and a
   component so Rollup actually splits.
 - **Layout demos.** `/showcase`, `/primitives`, `/forms`, `/feedback`,
   `/data`, `/tables`, `/charts`, `/positioning`, `/layout`, `/split`,
-  `/focus`, `/workspace`, `/admin`, `/timeline`, `/tree`, `/errors`,
-  `/print-preview` plus the `/login` flow.
+  `/focus`, `/workspace`, `/admin`, `/timeline`, `/tree`, `/kanban`,
+  `/files`, `/gallery`, `/wizard`, `/search`, `/mobile-preview`,
+  `/playground`, `/errors`, `/print-preview` plus the `/login` flow.
+- **Playground.** `/playground` is a developer tool for tweaking any
+  component's props live (searchable list, auto-generated controls,
+  copy-code button, theme + locale toggles). Driven by an explicit
+  registry at `src/playground/registry.tsx`; see
+  `src/playground/README.md` for how to add entries.
 
 ### 2.4 Tooling
 
@@ -278,7 +284,14 @@ admin-template/
 │  │  ├─ date.ts                     # date-fns wrappers
 │  │  ├─ date.test.ts
 │  │  └─ errorReporter.ts            # reportError(err, ctx) — swap body for Sentry/etc.
-│  ├─ pages/                         # demo / showcase pages
+│  ├─ pages/                         # demo / showcase pages (incl. playground/)
+│  ├─ playground/                    # /playground registry + controls + codegen
+│  │  ├─ registry.tsx                # explicit component → propSchema map
+│  │  ├─ types.ts
+│  │  ├─ PropControls.tsx
+│  │  ├─ codegen.ts                  # JSX string generator for "Copy code"
+│  │  ├─ preview.ts                  # raw values → live props (resolves jsx presets)
+│  │  └─ README.md                   # how to add components
 │  ├─ styles/
 │  │  ├─ globals.css                 # Tailwind import + base resets + print import
 │  │  ├─ print.css                   # @media print rules (data-print contract)

@@ -39,17 +39,18 @@ src/
                       # Skeleton, Spinner
     layout/           # AppLayout, Container, FocusMode, FullscreenWorkspace, LocaleSwitcher,
                       # PageHeader, PageShell, Sidebar, SplitLayout, ThemeToggle, Topbar
-    feedback/         # Alert, ConfirmDialog, Dialog, Drawer, ErrorBoundary, LoadingBoundary,
-                      # NotificationsCenter (Bell + Panel + Item), Progress, Toast, Tooltip
+    feedback/         # Alert, BottomSheet, ConfirmDialog, Dialog, Drawer, ErrorBoundary,
+                      # LoadingBoundary, NotificationsCenter (Bell + Panel + Item),
+                      # Progress, Toast, Tooltip
     navigation/       # Breadcrumbs, ContextMenu, DropdownMenu, Menu, Pagination, Stepper, Tabs
-    data-display/     # Card, DataTable, EmptyState, FileExplorer, ImageGallery (+ Lightbox),
-                      # Kanban, List, Stat, Table, Timeline, TreeView
+    data-display/     # Card, DataTable, EmptyState, FileExplorer, FilterableSearch,
+                      # ImageGallery (+ Lightbox), Kanban, List, Stat, Table, Timeline, TreeView
       charts/         # AreaChart, BarChart, ChartContainer, ComposedChart, DonutChart,
                       # LineChart, PieChart, RadialChart, StackedBarChart  (Recharts-backed)
     forms/            # Calendar, Checkbox, ColorPicker, Combobox, DatePicker, DateRangePicker,
-                      # DateTimePicker, Form, FormField, Input, Label, NumberInput, OtpInput,
-                      # PhoneInput, Radio, RadioGroup, RangeSlider, Rating, RichTextEditor,
-                      # Select, Slider, Switch, TagInput, Textarea, TimePicker
+                      # DateTimePicker, Form, FormField, FormWizard, Input, Label, NumberInput,
+                      # OtpInput, PhoneInput, Radio, RadioGroup, RangeSlider, Rating,
+                      # RichTextEditor, Select, Slider, Switch, TagInput, Textarea, TimePicker
     overlays/         # CommandPalette, Portal
   hooks/              # Behavioral primitives — see "Behavioral hooks" below
   context/            # ThemeProvider, ToastProvider, LocaleProvider
@@ -66,7 +67,9 @@ src/
   i18n/               # i18next init + locales/<lng>.json — see "Internationalization" below
   lib/                # cn.ts, date.ts, errorReporter.ts, formatters, validators, constants
   styles/             # globals.css, tokens.css, print.css
-  pages/              # Demo / showcase pages
+  pages/              # Demo / showcase pages (incl. playground/ for live prop tweaking)
+  playground/         # Registry + controls for the /playground route — see
+                      # src/playground/README.md for how to add components
   test-utils/         # a11y.ts (runAxe + toHaveNoViolations matcher)
   types/              # Shared TS types
   App.tsx
@@ -478,6 +481,23 @@ it. New tests that mount `AppLayout` / `Topbar` need to wrap with
 - Routes that pull a heavy carve-out are lazy via react-router v7's `lazy` route option: `/charts` (Recharts), `/tables` (TanStack Table + DataTable), `/workspace`, `/admin`. Add new heavy routes the same way — see CONTRIBUTING.md § "Adding a new lazy route".
 - `RichTextEditor` is split mid-component via `LazyRichTextEditor` (`forms/RichTextEditor/lazy.tsx`). The barrel intentionally does NOT re-export the eager component — re-exporting it would put TipTap back on the static graph and Rollup would refuse to split (`INEFFECTIVE_DYNAMIC_IMPORT`). Tests / stories import the eager version directly via `./RichTextEditor`.
 - Inspect with `pnpm analyze` (writes `dist/stats.html`).
+
+## Playground
+
+`/playground` is a developer tool for tweaking any component's props live
+without rebuilding stories. Searchable component list on the left, live
+preview + auto-generated controls + "Copy code" button on the right.
+Theme + locale switchers at the top so every component can be verified
+in light/dark and across locales.
+
+Driven by an **explicit registry** at `src/playground/registry.tsx` — not
+auto-introspected. Adding a component is a one-file change. Full
+contract (prop kinds, `children` patterns, JSX preset behavior) lives in
+`src/playground/README.md`. Default-equal props are stripped from the
+generated JSX; JSX-valued props use a preset map (no in-browser eval).
+
+The playground is intentionally NOT a Storybook replacement — stories
+remain the source of truth for canonical variants + interaction tests.
 
 ## Print
 

@@ -199,10 +199,10 @@ This is the workflow we want every contributor to follow.
 Pick the right folder under `src/components/`:
 
 - `primitives/` — Avatar, AvatarGroup, Badge, Button, IconButton, Kbd, Separator, Skeleton, Spinner
-- `forms/` — Calendar, Checkbox, ColorPicker, Combobox, DatePicker, DateRangePicker, DateTimePicker, Form, FormField, Input, Label, NumberInput, OtpInput, PhoneInput, Radio, RadioGroup, RangeSlider, Rating, RichTextEditor, Select, Slider, Switch, TagInput, Textarea, TimePicker
-- `feedback/` — Alert, ConfirmDialog, Dialog, Drawer, ErrorBoundary, LoadingBoundary, Progress, Toast, Tooltip
+- `forms/` — Calendar, Checkbox, ColorPicker, Combobox, DatePicker, DateRangePicker, DateTimePicker, Form, FormField, FormWizard, Input, Label, NumberInput, OtpInput, PhoneInput, Radio, RadioGroup, RangeSlider, Rating, RichTextEditor, Select, Slider, Switch, TagInput, Textarea, TimePicker
+- `feedback/` — Alert, BottomSheet, ConfirmDialog, Dialog, Drawer, ErrorBoundary, LoadingBoundary, NotificationsCenter, Progress, Toast, Tooltip
 - `navigation/` — Breadcrumbs, ContextMenu, DropdownMenu, Menu, Pagination, Stepper, Tabs
-- `data-display/` — Card, DataTable, EmptyState, Kanban, List, Stat, Table, Timeline, TreeView (`charts/` subfolder for Recharts-backed chart components)
+- `data-display/` — Card, DataTable, EmptyState, FileExplorer, FilterableSearch, ImageGallery (+ Lightbox), Kanban, List, Stat, Table, Timeline, TreeView (`charts/` subfolder for Recharts-backed chart components)
 - `layout/` — AppLayout, Container, FocusMode, FullscreenWorkspace, LocaleSwitcher, PageHeader, PageShell, Sidebar, SplitLayout, ThemeToggle, Topbar
 - `overlays/` — CommandPalette, Portal
 
