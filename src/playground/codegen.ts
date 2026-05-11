@@ -86,11 +86,12 @@ export function generateCode(entry: PlaygroundEntry, values: PropValues): string
     if (typeof def === 'string' && def !== '') childrenText = def;
   }
 
-  const open = attrs.length === 0
-    ? `<${entry.name}`
-    : attrs.length <= 2
-      ? `<${entry.name} ${attrs.join(' ')}`
-      : `<${entry.name}\n  ${attrs.join('\n  ')}\n`;
+  const open =
+    attrs.length === 0
+      ? `<${entry.name}`
+      : attrs.length <= 2
+        ? `<${entry.name} ${attrs.join(' ')}`
+        : `<${entry.name}\n  ${attrs.join('\n  ')}\n`;
 
   if (childrenText === null) {
     return `${open} />`;

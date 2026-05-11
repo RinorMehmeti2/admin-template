@@ -4,11 +4,7 @@ import { Input } from '@/components/forms/Input';
 import { Textarea } from '@/components/forms/Textarea';
 import { NumberInput } from '@/components/forms/NumberInput';
 import { Switch } from '@/components/forms/Switch';
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxTrigger,
-} from '@/components/forms/Combobox';
+import { Combobox, ComboboxContent, ComboboxTrigger } from '@/components/forms/Combobox';
 import { ColorPicker } from '@/components/forms/ColorPicker';
 import { IconButton } from '@/components/primitives/IconButton';
 import type { PlaygroundEntry, PropSchema, PropValues } from './types';
@@ -94,7 +90,13 @@ function PropControl({ name, schema, value, onChange }: PropControlProps) {
         ) : null}
       </div>
 
-      <ControlInput name={name} inputId={inputId} schema={schema} value={value} onChange={onChange} />
+      <ControlInput
+        name={name}
+        inputId={inputId}
+        schema={schema}
+        value={value}
+        onChange={onChange}
+      />
 
       {schema.description !== undefined ? (
         <p className="text-[0.6875rem] text-foreground-subtle">{schema.description}</p>

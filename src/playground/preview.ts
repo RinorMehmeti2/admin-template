@@ -18,7 +18,10 @@ import type { PlaygroundEntry, PropValues } from './types';
  * clean and lets the component apply its own defaults.
  */
 
-export function resolvePreviewProps(entry: PlaygroundEntry, values: PropValues): {
+export function resolvePreviewProps(
+  entry: PlaygroundEntry,
+  values: PropValues,
+): {
   props: Record<string, unknown>;
   childrenNode: ReactNode | undefined;
 } {

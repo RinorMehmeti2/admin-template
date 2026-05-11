@@ -152,9 +152,7 @@ function CodeBlock({ code }: CodeBlockProps) {
         <Button
           variant="ghost"
           size="sm"
-          leftIcon={
-            copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />
-          }
+          leftIcon={copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
           onClick={onCopy}
         >
           {copied ? 'Copied' : 'Copy code'}

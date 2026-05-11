@@ -33,14 +33,14 @@ Append an entry to `PLAYGROUND_REGISTRY`:
 
 ### Prop kinds
 
-| kind        | Control rendered           | Notes                                                                                                                   |
-| ----------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `'string'`  | `Input` or `Textarea`      | Pass `multiline: true` for `Textarea`. `placeholder` optional.                                                          |
-| `'number'`  | `NumberInput`              | `min` / `max` / `step` honored.                                                                                          |
-| `'boolean'` | `Switch`                   | —                                                                                                                       |
-| `'enum'`    | `Combobox` (searchable)    | `options: readonly string[]` required.                                                                                  |
-| `'color'`   | `ColorPicker`              | Value is the color string (`#RRGGBB`, `rgb(…)`, etc.).                                                                  |
-| `'jsx'`     | Preset chips + `Textarea`  | Provide `presets: [{ label, value, node }]`. The string is what gets copied; `node` is the live preview substitute.    |
+| kind        | Control rendered          | Notes                                                                                                               |
+| ----------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `'string'`  | `Input` or `Textarea`     | Pass `multiline: true` for `Textarea`. `placeholder` optional.                                                      |
+| `'number'`  | `NumberInput`             | `min` / `max` / `step` honored.                                                                                     |
+| `'boolean'` | `Switch`                  | —                                                                                                                   |
+| `'enum'`    | `Combobox` (searchable)   | `options: readonly string[]` required.                                                                              |
+| `'color'`   | `ColorPicker`             | Value is the color string (`#RRGGBB`, `rgb(…)`, etc.).                                                              |
+| `'jsx'`     | Preset chips + `Textarea` | Provide `presets: [{ label, value, node }]`. The string is what gets copied; `node` is the live preview substitute. |
 
 ### `children`
 
