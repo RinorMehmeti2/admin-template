@@ -7,7 +7,14 @@ import { Switch } from '@/components/forms/Switch';
 import { Combobox, ComboboxContent, ComboboxTrigger } from '@/components/forms/Combobox';
 import { ColorPicker } from '@/components/forms/ColorPicker';
 import { IconButton } from '@/components/primitives/IconButton';
-import type { PlaygroundEntry, PropSchema, PropValues } from './types';
+import { StyleOverlay } from './StyleOverlay';
+import {
+  STYLE_OVERLAY_KEY,
+  type PlaygroundEntry,
+  type PropSchema,
+  type PropValues,
+  type StyleOverlayValues,
+} from './types';
 
 interface PropControlsProps {
   entry: PlaygroundEntry;
@@ -53,6 +60,12 @@ export function PropControls({ entry, values, onChange, onReset }: PropControlsP
           />
         ))}
       </div>
+      {entry.advancedStyle !== false ? (
+        <StyleOverlay
+          values={(values[STYLE_OVERLAY_KEY] as StyleOverlayValues | undefined) ?? {}}
+          onChange={(next) => setKey(STYLE_OVERLAY_KEY, next)}
+        />
+      ) : null}
     </div>
   );
 }

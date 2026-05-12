@@ -1,4 +1,11 @@
-import type { PlaygroundEntry, PropSchema, PropValues } from './types';
+import {
+  STYLE_OVERLAY_KEY,
+  type PlaygroundEntry,
+  type PropSchema,
+  type PropValues,
+  type StyleOverlayValues,
+} from './types';
+import { overlayToClassAttr, overlayToStyleAttr } from './styleOverlayResolve';
 
 /*
  * Code generation for the playground "Copy code" button.
@@ -10,6 +17,10 @@ import type { PlaygroundEntry, PropSchema, PropValues } from './types';
  *
  * Output is plain JSX text — not formatted via prettier. Long prop lists
  * wrap onto separate lines.
+ *
+ * Style-overlay: `__style` values become a `style={{...}}` attribute and a
+ * `className="..."` attribute appended after schema-driven props. Box-shadow
+ * goes through Tailwind utility classes for theme-token alignment.
  */
 
 function isDefault(schema: PropSchema, value: unknown): boolean {
@@ -68,6 +79,14 @@ export function generateCode(entry: PlaygroundEntry, values: PropValues): string
     const attr = formatAttr(name, schema, value);
     if (attr !== null) attrs.push(attr);
   }
+
+  // Style overlay attrs (style + className). Appended after schema attrs so
+  // they read like the user-applied "polish" pass on top of the variant.
+  const overlayValues = values[STYLE_OVERLAY_KEY] as StyleOverlayValues | undefined;
+  const styleAttr = overlayToStyleAttr(overlayValues);
+  const classAttr = overlayToClassAttr(overlayValues);
+  if (classAttr !== null) attrs.push(classAttr);
+  if (styleAttr !== null) attrs.push(styleAttr);
 
   // If schema has no `children` entry but the registry provided a literal
   // `childrenCode` template (e.g. Card), use that — it's the only way to

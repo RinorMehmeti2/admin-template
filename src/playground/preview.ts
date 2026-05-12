@@ -1,5 +1,11 @@
 import type { ReactNode } from 'react';
-import type { PlaygroundEntry, PropValues } from './types';
+import {
+  STYLE_OVERLAY_KEY,
+  type PlaygroundEntry,
+  type PropValues,
+  type StyleOverlayValues,
+} from './types';
+import { resolveOverlay } from './styleOverlayResolve';
 
 /*
  * Translates raw playground values into props ready to spread onto the
@@ -16,6 +22,9 @@ import type { PlaygroundEntry, PropValues } from './types';
  *
  * Also drops props whose value equals the schema default — keeps spread
  * clean and lets the component apply its own defaults.
+ *
+ * The reserved `__style` key holds StyleOverlayValues that are merged into
+ * the final `style` + `className` (Tailwind shadow classes + free className).
  */
 
 export function resolvePreviewProps(
@@ -62,6 +71,21 @@ export function resolvePreviewProps(
     childrenNode = entry.children;
   }
 
+  // Merge style overlay (always — even when entry.advancedStyle is false the
+  // panel is hidden upstream, so __style stays empty).
+  const overlayValues = values[STYLE_OVERLAY_KEY] as StyleOverlayValues | undefined;
+  const overlay = resolveOverlay(overlayValues);
+  const hasInlineStyle = Object.keys(overlay.style).length > 0;
+  const hasInlineClass = overlay.className !== '';
+  if (hasInlineStyle) {
+    const existing = (props.style as Record<string, unknown> | undefined) ?? {};
+    props.style = { ...existing, ...overlay.style };
+  }
+  if (hasInlineClass) {
+    const existing = typeof props.className === 'string' ? props.className : '';
+    props.className = existing === '' ? overlay.className : `${existing} ${overlay.className}`;
+  }
+
   return { props, childrenNode };
 }
 
@@ -70,5 +94,6 @@ export function defaultValuesFor(entry: PlaygroundEntry): PropValues {
   for (const [name, schema] of Object.entries(entry.propSchemas)) {
     if (schema.default !== undefined) out[name] = schema.default;
   }
+  out[STYLE_OVERLAY_KEY] = {};
   return out;
 }

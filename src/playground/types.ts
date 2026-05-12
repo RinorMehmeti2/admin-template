@@ -71,6 +71,42 @@ export type PropSchema =
 
 export type PropValues = Record<string, unknown>;
 
+/**
+ * Per-component visual override applied via inline `style` + `className` on
+ * the rendered element. Owned by the playground (not the component schema)
+ * — every entry gets the same overlay panel unless `advancedStyle: false`.
+ *
+ * `__style` is a reserved key in PropValues that holds StyleOverlayValues.
+ */
+export interface StyleOverlayValues {
+  paddingTop?: number;
+  paddingRight?: number;
+  paddingBottom?: number;
+  paddingLeft?: number;
+  marginTop?: number;
+  marginRight?: number;
+  marginBottom?: number;
+  marginLeft?: number;
+  borderWidth?: number;
+  borderStyle?: 'solid' | 'dashed' | 'dotted' | 'double' | 'none';
+  borderColor?: string;
+  borderRadius?: number;
+  backgroundColor?: string;
+  color?: string;
+  width?: string;
+  height?: string;
+  minWidth?: string;
+  maxWidth?: string;
+  fontSize?: number;
+  fontWeight?: '300' | '400' | '500' | '600' | '700' | '800';
+  letterSpacing?: number;
+  opacity?: number;
+  boxShadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  className?: string;
+}
+
+export const STYLE_OVERLAY_KEY = '__style';
+
 export interface PlaygroundEntry {
   /** Display name shown in the list. */
   name: string;
@@ -94,6 +130,12 @@ export interface PlaygroundEntry {
   childrenCode?: string;
   /** Free-text keywords surfaced by the searchable list. */
   keywords?: ReadonlyArray<string>;
+  /**
+   * Show the advanced style-overlay panel for this entry. Default: true.
+   * Set false for components that don't spread style/className to their root
+   * (composite slot containers, headless wrappers).
+   */
+  advancedStyle?: boolean;
 }
 
 export type PlaygroundRegistry = ReadonlyArray<PlaygroundEntry>;
