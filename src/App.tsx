@@ -7,15 +7,15 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { PrimitivesPage } from '@/pages/PrimitivesPage';
-import { FormsPage } from '@/pages/FormsPage';
-import { FeedbackPage } from '@/pages/FeedbackPage';
-import { DataPage } from '@/pages/DataPage';
-import { PositioningPage } from '@/pages/PositioningPage';
-import { ShowcasePage } from '@/pages/ShowcasePage';
-import { SplitDemoPage } from '@/pages/SplitDemoPage';
-import { FocusDemoPage } from '@/pages/FocusDemoPage';
-import { DashboardPage, LayoutDemo, SettingsPage, UsersPage } from '@/pages/layout-demo';
+import { PrimitivesPage } from '@/pages/demos/primitives';
+import { FormsPage } from '@/pages/demos/forms';
+import { FeedbackPage } from '@/pages/demos/feedback';
+import { DataPage } from '@/pages/demos/data';
+import { PositioningPage } from '@/pages/demos/positioning';
+import { ShowcasePage } from '@/pages/demos/showcase';
+import { SplitDemoPage } from '@/pages/demos/split';
+import { FocusDemoPage } from '@/pages/demos/focus';
+import { DashboardPage, LayoutDemo, SettingsPage, UsersPage } from '@/pages/demos/layout';
 import { ToastProvider } from '@/context/ToastProvider';
 import { ThemeProvider, useTheme } from '@/context/ThemeProvider';
 import { LocaleProvider } from '@/context/LocaleProvider';
@@ -30,19 +30,19 @@ import { AuthProvider, ProtectedRoute, PublicOnlyRoute, RoleGate } from '@/auth'
 import { ApiAuthBridge, ErrorBridge, QueryProvider } from '@/data';
 import { NotificationsProvider } from '@/notifications';
 import { RootRouterErrorElement, RouterErrorElement } from '@/components/feedback/ErrorBoundary';
-import { ErrorsDemoPage } from '@/pages/errors';
+import { ErrorsDemoPage } from '@/pages/demos/errors';
 import { LoginPage } from '@/pages/auth/login';
 import { VerifyPage } from '@/pages/auth/verify';
-import { PrintPreviewPage } from '@/pages/PrintPreviewPage';
-import { TreePage } from '@/pages/TreePage';
-import { TimelinePage } from '@/pages/TimelinePage';
-import { DragDropSandboxPage } from '@/pages/DragDropSandboxPage';
-import { KanbanPage } from '@/pages/KanbanPage';
+import { PrintPreviewPage } from '@/pages/demos/print-preview';
+import { TreePage } from '@/pages/demos/tree';
+import { TimelinePage } from '@/pages/demos/timeline';
+import { DragDropSandboxPage } from '@/pages/demos/drag-drop';
+import { KanbanPage } from '@/pages/demos/kanban';
 import { FileExplorerPage } from '@/pages/file-explorer';
-import { GalleryPage } from '@/pages/GalleryPage';
-import { WizardPage } from '@/pages/WizardPage';
-import { SearchPage } from '@/pages/SearchPage';
-import { MobilePreviewPage } from '@/pages/MobilePreviewPage';
+import { GalleryPage } from '@/pages/demos/gallery';
+import { WizardPage } from '@/pages/demos/wizard';
+import { SearchPage } from '@/pages/demos/search';
+import { MobilePreviewPage } from '@/pages/demos/mobile-preview';
 import { PlaygroundPage } from '@/pages/playground';
 import { ThemeEditorPage } from '@/pages/settings/theme';
 import { TypographyEditorPage } from '@/pages/settings/typography';
@@ -264,7 +264,7 @@ const router = createBrowserRouter([
           {
             path: 'tables',
             lazy: async () => {
-              const { TablesPage } = await import('@/pages/TablesPage');
+              const { TablesPage } = await import('@/pages/demos/tables');
               return {
                 Component: () => (
                   <ProtectedRoute>
@@ -281,7 +281,7 @@ const router = createBrowserRouter([
           {
             path: 'charts',
             lazy: async () => {
-              const { ChartsPage } = await import('@/pages/ChartsPage');
+              const { ChartsPage } = await import('@/pages/demos/charts');
               return { Component: ChartsPage };
             },
             errorElement: <RouterErrorElement source="route:/charts" />,
@@ -302,7 +302,7 @@ const router = createBrowserRouter([
           {
             path: 'workspace',
             lazy: async () => {
-              const { WorkspaceDemoPage } = await import('@/pages/WorkspaceDemoPage');
+              const { WorkspaceDemoPage } = await import('@/pages/demos/workspace');
               return { Component: WorkspaceDemoPage };
             },
           },

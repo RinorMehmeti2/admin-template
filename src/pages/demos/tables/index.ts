@@ -1,0 +1,1 @@
+export { TablesPage } from './TablesPage';

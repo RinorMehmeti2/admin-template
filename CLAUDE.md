@@ -69,8 +69,20 @@ src/
   lib/                # cn.ts, date.ts, errorReporter.ts, themeTokens.ts, typography.ts,
                       # formatters, validators, constants
   styles/             # globals.css, tokens.css, print.css
-  pages/              # Demo / showcase pages (incl. playground/, settings/theme,
-                      # settings/typography for the in-app editors — see "Theming" below)
+  pages/              # Real product pages: auth/, admin/, file-explorer/,
+                      # playground/, settings/theme, settings/typography. New
+                      # product features go here. Per-feature layout: feature/
+                      # ├── FeaturePage.tsx (composition)
+                      # ├── index.ts (re-export)
+                      # ├── model.ts (types)
+                      # ├── data.ts (fixtures or react-query hooks — optional)
+                      # ├── components/ (page-scoped sub-components)
+                      # └── hooks/ (page-scoped hooks — optional)
+                      # See pages/demos/charts/ for a worked example.
+  pages/demos/        # Library showcase pages (Charts, Forms, Primitives,
+                      # Tables, Timeline, …). NOT product surface. Delete on
+                      # fork when starting a real app — also strip their route
+                      # entries from App.tsx.
   playground/         # Registry + controls for the /playground route — see
                       # src/playground/README.md for how to add components
   test-utils/         # a11y.ts (runAxe + toHaveNoViolations matcher)
@@ -360,7 +372,7 @@ Note: `useListbox` (Combobox, Select) and the chart container (Recharts) already
 5. Implement following the reference skeleton above.
 6. Add tests + stories.
 7. Export from the category's `index.ts`.
-8. Add a usage example to the relevant **demo page** in `src/pages/`.
+8. Add a usage example to the relevant **demo page** in `src/pages/demos/`.
 9. If anything is **ambiguous** (variant set, prop names, design choice), ASK before coding rather than guessing.
 
 ## Communication style I want from you
@@ -590,7 +602,7 @@ containers, and appends `(href)` after every external link.
 
 ### Verifying
 
-Open `/print-preview` (`PrintPreviewPage` in `src/pages/`) and use the
+Open `/print-preview` (`PrintPreviewPage` in `src/pages/demos/`) and use the
 browser's print preview (Ctrl/⌘ P). Acceptance: chrome gone, every
 DataTable row visible, every Tabs panel visible, charts keep colors and
 legends, links show `(href)`, no card or table row split across pages.

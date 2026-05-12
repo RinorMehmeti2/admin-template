@@ -985,7 +985,7 @@ return (
 Without the meta flag the global handler will toast every failure
 (including 422s) before `useApiFormSubmit` ever sees it. The
 `SettingsForm` on `/forms` is the canonical example — see
-`src/pages/FormsPage.tsx` for the three integration points.
+`src/pages/demos/FormsPage.tsx` for the three integration points.
 
 ### Auth integration
 
@@ -1035,7 +1035,7 @@ levels:
    (`/tables`, `/charts`, `/admin`). React Router intercepts before the
    class boundary fires.
 3. **Per-feature** — wrap any subtree in `<ErrorBoundary fallback={…}>`.
-   See `src/pages/errors/ErrorsDemoPage.tsx` for three side-by-side
+   See `src/pages/demos/errors/ErrorsDemoPage.tsx` for three side-by-side
    feature-level boundaries.
 
 ### What boundaries DO NOT catch
