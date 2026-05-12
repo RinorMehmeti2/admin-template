@@ -178,7 +178,7 @@ export function DrawerOverlay({ ref, className, ...rest }: DrawerOverlayProps) {
       aria-hidden="true"
       data-print="hide"
       className={cn(
-        'fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm motion-safe:animate-overlay-in',
+        'fixed inset-0 z-50 bg-foreground/70 motion-safe:animate-overlay-in',
         className,
       )}
       {...rest}

@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/feedback/T
 import {
   Dialog,
   DialogBody,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -139,6 +140,9 @@ export function TooltipShim({
 interface DialogShimProps extends Forwarded {
   defaultOpen?: boolean;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  variant?: 'default' | 'info' | 'success' | 'warning' | 'danger';
+  closeOnOverlayClick?: boolean;
+  closeOnEscape?: boolean;
   title?: string;
   description?: string;
 }
@@ -146,6 +150,9 @@ interface DialogShimProps extends Forwarded {
 export function DialogShim({
   defaultOpen = false,
   size = 'md',
+  variant = 'default',
+  closeOnOverlayClick = true,
+  closeOnEscape = true,
   title = 'Dialog title',
   description = 'Optional supporting copy beneath the title.',
   className,
@@ -156,7 +163,14 @@ export function DialogShim({
       <DialogTrigger>
         <Button>Open dialog</Button>
       </DialogTrigger>
-      <DialogContent size={size} className={className} style={style}>
+      <DialogContent
+        size={size}
+        variant={variant}
+        closeOnOverlayClick={closeOnOverlayClick}
+        closeOnEscape={closeOnEscape}
+        className={className}
+        style={style}
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
@@ -167,8 +181,12 @@ export function DialogShim({
           </p>
         </DialogBody>
         <DialogFooter>
-          <Button variant="ghost">Cancel</Button>
-          <Button>Confirm</Button>
+          <DialogClose asChild>
+            <Button variant="ghost">Cancel</Button>
+          </DialogClose>
+          <DialogClose asChild>
+            <Button>Confirm</Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

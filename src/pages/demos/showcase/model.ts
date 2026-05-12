@@ -1,7 +1,7 @@
 export interface ShowcaseEntry {
   to: string;
-  label: string;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
+  countKey: string;
   icon: React.ReactNode;
-  count: string;
 }

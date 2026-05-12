@@ -47,6 +47,9 @@ import type {
   NormalizedStep,
   PersistedDraft,
   ResponsiveBreakpoint,
+  StepIndicatorShape,
+  StepIndicatorSize,
+  StepIndicatorStyle,
   StepIndicatorVariant,
   WizardOrientation,
 } from './FormWizard.types';
@@ -96,6 +99,9 @@ export interface FormWizardProps<TSchema extends z.ZodObject<z.ZodRawShape>> {
   summaryRender?: (values: z.infer<TSchema>) => ReactNode;
 
   stepIndicatorVariant?: StepIndicatorVariant;
+  stepShape?: StepIndicatorShape;
+  stepStyle?: StepIndicatorStyle;
+  stepSize?: StepIndicatorSize;
   compactBelow?: ResponsiveBreakpoint;
 
   labels?: WizardI18nLabels;
@@ -210,6 +216,9 @@ export function FormWizard<TSchema extends z.ZodObject<z.ZodRawShape>>({
   showSummaryStep,
   summaryRender,
   stepIndicatorVariant = 'numbered',
+  stepShape = 'circle',
+  stepStyle = 'solid',
+  stepSize = 'md',
   compactBelow,
   labels,
   className,
@@ -223,14 +232,8 @@ export function FormWizard<TSchema extends z.ZodObject<z.ZodRawShape>>({
   const { toast } = useToast();
 
   const wizardId = useId('wizard');
-  const panelIdFor = useCallback(
-    (stepId: string) => `${wizardId}-panel-${stepId}`,
-    [wizardId],
-  );
-  const indicatorIdFor = useCallback(
-    (stepId: string) => `${wizardId}-tab-${stepId}`,
-    [wizardId],
-  );
+  const panelIdFor = useCallback((stepId: string) => `${wizardId}-panel-${stepId}`, [wizardId]);
+  const indicatorIdFor = useCallback((stepId: string) => `${wizardId}-tab-${stepId}`, [wizardId]);
 
   const baseSteps = useMemo(() => parseChildren<TValues>(children), [children]);
 
@@ -255,9 +258,7 @@ export function FormWizard<TSchema extends z.ZodObject<z.ZodRawShape>>({
   const responsiveQuery = BREAKPOINTS[responsiveBreakpoint];
   const isNarrow = useMediaQuery(responsiveQuery);
   const effectiveOrientation: WizardOrientation =
-    responsiveOrientation === true && isNarrow
-      ? 'vertical'
-      : (orientationProp ?? 'horizontal');
+    responsiveOrientation === true && isNarrow ? 'vertical' : (orientationProp ?? 'horizontal');
 
   useEffect(() => {
     if (onOrientationChange !== undefined && responsiveOrientation === true) {
@@ -325,15 +326,7 @@ export function FormWizard<TSchema extends z.ZodObject<z.ZodRawShape>>({
       completedStepIds: Array.from(completedIds),
     };
     writeDraft(persistKey, draft);
-  }, [
-    debouncedValues,
-    currentIndex,
-    completedIds,
-    persistKey,
-    allSteps,
-    restoreOpen,
-    isDirty,
-  ]);
+  }, [debouncedValues, currentIndex, completedIds, persistKey, allSteps, restoreOpen, isDirty]);
 
   // ───── per-step validation ─────
   const validateStep = useCallback(
@@ -432,7 +425,9 @@ export function FormWizard<TSchema extends z.ZodObject<z.ZodRawShape>>({
           const title =
             typeof blocker.title === 'string'
               ? blocker.title
-              : String((blocker.title as { toString?: () => string } | null)?.toString?.() ?? blocker.id);
+              : String(
+                  (blocker.title as { toString?: () => string } | null)?.toString?.() ?? blocker.id,
+                );
           const blockedFn = labels?.blockedToast ?? defaultBlockedToast;
           toast.warning(blockedFn(title));
         }
@@ -561,24 +556,18 @@ export function FormWizard<TSchema extends z.ZodObject<z.ZodRawShape>>({
     totalSteps,
   };
 
-  const summaryHelpText =
-    labels?.summaryHelpText ?? 'Review your entries before submitting.';
+  const summaryHelpText = labels?.summaryHelpText ?? 'Review your entries before submitting.';
 
   const content: ReactNode =
-    currentStep === undefined
-      ? null
-      : currentStep.isSummary === true
-        ? summaryRender !== undefined
-          ? summaryRender(form.getValues() as z.infer<TSchema>)
-          : (
-            <FormWizardSummary
-              values={form.getValues() as TValues}
-              summaryLabel={summaryHelpText}
-            />
-          )
-        : currentStep.render !== undefined
-          ? currentStep.render(renderArgs)
-          : null;
+    currentStep === undefined ? null : currentStep.isSummary === true ? (
+      summaryRender !== undefined ? (
+        summaryRender(form.getValues() as z.infer<TSchema>)
+      ) : (
+        <FormWizardSummary values={form.getValues() as TValues} summaryLabel={summaryHelpText} />
+      )
+    ) : currentStep.render !== undefined ? (
+      currentStep.render(renderArgs)
+    ) : null;
 
   const compactSummaryFn = labels?.compactSummaryText ?? defaultCompactSummary;
 
@@ -600,6 +589,9 @@ export function FormWizard<TSchema extends z.ZodObject<z.ZodRawShape>>({
           currentIndex={currentIndex}
           orientation={effectiveOrientation}
           variant={stepIndicatorVariant}
+          shape={stepShape}
+          styleVariant={stepStyle}
+          size={stepSize}
           compact={isCompact && effectiveOrientation === 'horizontal'}
           panelIdFor={panelIdFor}
           indicatorIdFor={indicatorIdFor}
@@ -617,8 +609,7 @@ export function FormWizard<TSchema extends z.ZodObject<z.ZodRawShape>>({
         >
           {allSteps.map((s, i) => {
             const active = i === currentIndex;
-            const panelContent =
-              i === currentIndex ? content : null;
+            const panelContent = i === currentIndex ? content : null;
             return (
               <div
                 key={s.id}

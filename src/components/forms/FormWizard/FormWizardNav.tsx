@@ -1,17 +1,12 @@
-import {
-  useRef,
-  type KeyboardEvent as ReactKeyboardEvent,
-  type ReactNode,
-} from 'react';
+import { useRef, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
 import { Check, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { RovingFocusGroup, useRovingFocusItem } from '@/hooks/useRovingFocus';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/feedback/Tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/feedback/Tooltip';
 import type {
+  StepIndicatorShape,
+  StepIndicatorSize,
+  StepIndicatorStyle,
   StepIndicatorVariant,
   WizardOrientation,
 } from './FormWizard.types';
@@ -47,6 +42,9 @@ export interface FormWizardNavProps {
   currentIndex: number;
   orientation: WizardOrientation;
   variant: StepIndicatorVariant;
+  shape: StepIndicatorShape;
+  styleVariant: StepIndicatorStyle;
+  size: StepIndicatorSize;
   compact: boolean;
   panelIdFor: (stepId: string) => string;
   indicatorIdFor: (stepId: string) => string;
@@ -61,6 +59,9 @@ export function FormWizardNav(props: FormWizardNavProps) {
     currentIndex,
     orientation,
     variant,
+    shape,
+    styleVariant,
+    size,
     compact,
     panelIdFor,
     indicatorIdFor,
@@ -72,9 +73,7 @@ export function FormWizardNav(props: FormWizardNavProps) {
   if (compact && orientation === 'horizontal') {
     const current = steps[currentIndex];
     const percent =
-      steps.length > 1
-        ? Math.round((currentIndex / Math.max(steps.length - 1, 1)) * 100)
-        : 0;
+      steps.length > 1 ? Math.round((currentIndex / Math.max(steps.length - 1, 1)) * 100) : 0;
     return (
       <div
         className="space-y-2"
@@ -83,13 +82,9 @@ export function FormWizardNav(props: FormWizardNavProps) {
         data-testid="wizard-nav-compact"
       >
         <div className="flex items-baseline justify-between gap-3">
-          <span className="text-sm font-medium text-foreground">
-            {compactSummary}
-          </span>
+          <span className="text-sm font-medium text-foreground">{compactSummary}</span>
           {current !== undefined ? (
-            <span className="truncate text-sm text-foreground-muted">
-              {current.title}
-            </span>
+            <span className="truncate text-sm text-foreground-muted">{current.title}</span>
           ) : null}
         </div>
         <div className="h-1 w-full overflow-hidden rounded-full bg-border">
@@ -103,6 +98,8 @@ export function FormWizardNav(props: FormWizardNavProps) {
     );
   }
 
+  const isProgressVariant = variant === 'progress';
+
   return (
     <RovingFocusGroup
       orientation={orientation}
@@ -115,9 +112,7 @@ export function FormWizardNav(props: FormWizardNavProps) {
         aria-orientation={orientation}
         className={cn(
           'flex',
-          orientation === 'horizontal'
-            ? 'w-full items-start'
-            : 'flex-col items-stretch',
+          orientation === 'horizontal' ? 'w-full items-start' : 'flex-col items-stretch',
         )}
         data-testid="wizard-nav"
       >
@@ -130,6 +125,9 @@ export function FormWizardNav(props: FormWizardNavProps) {
             currentIndex={currentIndex}
             orientation={orientation}
             variant={variant}
+            shape={shape}
+            styleVariant={styleVariant}
+            size={size}
             compactLabels={variant === 'dots' || variant === 'progress'}
             panelId={panelIdFor(step.id)}
             indicatorId={indicatorIdFor(step.id)}
@@ -137,7 +135,7 @@ export function FormWizardNav(props: FormWizardNavProps) {
           />
         ))}
       </div>
-      {variant === 'progress' ? (
+      {isProgressVariant && orientation === 'horizontal' ? (
         <ProgressBar currentIndex={currentIndex} totalSteps={steps.length} />
       ) : null}
     </RovingFocusGroup>
@@ -153,6 +151,9 @@ interface NavItemRowProps {
   currentIndex: number;
   orientation: WizardOrientation;
   variant: StepIndicatorVariant;
+  shape: StepIndicatorShape;
+  styleVariant: StepIndicatorStyle;
+  size: StepIndicatorSize;
   compactLabels: boolean;
   panelId: string;
   indicatorId: string;
@@ -166,6 +167,9 @@ function NavItemRow({
   currentIndex,
   orientation,
   variant,
+  shape,
+  styleVariant,
+  size,
   compactLabels,
   panelId,
   indicatorId,
@@ -179,6 +183,9 @@ function NavItemRow({
             <DisabledIndicator
               step={step}
               variant={variant}
+              shape={shape}
+              styleVariant={styleVariant}
+              size={size}
               orientation="vertical"
               panelId={panelId}
               indicatorId={indicatorId}
@@ -188,6 +195,9 @@ function NavItemRow({
               step={step}
               index={index}
               variant={variant}
+              shape={shape}
+              styleVariant={styleVariant}
+              size={size}
               orientation="vertical"
               currentIndex={currentIndex}
               panelId={panelId}
@@ -196,9 +206,7 @@ function NavItemRow({
             />
           )}
           {!isLast ? (
-            <VerticalConnector
-              fill={connectorFill(step, currentIndex, index)}
-            />
+            <VerticalConnector fill={connectorFill(step, currentIndex, index)} variant={variant} />
           ) : null}
         </div>
         <div className={cn('flex-1', isLast ? 'pb-1' : 'pb-6')}>
@@ -221,6 +229,9 @@ function NavItemRow({
           <DisabledIndicator
             step={step}
             variant={variant}
+            shape={shape}
+            styleVariant={styleVariant}
+            size={size}
             orientation="horizontal"
             panelId={panelId}
             indicatorId={indicatorId}
@@ -230,6 +241,9 @@ function NavItemRow({
             step={step}
             index={index}
             variant={variant}
+            shape={shape}
+            styleVariant={styleVariant}
+            size={size}
             orientation="horizontal"
             currentIndex={currentIndex}
             panelId={panelId}
@@ -258,7 +272,8 @@ function NavItemRow({
       {!isLast ? (
         <HorizontalConnector
           fill={connectorFill(step, currentIndex, index)}
-          compactLabels={compactLabels}
+          variant={variant}
+          size={size}
         />
       ) : null}
     </>
@@ -272,6 +287,9 @@ function NavItemRow({
 interface IndicatorPropsBase {
   step: NavStep;
   variant: StepIndicatorVariant;
+  shape: StepIndicatorShape;
+  styleVariant: StepIndicatorStyle;
+  size: StepIndicatorSize;
   orientation: WizardOrientation;
   panelId: string;
   indicatorId: string;
@@ -287,6 +305,9 @@ function EnabledIndicator({
   step,
   index,
   variant,
+  shape,
+  styleVariant,
+  size,
   orientation,
   currentIndex,
   panelId,
@@ -328,15 +349,18 @@ function EnabledIndicator({
       onClick={handleClick}
       data-status={step.status}
       data-clickable={step.clickable ? 'true' : 'false'}
+      data-shape={shape}
+      data-style={styleVariant}
+      data-size={size}
       className={cn(
-        indicatorBase(variant),
-        indicatorStateClasses(step.status, variant),
+        indicatorBase(variant, shape, size),
+        indicatorStateClasses(step.status, styleVariant, variant),
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         step.clickable ? 'cursor-pointer' : 'cursor-default',
         'motion-safe:transition-colors motion-safe:duration-200',
       )}
     >
-      <IndicatorGlyph step={step} index={index} variant={variant} />
+      <IndicatorGlyph step={step} index={index} variant={variant} size={size} />
     </button>
   );
 
@@ -355,6 +379,9 @@ function EnabledIndicator({
 function DisabledIndicator({
   step,
   variant,
+  shape,
+  styleVariant,
+  size,
   orientation,
   panelId,
   indicatorId,
@@ -370,17 +397,16 @@ function DisabledIndicator({
       tabIndex={-1}
       data-status="idle"
       data-disabled="true"
+      data-shape={shape}
+      data-style={styleVariant}
+      data-size={size}
       className={cn(
-        indicatorBase(variant),
+        indicatorBase(variant, shape, size),
         'border-border bg-surface-muted text-foreground-subtle',
         'cursor-not-allowed opacity-60',
       )}
     >
-      <IndicatorGlyph
-        step={{ ...step, status: 'idle' }}
-        index={0}
-        variant={variant}
-      />
+      <IndicatorGlyph step={{ ...step, status: 'idle' }} index={0} variant={variant} size={size} />
     </span>
   );
 
@@ -400,53 +426,125 @@ function IndicatorGlyph({
   step,
   index,
   variant,
+  size,
 }: {
   step: NavStep;
   index: number;
   variant: StepIndicatorVariant;
+  size: StepIndicatorSize;
 }) {
   if (variant === 'dots' || variant === 'progress') {
     return <span className="block h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />;
   }
+  const glyphCls = glyphSizeClass(size);
   if (step.status === 'complete') {
-    return <Check className="h-3.5 w-3.5" aria-hidden="true" />;
+    return <Check className={glyphCls} aria-hidden="true" />;
   }
   if (step.status === 'error') {
-    return <AlertCircle className="h-3.5 w-3.5" aria-hidden="true" />;
+    return <AlertCircle className={glyphCls} aria-hidden="true" />;
   }
   if (variant === 'icons' && step.icon !== undefined) {
     return (
-      <span className="inline-flex h-4 w-4 items-center justify-center" aria-hidden="true">
+      <span className={cn('inline-flex items-center justify-center', glyphCls)} aria-hidden="true">
         {step.icon}
       </span>
     );
   }
   return (
-    <span className="text-xs font-semibold" aria-hidden="true">
+    <span className={cn('font-semibold', numberSizeClass(size))} aria-hidden="true">
       {index + 1}
     </span>
   );
 }
 
-function indicatorBase(variant: StepIndicatorVariant): string {
-  if (variant === 'dots' || variant === 'progress') {
-    return 'inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2';
-  }
-  return 'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2';
+function glyphSizeClass(size: StepIndicatorSize): string {
+  if (size === 'sm') return 'h-3 w-3';
+  if (size === 'lg') return 'h-4 w-4';
+  return 'h-3.5 w-3.5';
 }
 
-function indicatorStateClasses(status: NavStepStatus, variant: StepIndicatorVariant): string {
-  // dots/progress use a smaller dot inside; same color rules
-  if (status === 'active') {
-    return 'border-primary bg-primary text-primary-foreground';
+function numberSizeClass(size: StepIndicatorSize): string {
+  if (size === 'sm') return 'text-[10px]';
+  if (size === 'lg') return 'text-sm';
+  return 'text-xs';
+}
+
+function shapeRadius(shape: StepIndicatorShape): string {
+  if (shape === 'square') return 'rounded-none';
+  if (shape === 'rounded') return 'rounded-md';
+  return 'rounded-full';
+}
+
+function indicatorBase(
+  variant: StepIndicatorVariant,
+  shape: StepIndicatorShape,
+  size: StepIndicatorSize,
+): string {
+  if (variant === 'dots' || variant === 'progress') {
+    return cn(
+      'inline-flex h-4 w-4 shrink-0 items-center justify-center border-2',
+      shapeRadius(shape),
+    );
   }
-  if (status === 'complete') {
-    return 'border-primary bg-primary text-primary-foreground';
+  const sizeCls =
+    shape === 'pill'
+      ? size === 'sm'
+        ? 'h-6 w-9 px-1'
+        : size === 'lg'
+          ? 'h-10 w-14 px-2'
+          : 'h-8 w-12 px-1.5'
+      : size === 'sm'
+        ? 'h-6 w-6'
+        : size === 'lg'
+          ? 'h-10 w-10'
+          : 'h-8 w-8';
+  return cn(
+    'inline-flex shrink-0 items-center justify-center border-2',
+    shapeRadius(shape),
+    sizeCls,
+  );
+}
+
+function indicatorStateClasses(
+  status: NavStepStatus,
+  styleVariant: StepIndicatorStyle,
+  variant: StepIndicatorVariant,
+): string {
+  if (styleVariant === 'outline') {
+    if (status === 'active') {
+      return 'border-primary bg-surface text-primary ring-2 ring-primary/25';
+    }
+    if (status === 'complete') return 'border-primary bg-surface text-primary';
+    if (status === 'error') return 'border-danger bg-surface text-danger';
+    return cn(
+      'border-border bg-surface text-foreground-muted',
+      variant === 'dots' || variant === 'progress' ? '' : 'hover:border-foreground-muted',
+    );
   }
-  if (status === 'error') {
-    return 'border-danger bg-surface text-danger';
+
+  if (styleVariant === 'soft') {
+    if (status === 'active') {
+      return 'border-primary/40 bg-primary/15 text-primary';
+    }
+    if (status === 'complete') return 'border-primary/30 bg-primary/10 text-primary';
+    if (status === 'error') return 'border-danger/40 bg-danger/10 text-danger';
+    return cn(
+      'border-border bg-surface-muted text-foreground-muted',
+      variant === 'dots' || variant === 'progress' ? '' : 'hover:border-foreground-muted',
+    );
   }
-  // idle / future
+
+  if (styleVariant === 'ghost') {
+    if (status === 'active') return 'border-transparent bg-transparent text-primary';
+    if (status === 'complete') return 'border-transparent bg-transparent text-primary';
+    if (status === 'error') return 'border-transparent bg-transparent text-danger';
+    return 'border-transparent bg-transparent text-foreground-muted';
+  }
+
+  // solid (default)
+  if (status === 'active') return 'border-primary bg-primary text-primary-foreground';
+  if (status === 'complete') return 'border-primary bg-primary text-primary-foreground';
+  if (status === 'error') return 'border-danger bg-surface text-danger';
   return cn(
     'border-border bg-surface text-foreground-muted',
     variant === 'dots' || variant === 'progress' ? '' : 'hover:border-foreground-muted',
@@ -501,54 +599,79 @@ function NavLabel({ step, indicatorId, compactLabels, orientation }: NavLabelPro
 /* Connectors                                                                 */
 /* -------------------------------------------------------------------------- */
 
-type ConnectorFill = 'empty' | 'half' | 'full';
+type ConnectorFill = 'empty' | 'full';
 
-function connectorFill(step: NavStep, currentIndex: number, index: number): ConnectorFill {
+/*
+ * Progress lands AT the circle, not between two. So a step is either:
+ *  - complete → connector AFTER it is fully filled (we've passed it)
+ *  - otherwise → empty
+ * No half-fill for the active step.
+ */
+function connectorFill(step: NavStep, _currentIndex: number, _index: number): ConnectorFill {
   if (step.status === 'complete') return 'full';
-  if (index === currentIndex) return 'half';
   return 'empty';
+}
+
+function horizontalConnectorOffset(size: StepIndicatorSize, compactLabels: boolean): string {
+  if (compactLabels) return 'mt-2'; // dots/progress h-4 → center 8px
+  if (size === 'sm') return 'mt-3'; // h-6 → 12px
+  if (size === 'lg') return 'mt-5'; // h-10 → 20px
+  return 'mt-4'; // h-8 → 16px
 }
 
 function HorizontalConnector({
   fill,
-  compactLabels,
+  variant,
+  size,
 }: {
   fill: ConnectorFill;
-  compactLabels: boolean;
+  variant: StepIndicatorVariant;
+  size: StepIndicatorSize;
 }) {
-  const widthPct = fill === 'full' ? '100%' : fill === 'half' ? '50%' : '0%';
-  // mt aligns with indicator's vertical center: indicator h-8 (32px) → mt-4 (16px),
-  // smaller for dots/progress (h-4 → mt-2)
-  const mt = compactLabels ? 'mt-2' : 'mt-4';
+  const widthPct = fill === 'full' ? '100%' : '0%';
+  const compactLabels = variant === 'dots' || variant === 'progress';
+  const offset = horizontalConnectorOffset(size, compactLabels);
+  const thickness = variant === 'progress' ? 'h-1' : 'h-0.5';
   return (
     <div
       aria-hidden="true"
       role="presentation"
-      className={cn('h-0.5 flex-1 self-start rounded-full bg-border overflow-hidden mx-2', mt)}
+      className={cn(
+        thickness,
+        'flex-1 self-start rounded-full bg-border overflow-hidden mx-2',
+        offset,
+      )}
       data-fill={fill}
       data-testid="wizard-connector"
     >
       <div
-        className="h-full rounded-full bg-primary motion-safe:transition-[width] motion-safe:duration-200"
+        className="h-full rounded-full bg-primary motion-safe:transition-[width] motion-safe:duration-300"
         style={{ width: widthPct }}
       />
     </div>
   );
 }
 
-function VerticalConnector({ fill }: { fill: ConnectorFill }) {
-  const heightPct = fill === 'full' ? '100%' : fill === 'half' ? '50%' : '0%';
+function VerticalConnector({
+  fill,
+  variant,
+}: {
+  fill: ConnectorFill;
+  variant: StepIndicatorVariant;
+}) {
+  const heightPct = fill === 'full' ? '100%' : '0%';
+  const thickness = variant === 'progress' ? 'w-1' : 'w-0.5';
   return (
     <div
       aria-hidden="true"
       role="presentation"
-      className="my-1 w-0.5 flex-1 self-stretch rounded-full bg-border overflow-hidden"
+      className={cn(thickness, 'my-1 flex-1 self-stretch rounded-full bg-border overflow-hidden')}
       data-fill={fill}
       data-testid="wizard-connector"
       style={{ minHeight: '1rem' }}
     >
       <div
-        className="w-full rounded-full bg-primary motion-safe:transition-[height] motion-safe:duration-200"
+        className="w-full rounded-full bg-primary motion-safe:transition-[height] motion-safe:duration-300"
         style={{ height: heightPct }}
       />
     </div>
@@ -559,17 +682,9 @@ function VerticalConnector({ fill }: { fill: ConnectorFill }) {
 /* ProgressBar (variant="progress")                                           */
 /* -------------------------------------------------------------------------- */
 
-function ProgressBar({
-  currentIndex,
-  totalSteps,
-}: {
-  currentIndex: number;
-  totalSteps: number;
-}) {
+function ProgressBar({ currentIndex, totalSteps }: { currentIndex: number; totalSteps: number }) {
   const percent =
-    totalSteps > 1
-      ? Math.round((currentIndex / Math.max(totalSteps - 1, 1)) * 100)
-      : 0;
+    totalSteps > 1 ? Math.round((currentIndex / Math.max(totalSteps - 1, 1)) * 100) : 0;
   return (
     <div
       className="mt-3 space-y-1"
@@ -581,7 +696,7 @@ function ProgressBar({
     >
       <div className="h-1 w-full overflow-hidden rounded-full bg-border">
         <div
-          className="h-full rounded-full bg-primary motion-safe:transition-[width] motion-safe:duration-200"
+          className="h-full rounded-full bg-primary motion-safe:transition-[width] motion-safe:duration-300"
           style={{ width: `${percent}%` }}
         />
       </div>
@@ -589,4 +704,3 @@ function ProgressBar({
     </div>
   );
 }
-

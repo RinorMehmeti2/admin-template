@@ -62,3 +62,67 @@ export const Sizes = {
     </div>
   ),
 };
+
+export const Variants = {
+  render: () => (
+    <div className="flex flex-wrap gap-2">
+      {(['default', 'info', 'success', 'warning', 'danger'] as const).map((v) => (
+        <Dialog key={v}>
+          <DialogTrigger>
+            <Button variant="outline">{v}</Button>
+          </DialogTrigger>
+          <DialogContent variant={v}>
+            <DialogHeader>
+              <DialogTitle>Variant: {v}</DialogTitle>
+              <DialogDescription>
+                Colored top accent communicates tone (info, success, warning, danger).
+              </DialogDescription>
+            </DialogHeader>
+            <DialogBody>
+              <p className="text-sm text-foreground-muted">
+                Use sparingly for system-level dialogs that need urgency or status cues.
+              </p>
+            </DialogBody>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button>OK</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      ))}
+    </div>
+  ),
+};
+
+export const Locked = {
+  render: () => (
+    <Dialog>
+      <DialogTrigger>
+        <Button>Open locked dialog</Button>
+      </DialogTrigger>
+      <DialogContent variant="warning" closeOnOverlayClick={false} closeOnEscape={false}>
+        <DialogHeader>
+          <DialogTitle>Confirm required</DialogTitle>
+          <DialogDescription>
+            This dialog can only be dismissed via the close buttons — clicking the backdrop and
+            pressing Escape are disabled.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogBody>
+          <p className="text-sm text-foreground-muted">
+            Use for destructive flows or wizards where accidental dismissal would lose work.
+          </p>
+        </DialogBody>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="ghost">Cancel</Button>
+          </DialogClose>
+          <DialogClose asChild>
+            <Button variant="danger">Confirm</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  ),
+};

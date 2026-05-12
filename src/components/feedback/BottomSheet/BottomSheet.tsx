@@ -142,7 +142,7 @@ function BottomSheetOverlay({ onClick }: { onClick: () => void }) {
       aria-hidden="true"
       data-print="hide"
       onClick={onClick}
-      className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm motion-safe:animate-overlay-in"
+      className="fixed inset-0 z-50 bg-foreground/70 motion-safe:animate-overlay-in"
     />
   );
 }
@@ -239,14 +239,10 @@ export function BottomSheetContent({
 
   // Compute height: snap% minus current drag offset (clamped to 0..vh).
   const heightStyle: React.CSSProperties = {
-    height: ctx.isDragging
-      ? `calc(${ctx.snap}vh - ${ctx.dragOffset}px)`
-      : `${ctx.snap}vh`,
+    height: ctx.isDragging ? `calc(${ctx.snap}vh - ${ctx.dragOffset}px)` : `${ctx.snap}vh`,
     // Spring-ish easing — only animate when NOT dragging (otherwise it lags
     // the pointer). Pure CSS, no library.
-    transition: ctx.isDragging
-      ? 'none'
-      : 'height 220ms cubic-bezier(0.22, 1, 0.36, 1)',
+    transition: ctx.isDragging ? 'none' : 'height 220ms cubic-bezier(0.22, 1, 0.36, 1)',
   };
 
   return (
@@ -368,7 +364,10 @@ export function BottomSheetFooter({
   return (
     <div
       ref={ref}
-      className={cn('flex items-center justify-end gap-2 border-t border-border px-5 py-3', className)}
+      className={cn(
+        'flex items-center justify-end gap-2 border-t border-border px-5 py-3',
+        className,
+      )}
       {...rest}
     >
       {children}

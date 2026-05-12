@@ -434,7 +434,7 @@ export function EditorToolbar({
         aria-label="Text formatting"
         onKeyDown={onToolbarKeyDown}
         className={cn(
-          'flex flex-wrap items-center gap-0.5 border-b border-border bg-surface px-1.5 py-1',
+          'flex items-center gap-0.5 overflow-x-auto border-b border-border bg-surface px-1.5 py-1 [&>*]:shrink-0',
           className,
         )}
       >

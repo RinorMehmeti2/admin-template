@@ -566,7 +566,7 @@ export const PLAYGROUND_REGISTRY: PlaygroundRegistry = [
     name: 'Dialog',
     category: 'feedback',
     component: DialogShim,
-    keywords: ['modal', 'overlay'],
+    keywords: ['modal', 'overlay', 'locked'],
     propSchemas: {
       title: { kind: 'string', default: 'Dialog title' },
       description: {
@@ -575,6 +575,13 @@ export const PLAYGROUND_REGISTRY: PlaygroundRegistry = [
         multiline: true,
       },
       size: { kind: 'enum', options: ['sm', 'md', 'lg', 'xl', 'full'], default: 'md' },
+      variant: {
+        kind: 'enum',
+        options: ['default', 'info', 'success', 'warning', 'danger'],
+        default: 'default',
+      },
+      closeOnOverlayClick: { kind: 'boolean', default: true },
+      closeOnEscape: { kind: 'boolean', default: true },
       defaultOpen: { kind: 'boolean', default: false },
     },
   },

@@ -11,6 +11,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useControllableState } from '@/hooks/useControllableState';
 import { useDrag } from '@/hooks/useDrag';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 const DEFAULT_LEFT_WIDTH = 320;
 const DEFAULT_MIN = 200;
@@ -172,6 +173,29 @@ export function SplitLayout({
 
   const effectiveWidth = isCollapsed ? collapsedLeftWidth : width;
   const showDivider = resizable || collapsible;
+  const isMobile = useMediaQuery('(max-width: 767px)');
+
+  // Mobile: stack vertically. Drop divider/resize — fixed pixel widths overflow
+  // 375px viewports. Left pane sits on top, right pane fills below.
+  if (isMobile) {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          'flex h-full min-h-0 w-full flex-col overflow-hidden bg-background',
+          className,
+        )}
+      >
+        <aside
+          id="split-layout-left"
+          className="max-h-[40vh] shrink-0 overflow-auto border-b border-border bg-surface"
+        >
+          {left}
+        </aside>
+        <main className="min-h-0 flex-1 overflow-auto bg-background">{right}</main>
+      </div>
+    );
+  }
 
   return (
     <div

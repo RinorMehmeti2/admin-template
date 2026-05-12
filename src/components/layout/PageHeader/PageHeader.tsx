@@ -21,11 +21,13 @@ export function PageHeader({
   ...rest
 }: PageHeaderProps) {
   return (
-    <header ref={ref} className={cn('space-y-3 pb-6', className)} {...rest}>
+    <header ref={ref} className={cn('space-y-3 pb-4 sm:pb-6', className)} {...rest}>
       {breadcrumbs}
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4">
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+            {title}
+          </h1>
           {description !== undefined ? (
             <p className="mt-1 text-foreground-muted">{description}</p>
           ) : null}

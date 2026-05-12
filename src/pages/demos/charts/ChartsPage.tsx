@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ChartContainer } from '@/components/data-display/charts';
 import {
   KpiStats,
@@ -8,14 +9,12 @@ import {
 } from './components';
 
 export function ChartsPage() {
+  const { t } = useTranslation();
   return (
     <ChartContainer className="mx-auto max-w-7xl space-y-8">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Charts</h1>
-        <p className="mt-1 text-foreground-muted">
-          Recharts wrapped in our visual language. Tokens drive every colour; toggle the legend
-          chips below each chart to hide a series.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t('demos.charts.title')}</h1>
+        <p className="mt-1 text-foreground-muted">{t('demos.charts.subtitle')}</p>
       </header>
 
       <KpiStats />

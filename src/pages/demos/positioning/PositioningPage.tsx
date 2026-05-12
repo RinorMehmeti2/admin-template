@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   ContextMenuArea,
   CustomBoundaryDemo,
@@ -6,14 +7,12 @@ import {
 } from './components';
 
 export function PositioningPage() {
+  const { t } = useTranslation();
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Positioning</h1>
-        <p className="mt-1 text-sm text-foreground-subtle">
-          Manual verification page for <code>usePosition</code>: flip on placement-axis overflow,
-          shift on perpendicular-axis overflow, custom boundaries, and cursor-anchored menus.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t('demos.positioning.title')}</h1>
+        <p className="mt-1 text-sm text-foreground-subtle">{t('demos.positioning.subtitle')}</p>
       </header>
 
       <section className="space-y-3">

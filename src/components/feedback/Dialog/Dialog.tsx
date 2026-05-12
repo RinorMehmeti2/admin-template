@@ -16,6 +16,7 @@ import {
   type Ref,
   type RefObject,
 } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useId } from '@/hooks/useId';
@@ -167,7 +168,7 @@ export function DialogOverlay({ ref, className, ...rest }: DialogOverlayProps) {
       aria-hidden="true"
       data-print="hide"
       className={cn(
-        'fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm',
+        'fixed inset-0 z-50 bg-foreground/70',
         'motion-safe:animate-overlay-in',
         className,
       )}
@@ -180,17 +181,36 @@ export function DialogOverlay({ ref, className, ...rest }: DialogOverlayProps) {
 /*  Content                                                                   */
 /* -------------------------------------------------------------------------- */
 
-const contentSize = {
-  sm: 'max-w-sm',
-  md: 'max-w-lg',
-  lg: 'max-w-2xl',
-  xl: 'max-w-4xl',
-  full: 'max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]',
-} as const;
+const contentStyles = cva(
+  cn(
+    'relative w-full overflow-hidden rounded-lg border border-border bg-surface shadow-lg',
+    'flex max-h-[calc(100vh-2rem)] flex-col',
+    'motion-safe:animate-dialog-in',
+  ),
+  {
+    variants: {
+      size: {
+        sm: 'max-w-sm',
+        md: 'max-w-lg',
+        lg: 'max-w-2xl',
+        xl: 'max-w-4xl',
+        full: 'max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]',
+      },
+      variant: {
+        default: '',
+        info: 'border-t-4 border-t-info',
+        success: 'border-t-4 border-t-success',
+        warning: 'border-t-4 border-t-warning',
+        danger: 'border-t-4 border-t-danger',
+      },
+    },
+    defaultVariants: { size: 'md', variant: 'default' },
+  },
+);
 
-export interface DialogContentProps extends Omit<HTMLAttributes<HTMLDivElement>, 'role'> {
+export interface DialogContentProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'role'>, VariantProps<typeof contentStyles> {
   ref?: Ref<HTMLDivElement>;
-  size?: keyof typeof contentSize;
   closeOnOverlayClick?: boolean;
   closeOnEscape?: boolean;
 }
@@ -199,7 +219,8 @@ export function DialogContent({
   ref,
   className,
   children,
-  size = 'md',
+  size,
+  variant,
   closeOnOverlayClick = true,
   closeOnEscape = true,
   ...rest
@@ -239,13 +260,7 @@ export function DialogContent({
           aria-labelledby={ctx.hasTitle ? ctx.titleId : undefined}
           aria-describedby={ctx.hasDescription ? ctx.descriptionId : undefined}
           tabIndex={-1}
-          className={cn(
-            'relative w-full overflow-hidden rounded-lg border border-border bg-surface shadow-lg',
-            'flex max-h-[calc(100vh-2rem)] flex-col',
-            'motion-safe:animate-dialog-in',
-            contentSize[size],
-            className,
-          )}
+          className={cn(contentStyles({ size, variant }), className)}
           {...rest}
         >
           {children}

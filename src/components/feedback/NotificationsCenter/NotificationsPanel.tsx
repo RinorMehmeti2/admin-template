@@ -226,7 +226,7 @@ export function NotificationsPanel({
         <div
           aria-hidden="true"
           data-print="hide"
-          className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm motion-safe:animate-overlay-in"
+          className="fixed inset-0 z-50 bg-foreground/70 motion-safe:animate-overlay-in"
           onClick={() => onOpenChange(false)}
         />
       ) : null}

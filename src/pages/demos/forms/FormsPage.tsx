@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Separator } from '@/components/primitives/Separator';
 import {
   BioEditorDemo,
@@ -18,13 +19,12 @@ import {
 } from './components';
 
 export function FormsPage() {
+  const { t } = useTranslation();
   return (
     <div className="mx-auto max-w-3xl space-y-10">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Forms</h1>
-        <p className="mt-1 text-foreground-muted">
-          Form primitives composed with react-hook-form + zod validation.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t('demos.forms.title')}</h1>
+        <p className="mt-1 text-foreground-muted">{t('demos.forms.subtitle')}</p>
       </header>
 
       <Section title="Login form">

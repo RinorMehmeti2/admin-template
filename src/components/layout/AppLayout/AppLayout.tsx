@@ -1,11 +1,9 @@
-import { useCallback, useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   BarChart3,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Clock,
   Columns2,
   Compass,
@@ -36,8 +34,15 @@ import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { ThemePicker } from '@/components/layout/ThemePicker';
 import { TypographyPicker } from '@/components/layout/TypographyPicker';
 import { LocaleSwitcher } from '@/components/layout/LocaleSwitcher';
+import {
+  Sidebar,
+  SidebarMobileToggle,
+  SidebarProvider,
+  useSidebar,
+} from '@/components/layout/Sidebar';
 import { Avatar } from '@/components/primitives/Avatar';
 import { Button } from '@/components/primitives/Button';
+import { IconButton } from '@/components/primitives/IconButton';
 import { Kbd } from '@/components/primitives/Kbd';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/feedback/Tooltip';
 import { useCommandRegistry } from '@/components/overlays/CommandPalette';
@@ -55,42 +60,51 @@ import { useLocale } from '@/context/LocaleProvider';
 
 interface NavItem {
   to: string;
-  label: string;
+  labelKey: string;
   icon: React.ReactNode;
 }
 
 const NAV_ITEMS: ReadonlyArray<NavItem> = [
-  { to: '/showcase', label: 'Overview', icon: <Compass className="h-4 w-4" /> },
-  { to: '/primitives', label: 'Primitives', icon: <Sparkles className="h-4 w-4" /> },
-  { to: '/forms', label: 'Forms', icon: <FormInput className="h-4 w-4" /> },
+  { to: '/showcase', labelKey: 'nav.overview', icon: <Compass className="h-4 w-4" /> },
+  { to: '/primitives', labelKey: 'nav.primitives', icon: <Sparkles className="h-4 w-4" /> },
+  { to: '/forms', labelKey: 'nav.forms', icon: <FormInput className="h-4 w-4" /> },
   {
     to: '/feedback',
-    label: 'Feedback',
+    labelKey: 'nav.feedback',
     icon: <MessageSquareWarning className="h-4 w-4" />,
   },
-  { to: '/data', label: 'Data display', icon: <LayoutDashboard className="h-4 w-4" /> },
-  { to: '/tables', label: 'Tables', icon: <Table className="h-4 w-4" /> },
-  { to: '/tree', label: 'Tree', icon: <FolderTree className="h-4 w-4" /> },
-  { to: '/timeline', label: 'Timeline', icon: <Clock className="h-4 w-4" /> },
-  { to: '/charts', label: 'Charts', icon: <BarChart3 className="h-4 w-4" /> },
-  { to: '/kanban', label: 'Kanban', icon: <KanbanSquare className="h-4 w-4" /> },
-  { to: '/files', label: 'File explorer', icon: <FolderOpen className="h-4 w-4" /> },
-  { to: '/gallery', label: 'Gallery', icon: <Images className="h-4 w-4" /> },
-  { to: '/wizard', label: 'Form wizard', icon: <ListChecks className="h-4 w-4" /> },
-  { to: '/positioning', label: 'Positioning', icon: <Move className="h-4 w-4" /> },
-  { to: '/layout', label: 'Layout', icon: <PanelsTopLeft className="h-4 w-4" /> },
-  { to: '/split', label: 'Split', icon: <Columns2 className="h-4 w-4" /> },
-  { to: '/focus', label: 'Focus', icon: <SquareDashedMousePointer className="h-4 w-4" /> },
-  { to: '/playground', label: 'Playground', icon: <SlidersHorizontal className="h-4 w-4" /> },
-  { to: '/settings/theme', label: 'Theme editor', icon: <PaletteIcon className="h-4 w-4" /> },
-  { to: '/settings/typography', label: 'Typography', icon: <TypeIcon className="h-4 w-4" /> },
-  { to: '/workspace', label: 'Workspace', icon: <Frame className="h-4 w-4" /> },
-  { to: '/admin', label: 'Admin', icon: <ShieldCheck className="h-4 w-4" /> },
+  { to: '/data', labelKey: 'nav.dataDisplay', icon: <LayoutDashboard className="h-4 w-4" /> },
+  { to: '/tables', labelKey: 'nav.tables', icon: <Table className="h-4 w-4" /> },
+  { to: '/tree', labelKey: 'nav.tree', icon: <FolderTree className="h-4 w-4" /> },
+  { to: '/timeline', labelKey: 'nav.timeline', icon: <Clock className="h-4 w-4" /> },
+  { to: '/charts', labelKey: 'nav.charts', icon: <BarChart3 className="h-4 w-4" /> },
+  { to: '/kanban', labelKey: 'nav.kanban', icon: <KanbanSquare className="h-4 w-4" /> },
+  { to: '/files', labelKey: 'nav.fileExplorer', icon: <FolderOpen className="h-4 w-4" /> },
+  { to: '/gallery', labelKey: 'nav.gallery', icon: <Images className="h-4 w-4" /> },
+  { to: '/wizard', labelKey: 'nav.formWizard', icon: <ListChecks className="h-4 w-4" /> },
+  { to: '/positioning', labelKey: 'nav.positioning', icon: <Move className="h-4 w-4" /> },
+  { to: '/layout', labelKey: 'nav.layout', icon: <PanelsTopLeft className="h-4 w-4" /> },
+  { to: '/split', labelKey: 'nav.split', icon: <Columns2 className="h-4 w-4" /> },
+  { to: '/focus', labelKey: 'nav.focus', icon: <SquareDashedMousePointer className="h-4 w-4" /> },
+  {
+    to: '/playground',
+    labelKey: 'nav.playground',
+    icon: <SlidersHorizontal className="h-4 w-4" />,
+  },
+  { to: '/settings/theme', labelKey: 'nav.themeEditor', icon: <PaletteIcon className="h-4 w-4" /> },
+  {
+    to: '/settings/typography',
+    labelKey: 'nav.typography',
+    icon: <TypeIcon className="h-4 w-4" />,
+  },
+  { to: '/workspace', labelKey: 'nav.workspace', icon: <Frame className="h-4 w-4" /> },
+  { to: '/admin', labelKey: 'nav.admin', icon: <ShieldCheck className="h-4 w-4" /> },
 ];
 
 function AuthMenu() {
   const { user, state, logout, hasRole } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   if (state === 'authenticated' && user !== null) {
     return (
@@ -99,7 +113,7 @@ function AuthMenu() {
           <button
             type="button"
             className="inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            aria-label={`Account menu for ${user.name}`}
+            aria-label={t('auth.menu.accountFor', { name: user.name })}
           >
             <Avatar name={user.name} size="sm" />
             <span className="hidden md:inline-block">{user.name}</span>
@@ -119,7 +133,7 @@ function AuthMenu() {
           <DropdownMenuSeparator />
           {hasRole('admin') ? (
             <DropdownMenuItem onSelect={() => navigate('/admin')}>
-              <ShieldCheck className="mr-2 h-4 w-4" /> Admin area
+              <ShieldCheck className="mr-2 h-4 w-4" /> {t('auth.menu.adminArea')}
             </DropdownMenuItem>
           ) : null}
           <DropdownMenuItem
@@ -127,7 +141,7 @@ function AuthMenu() {
               void logout().then(() => navigate('/login'));
             }}
           >
-            <LogOut className="mr-2 h-4 w-4" /> Log out
+            <LogOut className="mr-2 h-4 w-4" /> {t('auth.menu.logOut')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -141,39 +155,198 @@ function AuthMenu() {
       leftIcon={<LogIn className="h-4 w-4" />}
       onClick={() => navigate('/login')}
     >
-      Sign in
+      {t('auth.menu.signIn')}
     </Button>
   );
 }
 
-const SIDEBAR_STORAGE_KEY = 'sidebar-collapsed';
+function SidebarBrand() {
+  const { t } = useTranslation();
+  const { isMobile, collapsed } = useSidebar();
+  const brandName = t('brand.name');
 
-function readStoredCollapsed(): boolean {
-  if (typeof window === 'undefined') return false;
-  try {
-    return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true';
-  } catch {
-    return false;
+  if (!isMobile && collapsed) {
+    return (
+      <div className="flex w-full items-center justify-center">
+        <Avatar
+          name={brandName}
+          size="sm"
+          className="rounded-md bg-primary text-primary-foreground"
+        />
+      </div>
+    );
   }
+
+  return (
+    <div className="min-w-0">
+      <h1 className="truncate text-sm font-semibold leading-tight tracking-tight">{brandName}</h1>
+      <p className="truncate text-[11px] leading-tight text-foreground-subtle">
+        {t('brand.subtitle')}
+      </p>
+    </div>
+  );
+}
+
+function PrimaryNav() {
+  const { isMobile, collapsed, mobileOpen, setMobileOpen } = useSidebar();
+  const { t } = useTranslation();
+  const { pathname } = useLocation();
+  const navRef = useRef<HTMLElement>(null);
+  const showLabels = isMobile || !collapsed;
+
+  // Scroll the active NavLink into view on route change / mount. If sidebar
+  // is overflowed, the active item is otherwise hidden below the fold.
+  useEffect(() => {
+    if (isMobile && !mobileOpen) return;
+    const active = navRef.current?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (active === null || active === undefined) return;
+    if (typeof active.scrollIntoView !== 'function') return;
+    active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [pathname, isMobile, mobileOpen]);
+
+  return (
+    <nav ref={navRef} aria-label={t('nav.ariaPrimary')}>
+      <ul className="space-y-0.5">
+        {NAV_ITEMS.map((item) => {
+          const label = t(item.labelKey);
+          const link = (
+            <NavLink
+              to={item.to}
+              onClick={() => {
+                if (isMobile) setMobileOpen(false);
+              }}
+              aria-label={!showLabels ? label : undefined}
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-2.5 rounded-md py-2 text-sm transition-colors',
+                  showLabels ? 'px-3' : 'justify-center px-2',
+                  isActive
+                    ? 'bg-surface-muted font-medium text-foreground'
+                    : 'text-foreground-muted hover:bg-surface-muted hover:text-foreground',
+                )
+              }
+            >
+              <span
+                className={cn(
+                  'shrink-0 text-foreground-subtle',
+                  !showLabels && '[&>svg]:h-5 [&>svg]:w-5',
+                )}
+              >
+                {item.icon}
+              </span>
+              {showLabels ? <span className="truncate">{label}</span> : null}
+            </NavLink>
+          );
+          return (
+            <li key={item.to}>
+              {!showLabels ? (
+                <Tooltip>
+                  <TooltipTrigger>{link}</TooltipTrigger>
+                  <TooltipContent side="right" sideOffset={10}>
+                    {label}
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                link
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}
+
+function PrimarySidebar() {
+  const { t } = useTranslation();
+  return (
+    <Sidebar header={<SidebarBrand />} mobileTitle={t('brand.name')}>
+      <PrimaryNav />
+    </Sidebar>
+  );
+}
+
+interface NotificationsLabels {
+  title: string;
+  markAllRead: string;
+  filterAll: string;
+  filterUnread: string;
+  empty: string;
+  emptyDescription: string;
+  loading: string;
+  remove: string;
+  closeLabel: string;
+  bellLabel: string;
+  unreadSuffix: (count: number) => string;
+}
+
+function AppTopbar({
+  notificationsLabels,
+  locale,
+}: {
+  notificationsLabels: NotificationsLabels;
+  locale: string;
+}) {
+  const { openPalette } = useCommandRegistry();
+  const { isMobile } = useSidebar();
+  const { t } = useTranslation();
+
+  return (
+    <header
+      className="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-surface px-3 sm:px-4 md:px-6"
+      data-print="hide"
+    >
+      <SidebarMobileToggle />
+
+      {isMobile ? (
+        <IconButton
+          aria-label={t('topbar.searchCommands')}
+          aria-haspopup="dialog"
+          variant="ghost"
+          size="sm"
+          onClick={openPalette}
+        >
+          <Search className="h-4 w-4" />
+        </IconButton>
+      ) : (
+        <button
+          type="button"
+          onClick={openPalette}
+          aria-label={t('topbar.openPalette')}
+          aria-haspopup="dialog"
+          className="group flex h-9 w-full max-w-md items-center gap-2 rounded-md border border-border bg-surface-muted/50 px-3 text-sm text-foreground-subtle transition-colors hover:bg-surface-muted hover:text-foreground-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          <Search className="h-4 w-4" aria-hidden="true" />
+          <span className="flex-1 text-left">{t('topbar.searchCommandsPlaceholder')}</span>
+          <span className="ml-auto flex shrink-0 items-center gap-1">
+            <Kbd>⌘</Kbd>
+            <Kbd>K</Kbd>
+          </span>
+        </button>
+      )}
+
+      <div className="ml-auto flex items-center gap-1 sm:gap-2">
+        {!isMobile ? (
+          <>
+            <LocaleSwitcher />
+            <NotificationsBell labels={notificationsLabels} locale={locale} />
+            <ThemePicker />
+            <TypographyPicker />
+          </>
+        ) : (
+          <NotificationsBell labels={notificationsLabels} locale={locale} />
+        )}
+        <ThemeToggle />
+        <AuthMenu />
+      </div>
+    </header>
+  );
 }
 
 export function AppLayout() {
-  const { openPalette } = useCommandRegistry();
   const { t } = useTranslation();
   const { locale } = useLocale();
-  const [collapsed, setCollapsed] = useState<boolean>(readStoredCollapsed);
-  const toggleCollapsed = useCallback(() => {
-    setCollapsed((prev) => {
-      const next = !prev;
-      try {
-        window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next));
-      } catch {
-        // ignore (private mode, etc.)
-      }
-      return next;
-    });
-  }, []);
-  const notificationsLabels = {
+  const notificationsLabels: NotificationsLabels = {
     title: t('notifications.title'),
     markAllRead: t('notifications.markAllRead'),
     filterAll: t('notifications.filter.all'),
@@ -188,117 +361,17 @@ export function AppLayout() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background text-foreground">
-      <aside
-        className={cn(
-          'relative flex shrink-0 flex-col border-r border-border bg-surface transition-[width] duration-200 ease-in-out',
-          collapsed ? 'w-16' : 'w-60',
-        )}
-        data-print="hide"
-        data-collapsed={collapsed}
-      >
-        <div
-          className={cn(
-            'flex h-14 shrink-0 items-center gap-2 border-b border-border',
-            collapsed ? 'justify-center px-2' : 'px-3',
-          )}
-        >
-          {collapsed ? null : (
-            <div className="min-w-0 pr-8 pl-2">
-              <h1 className="truncate text-sm font-semibold leading-tight tracking-tight">
-                Admin Template
-              </h1>
-              <p className="truncate text-[11px] leading-tight text-foreground-subtle">
-                Component library
-              </p>
-            </div>
-          )}
-        </div>
-        <button
-          type="button"
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          aria-expanded={!collapsed}
-          onClick={toggleCollapsed}
-          className="absolute top-7 right-0 z-30 flex h-7 w-7 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-border bg-surface text-foreground-muted shadow-md transition-colors hover:bg-primary hover:text-primary-foreground hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        >
-          {collapsed ? (
-            <ChevronRight className="h-3.5 w-3.5" />
-          ) : (
-            <ChevronLeft className="h-3.5 w-3.5" />
-          )}
-        </button>
-        <nav className="min-h-0 flex-1 overflow-y-auto p-3" aria-label="Primary">
-          <ul className="space-y-0.5">
-            {NAV_ITEMS.map((item) => {
-              const link = (
-                <NavLink
-                  to={item.to}
-                  aria-label={collapsed ? item.label : undefined}
-                  className={({ isActive }) =>
-                    cn(
-                      'flex items-center gap-2.5 rounded-md py-2 text-sm transition-colors',
-                      collapsed ? 'justify-center px-2' : 'px-3',
-                      isActive
-                        ? 'bg-surface-muted font-medium text-foreground'
-                        : 'text-foreground-muted hover:bg-surface-muted hover:text-foreground',
-                    )
-                  }
-                >
-                  <span className="shrink-0 text-foreground-subtle">{item.icon}</span>
-                  {collapsed ? null : <span className="truncate">{item.label}</span>}
-                </NavLink>
-              );
-              return (
-                <li key={item.to}>
-                  {collapsed ? (
-                    <Tooltip>
-                      <TooltipTrigger>{link}</TooltipTrigger>
-                      <TooltipContent side="right" sideOffset={10}>
-                        {item.label}
-                      </TooltipContent>
-                    </Tooltip>
-                  ) : (
-                    link
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      </aside>
+    <SidebarProvider>
+      <div className="flex h-screen overflow-hidden bg-background text-foreground">
+        <PrimarySidebar />
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header
-          className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface px-6"
-          data-print="hide"
-        >
-          <button
-            type="button"
-            onClick={openPalette}
-            aria-label="Open command palette"
-            aria-haspopup="dialog"
-            className="group flex h-9 w-full max-w-md items-center gap-2 rounded-md border border-border bg-surface-muted/50 px-3 text-sm text-foreground-subtle transition-colors hover:bg-surface-muted hover:text-foreground-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            <Search className="h-4 w-4" aria-hidden="true" />
-            <span className="flex-1 text-left">Search commands…</span>
-            <span className="ml-auto flex shrink-0 items-center gap-1">
-              <Kbd>⌘</Kbd>
-              <Kbd>K</Kbd>
-            </span>
-          </button>
-          <div className="ml-auto flex items-center gap-2">
-            <LocaleSwitcher />
-            <NotificationsBell labels={notificationsLabels} locale={locale} />
-            <ThemePicker />
-            <TypographyPicker />
-            <ThemeToggle />
-            <AuthMenu />
-          </div>
-        </header>
-        <main className="flex-1 overflow-auto p-8">
-          <Outlet />
-        </main>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <AppTopbar notificationsLabels={notificationsLabels} locale={locale} />
+          <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

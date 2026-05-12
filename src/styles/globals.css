@@ -195,6 +195,12 @@
     font-family: var(--font-heading);
   }
 
+  /* Interactive elements get pointer cursor by default. Disabled stays default. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+
   /* Reset default outline; components opt-in to focus-visible:ring-2 */
   :focus {
     outline: none;

@@ -1,20 +1,24 @@
 import { useState } from 'react';
 import { Printer } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/primitives/Button';
 import { ChartsRow, InvoicesTable, KpiCards, PlanAndNotes } from './components';
 
 export function PrintPreviewPage() {
+  const { t, i18n } = useTranslation();
   const [printedAt] = useState(() => new Date());
 
   return (
     <div className="mx-auto max-w-5xl p-8">
       <PageHeader
-        title="Q2 financial summary"
-        description={`Generated ${printedAt.toLocaleString()} · sample dashboard for verifying print output`}
+        title={t('demos.printPreview.title')}
+        description={t('demos.printPreview.description', {
+          date: printedAt.toLocaleString(i18n.language),
+        })}
         actions={
           <Button leftIcon={<Printer className="h-4 w-4" />} onClick={() => window.print()}>
-            Print
+            {t('demos.printPreview.print')}
           </Button>
         }
       />

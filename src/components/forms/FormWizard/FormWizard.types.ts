@@ -1,14 +1,19 @@
 import type { ReactNode } from 'react';
-import type {
-  FieldValues,
-  Path,
-  UseFormReturn,
-} from 'react-hook-form';
+import type { FieldValues, Path, UseFormReturn } from 'react-hook-form';
 import type { z } from 'zod';
 
 export type WizardOrientation = 'horizontal' | 'vertical';
 
 export type StepIndicatorVariant = 'numbered' | 'icons' | 'dots' | 'progress';
+
+/** Geometric shape of step indicator. */
+export type StepIndicatorShape = 'circle' | 'square' | 'rounded' | 'pill';
+
+/** Visual treatment for borders + bg + text colors. */
+export type StepIndicatorStyle = 'solid' | 'outline' | 'soft' | 'ghost';
+
+/** Indicator footprint. Scales padding, glyph size and connector alignment. */
+export type StepIndicatorSize = 'sm' | 'md' | 'lg';
 
 export type ResponsiveBreakpoint = 'sm' | 'md' | 'lg' | 'xl';
 

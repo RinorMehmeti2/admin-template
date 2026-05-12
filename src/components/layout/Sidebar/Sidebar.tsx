@@ -9,7 +9,14 @@ import {
   type ReactNode,
   type Ref,
 } from 'react';
-import { Menu as MenuIcon, PanelLeft, PanelLeftClose } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Menu as MenuIcon,
+  PanelLeft,
+  PanelLeftClose,
+} from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/cn';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { IconButton } from '@/components/primitives/IconButton';
@@ -120,22 +127,19 @@ export function Sidebar({
   className,
   collapsedWidth = 4,
   expandedWidth = 15,
-  mobileTitle = 'Navigation',
+  mobileTitle,
   ...rest
 }: SidebarProps) {
   const ctx = useSidebar();
+  const { t } = useTranslation();
+  const resolvedMobileTitle = mobileTitle ?? t('sidebar.mobileTitle');
 
   if (ctx.isMobile) {
     return (
-      <Drawer
-        open={ctx.mobileOpen}
-        onOpenChange={ctx.setMobileOpen}
-        side="left"
-        responsive={false}
-      >
+      <Drawer open={ctx.mobileOpen} onOpenChange={ctx.setMobileOpen} side="left" responsive={false}>
         <DrawerContent className="w-72 max-w-[85vw]" data-print="hide">
           <DrawerHeader>
-            <DrawerTitle>{mobileTitle}</DrawerTitle>
+            <DrawerTitle>{resolvedMobileTitle}</DrawerTitle>
           </DrawerHeader>
           <DrawerBody>
             {header !== undefined ? <div className="mb-4">{header}</div> : null}
@@ -155,14 +159,28 @@ export function Sidebar({
       data-print="hide"
       style={{ width: `${widthRem}rem` }}
       className={cn(
-        'flex shrink-0 flex-col border-r border-border bg-surface transition-[width] duration-200 ease-in-out',
+        'relative flex shrink-0 flex-col border-r border-border bg-surface transition-[width] duration-200 ease-in-out',
         className,
       )}
       {...rest}
     >
       {header !== undefined ? (
-        <div className="border-b border-border px-3 py-3">{header}</div>
+        <div className="flex h-14 shrink-0 items-center border-b border-border px-3">{header}</div>
       ) : null}
+      <button
+        type="button"
+        aria-label={ctx.collapsed ? t('sidebar.expand') : t('sidebar.collapse')}
+        aria-expanded={!ctx.collapsed}
+        onClick={() => ctx.setCollapsed(!ctx.collapsed)}
+        className="absolute top-7 right-0 z-30 flex h-7 w-7 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-border bg-surface text-foreground-muted shadow-md transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        data-print="hide"
+      >
+        {ctx.collapsed ? (
+          <ChevronRight className="h-3.5 w-3.5" />
+        ) : (
+          <ChevronLeft className="h-3.5 w-3.5" />
+        )}
+      </button>
       <div className="min-h-0 flex-1 overflow-y-auto p-2">{children}</div>
       {footer !== undefined ? <div className="border-t border-border p-2">{footer}</div> : null}
     </aside>
@@ -175,10 +193,11 @@ export function Sidebar({
 
 export function SidebarCollapseToggle({ className }: { className?: string }) {
   const ctx = useSidebar();
+  const { t } = useTranslation();
   if (ctx.isMobile) return null;
   return (
     <IconButton
-      aria-label={ctx.collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      aria-label={ctx.collapsed ? t('sidebar.expand') : t('sidebar.collapse')}
       variant="ghost"
       size="sm"
       onClick={() => ctx.setCollapsed(!ctx.collapsed)}
@@ -191,10 +210,11 @@ export function SidebarCollapseToggle({ className }: { className?: string }) {
 
 export function SidebarMobileToggle({ className }: { className?: string }) {
   const ctx = useSidebar();
+  const { t } = useTranslation();
   if (!ctx.isMobile) return null;
   return (
     <IconButton
-      aria-label="Open navigation"
+      aria-label={t('sidebar.openNav')}
       variant="ghost"
       size="sm"
       onClick={() => ctx.setMobileOpen(true)}

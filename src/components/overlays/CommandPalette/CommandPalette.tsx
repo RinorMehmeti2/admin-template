@@ -6,6 +6,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react';
 import { Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/cn';
 import { useId } from '@/hooks/useId';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
@@ -28,13 +29,16 @@ interface FlatItem {
   cmdIndex?: number;
 }
 
-function flattenGroups(filtered: ReadonlyArray<Command>): {
+function flattenGroups(
+  filtered: ReadonlyArray<Command>,
+  defaultGroup: string,
+): {
   flat: FlatItem[];
   commandCount: number;
 } {
   const groupMap = new Map<string, Command[]>();
   for (const cmd of filtered) {
-    const key = cmd.group ?? 'General';
+    const key = cmd.group ?? defaultGroup;
     const arr = groupMap.get(key) ?? [];
     arr.push(cmd);
     groupMap.set(key, arr);
@@ -58,10 +62,9 @@ export interface CommandPaletteProps {
   className?: string;
 }
 
-export function CommandPalette({
-  placeholder = 'Type a command or search…',
-  className,
-}: CommandPaletteProps) {
+export function CommandPalette({ placeholder, className }: CommandPaletteProps) {
+  const { t } = useTranslation();
+  const resolvedPlaceholder = placeholder ?? t('commandPalette.placeholder');
   const { open, closePalette, commands } = useCommandRegistry();
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
@@ -89,13 +92,15 @@ export function CommandPalette({
     return () => window.clearTimeout(id);
   }, [open]);
 
+  const defaultGroup = t('commandPalette.groups.general');
+
   const filtered = useMemo<ReadonlyArray<Command>>(() => {
     const enabled = commands.filter((c) => c.disabled !== true);
     if (query.trim() === '') {
       // Stable order: by group, then registration order.
       return enabled.slice().sort((a, b) => {
-        const ag = a.group ?? 'General';
-        const bg = b.group ?? 'General';
+        const ag = a.group ?? defaultGroup;
+        const bg = b.group ?? defaultGroup;
         return ag.localeCompare(bg);
       });
     }
@@ -104,9 +109,12 @@ export function CommandPalette({
       .filter((x) => x.result.matched)
       .sort((a, b) => b.result.score - a.result.score);
     return ranked.map((x) => x.cmd);
-  }, [commands, query]);
+  }, [commands, query, defaultGroup]);
 
-  const { flat, commandCount } = useMemo(() => flattenGroups(filtered), [filtered]);
+  const { flat, commandCount } = useMemo(
+    () => flattenGroups(filtered, defaultGroup),
+    [filtered, defaultGroup],
+  );
 
   const safeActive = commandCount === 0 ? -1 : Math.min(Math.max(activeIndex, 0), commandCount - 1);
 
@@ -158,7 +166,7 @@ export function CommandPalette({
       <div
         aria-hidden="true"
         data-print="hide"
-        className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm motion-safe:animate-overlay-in"
+        className="fixed inset-0 z-50 bg-foreground/70 motion-safe:animate-overlay-in"
       />
       <div
         className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-[15vh]"
@@ -168,7 +176,7 @@ export function CommandPalette({
           ref={panelRef}
           role="dialog"
           aria-modal="true"
-          aria-label="Command palette"
+          aria-label={t('commandPalette.ariaLabel')}
           className={cn(
             'flex w-full max-w-xl flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-lg',
             'motion-safe:animate-dialog-in',
@@ -176,7 +184,7 @@ export function CommandPalette({
           )}
         >
           <label htmlFor={inputId} className="sr-only">
-            Search commands
+            {t('commandPalette.searchLabel')}
           </label>
           <div className="flex items-center gap-2 border-b border-border px-3">
             <Search className="h-4 w-4 shrink-0 text-foreground-subtle" aria-hidden="true" />
@@ -195,7 +203,7 @@ export function CommandPalette({
                 setActiveIndex(0);
               }}
               onKeyDown={onInputKeyDown}
-              placeholder={placeholder}
+              placeholder={resolvedPlaceholder}
               className="h-12 w-full bg-transparent text-sm text-foreground placeholder:text-foreground-subtle focus:outline-none"
             />
             <Kbd className="hidden sm:inline-flex" aria-hidden="true">
@@ -211,7 +219,7 @@ export function CommandPalette({
           >
             {commandCount === 0 ? (
               <div className="px-3 py-8 text-center text-sm text-foreground-subtle">
-                No results for &ldquo;{query}&rdquo;
+                {t('commandPalette.noResults', { query })}
               </div>
             ) : (
               flat.map((item, i) => {
@@ -284,15 +292,15 @@ export function CommandPalette({
             <span className="flex items-center gap-1">
               <Kbd>↑</Kbd>
               <Kbd>↓</Kbd>
-              <span>navigate</span>
+              <span>{t('commandPalette.hint.navigate')}</span>
             </span>
             <span className="flex items-center gap-1">
               <Kbd>↵</Kbd>
-              <span>select</span>
+              <span>{t('commandPalette.hint.select')}</span>
             </span>
             <span className="flex items-center gap-1">
               <Kbd>Esc</Kbd>
-              <span>close</span>
+              <span>{t('commandPalette.hint.close')}</span>
             </span>
           </div>
         </div>

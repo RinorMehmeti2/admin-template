@@ -401,6 +401,118 @@ const FOREST_DARK: TokenMap = {
   '--color-info-foreground': 'hsl(0 0% 100%)',
 };
 
+/* ------------------------------------------------------------ */
+/* PayPal — white surfaces, PayPal blue primary, navy secondary, */
+/* gold warning, cyan info. Brand: #003087 navy, #0070BA blue,   */
+/* #009CDE cyan, #FFC439 gold.                                   */
+/* ------------------------------------------------------------ */
+
+const PAYPAL_LIGHT: TokenMap = {
+  '--color-background': 'hsl(210 50% 99%)',
+  '--color-surface': 'hsl(0 0% 100%)',
+  '--color-surface-muted': 'hsl(210 30% 96%)',
+  '--color-surface-elevated': 'hsl(0 0% 100%)',
+  '--color-foreground': 'hsl(218 50% 12%)',
+  '--color-foreground-muted': 'hsl(218 20% 35%)',
+  '--color-foreground-subtle': 'hsl(218 15% 50%)',
+  '--color-border': 'hsl(210 25% 88%)',
+  '--color-border-strong': 'hsl(210 22% 75%)',
+  '--color-ring': 'hsl(202 100% 36%)',
+  '--color-primary': 'hsl(202 100% 36%)',
+  '--color-primary-foreground': 'hsl(0 0% 100%)',
+  '--color-secondary': 'hsl(218 100% 26%)',
+  '--color-secondary-foreground': 'hsl(0 0% 100%)',
+  '--color-success': 'hsl(152 65% 38%)',
+  '--color-success-foreground': 'hsl(0 0% 100%)',
+  '--color-warning': 'hsl(43 100% 50%)',
+  '--color-warning-foreground': 'hsl(40 100% 10%)',
+  '--color-danger': 'hsl(0 72% 50%)',
+  '--color-danger-foreground': 'hsl(0 0% 100%)',
+  '--color-info': 'hsl(198 100% 44%)',
+  '--color-info-foreground': 'hsl(0 0% 100%)',
+};
+
+const PAYPAL_DARK: TokenMap = {
+  '--color-background': 'hsl(218 40% 8%)',
+  '--color-surface': 'hsl(218 35% 11%)',
+  '--color-surface-muted': 'hsl(218 30% 15%)',
+  '--color-surface-elevated': 'hsl(218 30% 19%)',
+  '--color-foreground': 'hsl(210 30% 96%)',
+  '--color-foreground-muted': 'hsl(210 15% 72%)',
+  '--color-foreground-subtle': 'hsl(210 12% 56%)',
+  '--color-border': 'hsl(218 22% 26%)',
+  '--color-border-strong': 'hsl(218 22% 38%)',
+  '--color-ring': 'hsl(202 90% 60%)',
+  '--color-primary': 'hsl(202 90% 58%)',
+  '--color-primary-foreground': 'hsl(218 100% 8%)',
+  '--color-secondary': 'hsl(210 30% 80%)',
+  '--color-secondary-foreground': 'hsl(218 40% 11%)',
+  '--color-success': 'hsl(152 60% 50%)',
+  '--color-success-foreground': 'hsl(150 80% 8%)',
+  '--color-warning': 'hsl(43 100% 60%)',
+  '--color-warning-foreground': 'hsl(40 100% 10%)',
+  '--color-danger': 'hsl(0 72% 60%)',
+  '--color-danger-foreground': 'hsl(0 0% 100%)',
+  '--color-info': 'hsl(198 90% 60%)',
+  '--color-info-foreground': 'hsl(0 0% 100%)',
+};
+
+/* ------------------------------------------------------------ */
+/* Mono — pure grayscale neutrals + black/white primary. Keeps   */
+/* semantic accents (success/warning/danger/info) hued so alerts */
+/* stay distinguishable.                                         */
+/* ------------------------------------------------------------ */
+
+const MONO_LIGHT: TokenMap = {
+  '--color-background': 'hsl(0 0% 100%)',
+  '--color-surface': 'hsl(0 0% 100%)',
+  '--color-surface-muted': 'hsl(0 0% 96%)',
+  '--color-surface-elevated': 'hsl(0 0% 100%)',
+  '--color-foreground': 'hsl(0 0% 9%)',
+  '--color-foreground-muted': 'hsl(0 0% 35%)',
+  '--color-foreground-subtle': 'hsl(0 0% 50%)',
+  '--color-border': 'hsl(0 0% 88%)',
+  '--color-border-strong': 'hsl(0 0% 70%)',
+  '--color-ring': 'hsl(0 0% 9%)',
+  '--color-primary': 'hsl(0 0% 9%)',
+  '--color-primary-foreground': 'hsl(0 0% 100%)',
+  '--color-secondary': 'hsl(0 0% 35%)',
+  '--color-secondary-foreground': 'hsl(0 0% 100%)',
+  '--color-success': 'hsl(152 65% 38%)',
+  '--color-success-foreground': 'hsl(0 0% 100%)',
+  '--color-warning': 'hsl(35 92% 48%)',
+  '--color-warning-foreground': 'hsl(40 100% 10%)',
+  '--color-danger': 'hsl(0 72% 50%)',
+  '--color-danger-foreground': 'hsl(0 0% 100%)',
+  '--color-info': 'hsl(199 89% 48%)',
+  '--color-info-foreground': 'hsl(0 0% 100%)',
+};
+
+const MONO_DARK: TokenMap = {
+  '--color-background': 'hsl(0 0% 7%)',
+  '--color-surface': 'hsl(0 0% 10%)',
+  '--color-surface-muted': 'hsl(0 0% 14%)',
+  '--color-surface-elevated': 'hsl(0 0% 17%)',
+  '--color-foreground': 'hsl(0 0% 96%)',
+  '--color-foreground-muted': 'hsl(0 0% 68%)',
+  '--color-foreground-subtle': 'hsl(0 0% 52%)',
+  '--color-border': 'hsl(0 0% 22%)',
+  '--color-border-strong': 'hsl(0 0% 34%)',
+  '--color-ring': 'hsl(0 0% 96%)',
+  '--color-primary': 'hsl(0 0% 96%)',
+  '--color-primary-foreground': 'hsl(0 0% 9%)',
+  '--color-secondary': 'hsl(0 0% 70%)',
+  '--color-secondary-foreground': 'hsl(0 0% 9%)',
+  '--color-success': 'hsl(152 60% 50%)',
+  '--color-success-foreground': 'hsl(150 80% 8%)',
+  '--color-warning': 'hsl(35 92% 60%)',
+  '--color-warning-foreground': 'hsl(40 100% 10%)',
+  '--color-danger': 'hsl(0 72% 60%)',
+  '--color-danger-foreground': 'hsl(0 0% 100%)',
+  '--color-info': 'hsl(199 89% 60%)',
+  '--color-info-foreground': 'hsl(0 0% 100%)',
+};
+
 export const BUILT_IN_PALETTES: ReadonlyArray<Palette> = [
   {
     id: 'default',
@@ -413,6 +525,8 @@ export const BUILT_IN_PALETTES: ReadonlyArray<Palette> = [
   { id: 'rose', name: 'Rose', builtIn: true, light: ROSE_LIGHT, dark: ROSE_DARK },
   { id: 'forest', name: 'Forest', builtIn: true, light: FOREST_LIGHT, dark: FOREST_DARK },
   { id: 'claude', name: 'Claude', builtIn: true, light: CLAUDE_LIGHT, dark: CLAUDE_DARK },
+  { id: 'paypal', name: 'PayPal', builtIn: true, light: PAYPAL_LIGHT, dark: PAYPAL_DARK },
+  { id: 'mono', name: 'Mono', builtIn: true, light: MONO_LIGHT, dark: MONO_DARK },
 ];
 
 export const DEFAULT_PALETTE_ID = 'default';

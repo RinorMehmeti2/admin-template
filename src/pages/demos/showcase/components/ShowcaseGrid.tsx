@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   Card,
   CardContent,
@@ -10,9 +11,10 @@ import {
 import { ENTRIES } from '../data';
 
 export function ShowcaseGrid() {
+  const { t } = useTranslation();
   return (
     <section
-      aria-label="Component categories"
+      aria-label={t('showcase.categoriesAria')}
       className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
     >
       {ENTRIES.map((entry) => (
@@ -31,14 +33,14 @@ export function ShowcaseGrid() {
                   {entry.icon}
                 </span>
                 <div>
-                  <CardTitle className="text-base">{entry.label}</CardTitle>
-                  <span className="text-xs text-foreground-subtle">{entry.count}</span>
+                  <CardTitle className="text-base">{t(entry.labelKey)}</CardTitle>
+                  <span className="text-xs text-foreground-subtle">{t(entry.countKey)}</span>
                 </div>
               </div>
               <ArrowUpRight className="h-4 w-4 text-foreground-subtle transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
             </CardHeader>
             <CardContent>
-              <CardDescription>{entry.description}</CardDescription>
+              <CardDescription>{t(entry.descriptionKey)}</CardDescription>
             </CardContent>
           </Card>
         </Link>

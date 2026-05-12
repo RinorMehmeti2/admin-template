@@ -6,6 +6,7 @@ import {
   RouterProvider,
   useNavigate,
 } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { PrimitivesPage } from '@/pages/demos/primitives';
 import { FormsPage } from '@/pages/demos/forms';
@@ -69,77 +70,107 @@ import { TypographyEditorPage } from '@/pages/settings/typography';
  * via React.lazy + Suspense — see components/forms/RichTextEditor/lazy.tsx.
  */
 
-const NAV_COMMANDS: ReadonlyArray<{ to: string; label: string; keywords: string[] }> = [
-  { to: '/showcase', label: 'Overview', keywords: ['home', 'index', 'showcase'] },
-  { to: '/primitives', label: 'Primitives', keywords: ['button', 'badge', 'avatar'] },
-  { to: '/forms', label: 'Forms', keywords: ['input', 'select', 'checkbox'] },
-  { to: '/feedback', label: 'Feedback', keywords: ['toast', 'alert', 'dialog'] },
-  { to: '/data', label: 'Data display', keywords: ['card', 'stat', 'list'] },
-  { to: '/tables', label: 'Tables', keywords: ['datatable', 'rows'] },
-  { to: '/tree', label: 'Tree view', keywords: ['tree', 'folder', 'explorer', 'nav'] },
+interface NavCommand {
+  to: string;
+  labelKey: string;
+  keywords: string[];
+}
+
+const NAV_COMMANDS: ReadonlyArray<NavCommand> = [
+  { to: '/showcase', labelKey: 'nav.overview', keywords: ['home', 'index', 'showcase'] },
+  { to: '/primitives', labelKey: 'nav.primitives', keywords: ['button', 'badge', 'avatar'] },
+  { to: '/forms', labelKey: 'nav.forms', keywords: ['input', 'select', 'checkbox'] },
+  { to: '/feedback', labelKey: 'nav.feedback', keywords: ['toast', 'alert', 'dialog'] },
+  {
+    to: '/data',
+    labelKey: 'commandPalette.cmd.dataDisplayLabel',
+    keywords: ['card', 'stat', 'list'],
+  },
+  { to: '/tables', labelKey: 'nav.tables', keywords: ['datatable', 'rows'] },
+  {
+    to: '/tree',
+    labelKey: 'commandPalette.cmd.treeViewLabel',
+    keywords: ['tree', 'folder', 'explorer', 'nav'],
+  },
   {
     to: '/timeline',
-    label: 'Timeline',
+    labelKey: 'nav.timeline',
     keywords: ['activity', 'feed', 'audit', 'log', 'history'],
   },
-  { to: '/charts', label: 'Charts', keywords: ['line', 'bar', 'pie', 'recharts'] },
-  { to: '/positioning', label: 'Positioning', keywords: ['flip', 'shift', 'boundary', 'tooltip'] },
-  { to: '/layout', label: 'Layout demo', keywords: ['sidebar', 'topbar', 'shell'] },
+  { to: '/charts', labelKey: 'nav.charts', keywords: ['line', 'bar', 'pie', 'recharts'] },
+  {
+    to: '/positioning',
+    labelKey: 'nav.positioning',
+    keywords: ['flip', 'shift', 'boundary', 'tooltip'],
+  },
+  {
+    to: '/layout',
+    labelKey: 'commandPalette.cmd.layoutDemoLabel',
+    keywords: ['sidebar', 'topbar', 'shell'],
+  },
   {
     to: '/split',
-    label: 'Split layout',
+    labelKey: 'commandPalette.cmd.splitLayoutLabel',
     keywords: ['inbox', 'master', 'detail', 'pane', 'resize'],
   },
-  { to: '/focus', label: 'Focus mode', keywords: ['fullscreen', 'editor', 'distraction'] },
+  {
+    to: '/focus',
+    labelKey: 'commandPalette.cmd.focusModeLabel',
+    keywords: ['fullscreen', 'editor', 'distraction'],
+  },
   {
     to: '/kanban',
-    label: 'Kanban',
+    labelKey: 'nav.kanban',
     keywords: ['kanban', 'board', 'drag', 'drop', 'dnd', 'tasks'],
   },
   {
     to: '/files',
-    label: 'File explorer',
+    labelKey: 'nav.fileExplorer',
     keywords: ['files', 'folder', 'tree', 'explorer', 'finder'],
   },
   {
     to: '/gallery',
-    label: 'Image gallery',
+    labelKey: 'commandPalette.cmd.imageGalleryLabel',
     keywords: ['gallery', 'images', 'lightbox', 'photos', 'media'],
   },
   {
     to: '/wizard',
-    label: 'Form wizard',
+    labelKey: 'nav.formWizard',
     keywords: ['wizard', 'multistep', 'onboarding', 'form', 'stepper'],
   },
   {
     to: '/search',
-    label: 'Search & filters',
+    labelKey: 'commandPalette.cmd.searchFiltersLabel',
     keywords: ['search', 'filter', 'chips', 'query', 'facets'],
   },
   {
     to: '/mobile-preview',
-    label: 'Mobile preview',
+    labelKey: 'commandPalette.cmd.mobilePreviewLabel',
     keywords: ['mobile', 'bottom-sheet', 'touch', 'swipe', 'responsive'],
   },
   {
     to: '/playground',
-    label: 'Playground',
+    labelKey: 'nav.playground',
     keywords: ['playground', 'props', 'controls', 'sandbox', 'tweak'],
   },
   {
     to: '/settings/theme',
-    label: 'Theme editor',
+    labelKey: 'nav.themeEditor',
     keywords: ['theme', 'palette', 'colors', 'tokens', 'customize'],
   },
   {
     to: '/settings/typography',
-    label: 'Typography editor',
+    labelKey: 'commandPalette.cmd.typographyEditorLabel',
     keywords: ['typography', 'font', 'family', 'size', 'scale'],
   },
-  { to: '/workspace', label: 'Workspace', keywords: ['canvas', 'panels', 'editor', 'design'] },
+  {
+    to: '/workspace',
+    labelKey: 'nav.workspace',
+    keywords: ['canvas', 'panels', 'editor', 'design'],
+  },
   {
     to: '/errors',
-    label: 'Error boundaries',
+    labelKey: 'commandPalette.cmd.errorBoundariesLabel',
     keywords: ['error', 'boundary', 'crash', 'fallback'],
   },
 ];
@@ -148,6 +179,7 @@ function RootShell() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { togglePalette, openPalette } = useCommandRegistry();
+  const { t, i18n } = useTranslation();
 
   // Cmd/Ctrl+K toggles, "/" opens (when not typing).
   useEffect(() => {
@@ -176,45 +208,45 @@ function RootShell() {
     [
       ...NAV_COMMANDS.map((nav) => ({
         id: `nav:${nav.to}`,
-        label: `Go to ${nav.label}`,
-        group: 'Navigation',
+        label: t('commandPalette.goTo', { label: t(nav.labelKey) }),
+        group: t('commandPalette.groups.navigation'),
         keywords: ['navigate', ...nav.keywords],
         perform: () => navigate(nav.to),
       })),
       {
         id: 'theme:light',
-        label: 'Switch to light theme',
-        group: 'Theme',
+        label: t('commandPalette.cmd.themeLight'),
+        group: t('commandPalette.groups.theme'),
         keywords: ['light', 'day'],
         disabled: theme === 'light',
         perform: () => setTheme('light'),
       },
       {
         id: 'theme:dark',
-        label: 'Switch to dark theme',
-        group: 'Theme',
+        label: t('commandPalette.cmd.themeDark'),
+        group: t('commandPalette.groups.theme'),
         keywords: ['dark', 'night'],
         disabled: theme === 'dark',
         perform: () => setTheme('dark'),
       },
       {
         id: 'theme:system',
-        label: 'Match system theme',
-        group: 'Theme',
+        label: t('commandPalette.cmd.themeSystem'),
+        group: t('commandPalette.groups.theme'),
         keywords: ['auto', 'system', 'os'],
         disabled: theme === 'system',
         perform: () => setTheme('system'),
       },
       {
         id: 'palette:open',
-        label: 'Open command palette',
-        group: 'Actions',
+        label: t('commandPalette.cmd.openPalette'),
+        group: t('commandPalette.groups.actions'),
         keywords: ['search', 'find', 'commands'],
         shortcut: ['⌘', 'K'],
         perform: () => openPalette(),
       },
     ],
-    [navigate, theme, setTheme, openPalette],
+    [navigate, theme, setTheme, openPalette, t, i18n.language],
   );
 
   return (

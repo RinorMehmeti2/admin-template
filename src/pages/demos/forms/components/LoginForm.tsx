@@ -73,7 +73,7 @@ export function LoginForm() {
       </div>
 
       {submitted !== null ? (
-        <pre className="mt-3 rounded-md border border-border bg-surface-muted p-3 text-xs text-foreground-muted">
+        <pre className="mt-3 max-h-80 overflow-auto rounded-md border border-border bg-surface-muted p-3 text-xs text-foreground-muted">
           {JSON.stringify(submitted, null, 2)}
         </pre>
       ) : null}

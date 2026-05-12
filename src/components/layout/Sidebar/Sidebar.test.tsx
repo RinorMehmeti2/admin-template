@@ -43,7 +43,6 @@ describe('Sidebar', () => {
     render(
       <SidebarProvider>
         <Sidebar>nav</Sidebar>
-        <SidebarCollapseToggle />
       </SidebarProvider>,
     );
     const toggle = screen.getByRole('button', { name: /Collapse sidebar/i });
@@ -57,7 +56,6 @@ describe('Sidebar', () => {
     render(
       <SidebarProvider>
         <Sidebar>nav</Sidebar>
-        <SidebarCollapseToggle />
       </SidebarProvider>,
     );
     expect(screen.getByRole('button', { name: /Expand sidebar/i })).toBeInTheDocument();
@@ -95,7 +93,6 @@ describe('Sidebar', () => {
             <a href="/">Home</a>
           </nav>
         </Sidebar>
-        <SidebarCollapseToggle />
       </SidebarProvider>,
     );
     expect(await runAxe(container)).toHaveNoViolations();
