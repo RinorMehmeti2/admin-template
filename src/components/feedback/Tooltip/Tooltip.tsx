@@ -15,6 +15,7 @@ import {
   type Ref,
   type RefObject,
 } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
 import { useId } from '@/hooks/useId';
 import { useControllableState } from '@/hooks/useControllableState';
@@ -198,7 +199,31 @@ export function TooltipTrigger({ children }: TooltipTriggerProps) {
 /*  Content                                                                   */
 /* -------------------------------------------------------------------------- */
 
-export interface TooltipContentProps extends Omit<HTMLAttributes<HTMLDivElement>, 'role'> {
+const tooltipContentStyles = cva(
+  'pointer-events-none z-[60] max-w-xs rounded-md shadow-md select-none',
+  {
+    variants: {
+      variant: {
+        default: 'bg-foreground text-background',
+        light: 'bg-surface text-foreground border border-border',
+        primary: 'bg-primary text-primary-foreground',
+        success: 'bg-success text-success-foreground',
+        warning: 'bg-warning text-warning-foreground',
+        danger: 'bg-danger text-danger-foreground',
+        info: 'bg-info text-info-foreground',
+      },
+      size: {
+        sm: 'px-1.5 py-0.5 text-[11px]',
+        md: 'px-2 py-1 text-xs',
+        lg: 'px-3 py-1.5 text-sm',
+      },
+    },
+    defaultVariants: { variant: 'default', size: 'md' },
+  },
+);
+
+export interface TooltipContentProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'role'>, VariantProps<typeof tooltipContentStyles> {
   ref?: Ref<HTMLDivElement>;
   side?: Placement;
   sideOffset?: number;
@@ -218,6 +243,8 @@ export function TooltipContent({
   shift,
   padding,
   boundary,
+  variant,
+  size,
   ...rest
 }: TooltipContentProps) {
   const ctx = useTooltipContext('TooltipContent');
@@ -255,20 +282,16 @@ export function TooltipContent({
         id={ctx.contentId}
         data-side={pos.placement}
         data-print="hide"
-        // We render at (0,0) before first rAF measurement instead of hiding.
-        // In a real browser the measurement happens within one frame so the
-        // flash is imperceptible; in tests (faked timers) it lets queries
-        // find the element without advancing rAF manually.
+        // Keep in DOM before first measurement (tests can query it without
+        // advancing rAF) but hide visually so users don't see a (0,0) flash
+        // on the way to the resolved position.
         style={{
           position: 'absolute',
           left: pos.x,
           top: pos.y,
+          opacity: pos.ready ? 1 : 0,
         }}
-        className={cn(
-          'z-[60] max-w-xs rounded-md bg-foreground px-2 py-1 text-xs text-background shadow-md',
-          'pointer-events-none select-none',
-          className,
-        )}
+        className={cn(tooltipContentStyles({ variant, size }), className)}
         {...rest}
       >
         {children}

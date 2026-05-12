@@ -1,8 +1,11 @@
+import { useCallback, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   BarChart3,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Columns2,
   Compass,
@@ -36,6 +39,7 @@ import { LocaleSwitcher } from '@/components/layout/LocaleSwitcher';
 import { Avatar } from '@/components/primitives/Avatar';
 import { Button } from '@/components/primitives/Button';
 import { Kbd } from '@/components/primitives/Kbd';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/feedback/Tooltip';
 import { useCommandRegistry } from '@/components/overlays/CommandPalette';
 import {
   DropdownMenu,
@@ -142,10 +146,33 @@ function AuthMenu() {
   );
 }
 
+const SIDEBAR_STORAGE_KEY = 'sidebar-collapsed';
+
+function readStoredCollapsed(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
 export function AppLayout() {
   const { openPalette } = useCommandRegistry();
   const { t } = useTranslation();
   const { locale } = useLocale();
+  const [collapsed, setCollapsed] = useState<boolean>(readStoredCollapsed);
+  const toggleCollapsed = useCallback(() => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next));
+      } catch {
+        // ignore (private mode, etc.)
+      }
+      return next;
+    });
+  }, []);
   const notificationsLabels = {
     title: t('notifications.title'),
     markAllRead: t('notifications.markAllRead'),
@@ -161,32 +188,81 @@ export function AppLayout() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <aside className="w-60 shrink-0 border-r border-border bg-surface" data-print="hide">
-        <div className="border-b border-border px-5 py-4">
-          <h1 className="text-base font-semibold tracking-tight">Admin Template</h1>
-          <p className="mt-0.5 text-xs text-foreground-subtle">Component library</p>
+    <div className="flex h-screen overflow-hidden bg-background text-foreground">
+      <aside
+        className={cn(
+          'relative flex shrink-0 flex-col border-r border-border bg-surface transition-[width] duration-200 ease-in-out',
+          collapsed ? 'w-16' : 'w-60',
+        )}
+        data-print="hide"
+        data-collapsed={collapsed}
+      >
+        <div
+          className={cn(
+            'flex h-14 shrink-0 items-center gap-2 border-b border-border',
+            collapsed ? 'justify-center px-2' : 'px-3',
+          )}
+        >
+          {collapsed ? null : (
+            <div className="min-w-0 pr-8 pl-2">
+              <h1 className="truncate text-sm font-semibold leading-tight tracking-tight">
+                Admin Template
+              </h1>
+              <p className="truncate text-[11px] leading-tight text-foreground-subtle">
+                Component library
+              </p>
+            </div>
+          )}
         </div>
-        <nav className="p-3" aria-label="Primary">
+        <button
+          type="button"
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-expanded={!collapsed}
+          onClick={toggleCollapsed}
+          className="absolute top-7 right-0 z-30 flex h-7 w-7 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-border bg-surface text-foreground-muted shadow-md transition-colors hover:bg-primary hover:text-primary-foreground hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          {collapsed ? (
+            <ChevronRight className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronLeft className="h-3.5 w-3.5" />
+          )}
+        </button>
+        <nav className="min-h-0 flex-1 overflow-y-auto p-3" aria-label="Primary">
           <ul className="space-y-0.5">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.to}>
+            {NAV_ITEMS.map((item) => {
+              const link = (
                 <NavLink
                   to={item.to}
+                  aria-label={collapsed ? item.label : undefined}
                   className={({ isActive }) =>
                     cn(
-                      'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors',
+                      'flex items-center gap-2.5 rounded-md py-2 text-sm transition-colors',
+                      collapsed ? 'justify-center px-2' : 'px-3',
                       isActive
                         ? 'bg-surface-muted font-medium text-foreground'
                         : 'text-foreground-muted hover:bg-surface-muted hover:text-foreground',
                     )
                   }
                 >
-                  <span className="text-foreground-subtle">{item.icon}</span>
-                  <span>{item.label}</span>
+                  <span className="shrink-0 text-foreground-subtle">{item.icon}</span>
+                  {collapsed ? null : <span className="truncate">{item.label}</span>}
                 </NavLink>
-              </li>
-            ))}
+              );
+              return (
+                <li key={item.to}>
+                  {collapsed ? (
+                    <Tooltip>
+                      <TooltipTrigger>{link}</TooltipTrigger>
+                      <TooltipContent side="right" sideOffset={10}>
+                        {item.label}
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    link
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </aside>
