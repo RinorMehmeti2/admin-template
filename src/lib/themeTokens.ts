@@ -298,10 +298,10 @@ const ROSE_DARK: TokenMap = {
 /* ------------------------------------------------------------ */
 
 const CLAUDE_LIGHT: TokenMap = {
-  '--color-background': 'hsl(38 35% 96%)',
-  '--color-surface': 'hsl(40 30% 98%)',
-  '--color-surface-muted': 'hsl(38 30% 92%)',
-  '--color-surface-elevated': 'hsl(40 35% 99%)',
+  '--color-background': 'hsl(48 33% 97%)',
+  '--color-surface': 'hsl(0 0% 100%)',
+  '--color-surface-muted': 'hsl(45 22% 96%)',
+  '--color-surface-elevated': 'hsl(0 0% 100%)',
   '--color-foreground': 'hsl(30 10% 13%)',
   '--color-foreground-muted': 'hsl(30 8% 35%)',
   '--color-foreground-subtle': 'hsl(30 8% 50%)',
@@ -347,6 +347,60 @@ const CLAUDE_DARK: TokenMap = {
   '--color-info-foreground': 'hsl(0 0% 100%)',
 };
 
+/* ------------------------------------------------------------ */
+/* Forest — deep forest green primary, sage surfaces.           */
+/* ------------------------------------------------------------ */
+
+const FOREST_LIGHT: TokenMap = {
+  '--color-background': 'hsl(48 26% 96%)',
+  '--color-surface': 'hsl(48 24% 98%)',
+  '--color-surface-muted': 'hsl(48 22% 91%)',
+  '--color-surface-elevated': 'hsl(48 24% 98%)',
+  '--color-foreground': 'hsl(150 40% 10%)',
+  '--color-foreground-muted': 'hsl(150 18% 30%)',
+  '--color-foreground-subtle': 'hsl(150 14% 46%)',
+  '--color-border': 'hsl(48 18% 82%)',
+  '--color-border-strong': 'hsl(80 16% 60%)',
+  '--color-ring': 'hsl(148 60% 32%)',
+  '--color-primary': 'hsl(148 55% 30%)',
+  '--color-primary-foreground': 'hsl(0 0% 100%)',
+  '--color-secondary': 'hsl(150 18% 30%)',
+  '--color-secondary-foreground': 'hsl(0 0% 100%)',
+  '--color-success': 'hsl(152 65% 38%)',
+  '--color-success-foreground': 'hsl(0 0% 100%)',
+  '--color-warning': 'hsl(35 92% 48%)',
+  '--color-warning-foreground': 'hsl(40 100% 10%)',
+  '--color-danger': 'hsl(0 72% 50%)',
+  '--color-danger-foreground': 'hsl(0 0% 100%)',
+  '--color-info': 'hsl(199 89% 48%)',
+  '--color-info-foreground': 'hsl(0 0% 100%)',
+};
+
+const FOREST_DARK: TokenMap = {
+  '--color-background': 'hsl(150 25% 7%)',
+  '--color-surface': 'hsl(150 22% 10%)',
+  '--color-surface-muted': 'hsl(150 20% 14%)',
+  '--color-surface-elevated': 'hsl(150 20% 18%)',
+  '--color-foreground': 'hsl(120 25% 95%)',
+  '--color-foreground-muted': 'hsl(120 14% 70%)',
+  '--color-foreground-subtle': 'hsl(120 12% 54%)',
+  '--color-border': 'hsl(150 18% 24%)',
+  '--color-border-strong': 'hsl(150 18% 36%)',
+  '--color-ring': 'hsl(145 60% 55%)',
+  '--color-primary': 'hsl(145 55% 50%)',
+  '--color-primary-foreground': 'hsl(150 100% 6%)',
+  '--color-secondary': 'hsl(120 18% 76%)',
+  '--color-secondary-foreground': 'hsl(150 25% 10%)',
+  '--color-success': 'hsl(152 60% 50%)',
+  '--color-success-foreground': 'hsl(150 80% 8%)',
+  '--color-warning': 'hsl(35 92% 60%)',
+  '--color-warning-foreground': 'hsl(40 100% 10%)',
+  '--color-danger': 'hsl(0 72% 60%)',
+  '--color-danger-foreground': 'hsl(0 0% 100%)',
+  '--color-info': 'hsl(199 89% 60%)',
+  '--color-info-foreground': 'hsl(0 0% 100%)',
+};
+
 export const BUILT_IN_PALETTES: ReadonlyArray<Palette> = [
   {
     id: 'default',
@@ -357,6 +411,7 @@ export const BUILT_IN_PALETTES: ReadonlyArray<Palette> = [
   },
   { id: 'teal', name: 'Teal', builtIn: true, light: TEAL_LIGHT, dark: TEAL_DARK },
   { id: 'rose', name: 'Rose', builtIn: true, light: ROSE_LIGHT, dark: ROSE_DARK },
+  { id: 'forest', name: 'Forest', builtIn: true, light: FOREST_LIGHT, dark: FOREST_DARK },
   { id: 'claude', name: 'Claude', builtIn: true, light: CLAUDE_LIGHT, dark: CLAUDE_DARK },
 ];
 
