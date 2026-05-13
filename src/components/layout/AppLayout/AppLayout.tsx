@@ -222,7 +222,7 @@ function PrimaryNav() {
               aria-label={!showLabels ? label : undefined}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-2.5 rounded-md py-2 text-sm transition-colors',
+                  'group flex items-center gap-2.5 rounded-md py-2 text-sm transition-colors',
                   showLabels ? 'px-3' : 'justify-center px-2',
                   isActive
                     ? 'bg-surface-muted font-medium text-foreground'
@@ -231,10 +231,8 @@ function PrimaryNav() {
               }
             >
               <span
-                className={cn(
-                  'shrink-0 text-foreground-subtle',
-                  !showLabels && '[&>svg]:h-5 [&>svg]:w-5',
-                )}
+                style={{ color: 'var(--color-primary)' }}
+                className={cn('shrink-0', !showLabels && '[&>svg]:h-5 [&>svg]:w-5')}
               >
                 {item.icon}
               </span>
