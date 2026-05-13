@@ -93,10 +93,7 @@ export function SectionedSidebarLayout() {
       title={t('forms.layouts.sectioned.title')}
       description={t('forms.layouts.sectioned.description')}
     >
-      <div
-        ref={containerRef}
-        className="grid grid-cols-1 gap-6 md:grid-cols-[12rem_minmax(0,1fr)]"
-      >
+      <div ref={containerRef} className="grid grid-cols-1 gap-6 md:grid-cols-[12rem_minmax(0,1fr)]">
         <aside
           aria-label="Section nav"
           className="md:sticky md:top-24 md:self-start"

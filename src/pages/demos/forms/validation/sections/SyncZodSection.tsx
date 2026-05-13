@@ -20,10 +20,7 @@ export function SyncZodSection() {
   const schema = useMemo(
     () =>
       z.object({
-        email: z
-          .string()
-          .min(1, t('forms.zod.required'))
-          .email(t('forms.zod.invalidEmail')),
+        email: z.string().min(1, t('forms.zod.required')).email(t('forms.zod.invalidEmail')),
         password: z
           .string()
           .min(1, t('forms.zod.required'))

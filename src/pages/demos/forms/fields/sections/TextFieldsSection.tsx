@@ -122,11 +122,7 @@ export function TextFieldsSection() {
               control={form.control}
               name="otp"
               render={({ field }) => (
-                <OtpInput
-                  length={6}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                />
+                <OtpInput length={6} value={field.value} onValueChange={field.onChange} />
               )}
             />
           </FormField>

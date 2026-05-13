@@ -106,7 +106,7 @@ const ROLE_BY_DEPT: Record<string, string[]> = {
 };
 
 function det(seed: number, max: number): number {
-  return Math.abs(Math.sin(seed * 12.9898) * 43758.5453) % max | 0;
+  return (Math.abs(Math.sin(seed * 12.9898) * 43758.5453) % max) | 0;
 }
 
 function buildEmployees(): Employee[] {
@@ -121,11 +121,10 @@ function buildEmployees(): Employee[] {
     const status: EmployeeStatus =
       i % 23 === 0 ? 'terminated' : i % 19 === 0 ? 'on-leave' : 'active';
     const startOffset = -((i * 37) % 1100) - 14;
-    const salary = 55000 + (i * 911) % 145000;
+    const salary = 55000 + ((i * 911) % 145000);
     const id = `emp-${String(i + 1).padStart(3, '0')}`;
     // First 8 are managers; rest report to one of them by department alignment.
-    const managerId =
-      i < 8 ? null : `emp-${String(((i * 13) % 8) + 1).padStart(3, '0')}`;
+    const managerId = i < 8 ? null : `emp-${String(((i * 13) % 8) + 1).padStart(3, '0')}`;
     employees.push({
       id,
       name: `${first} ${last}`,
@@ -257,12 +256,11 @@ function buildProjects(): Project[] {
   const projects: Project[] = [];
   for (let i = 0; i < total; i += 1) {
     const name = `${names[i % names.length]} ${Math.floor(i / names.length) + 1}`;
-    const status: ProjectStatus = (
-      ['planning', 'active', 'on-hold', 'shipped'] as ProjectStatus[]
-    )[i % 4]!;
-    const owner =
-      `${FIRST_NAMES[(i * 7) % FIRST_NAMES.length]} ${LAST_NAMES[(i * 5) % LAST_NAMES.length]}`;
-    const budget = 25000 + (i * 6700) % 480000;
+    const status: ProjectStatus = (['planning', 'active', 'on-hold', 'shipped'] as ProjectStatus[])[
+      i % 4
+    ]!;
+    const owner = `${FIRST_NAMES[(i * 7) % FIRST_NAMES.length]} ${LAST_NAMES[(i * 5) % LAST_NAMES.length]}`;
+    const budget = 25000 + ((i * 6700) % 480000);
     const progress = (i * 13) % 100;
     const startOffset = -((i * 9) % 200) - 30;
     const dueOffset = startOffset + 60 + ((i * 17) % 180);
@@ -312,7 +310,10 @@ const VENDORS = [
   'Quartz Print Shop',
 ];
 
-function buildInvoiceLines(seed: number): { lines: { description: string; qty: number; unit: number; amount: number }[]; total: number } {
+function buildInvoiceLines(seed: number): {
+  lines: { description: string; qty: number; unit: number; amount: number }[];
+  total: number;
+} {
   const titles = [
     'Hosting (month)',
     'Design retainer',
@@ -339,9 +340,9 @@ function buildInvoices(): Invoice[] {
   const invoices: Invoice[] = [];
   for (let i = 0; i < total; i += 1) {
     const { lines, total: amount } = buildInvoiceLines(i + 1);
-    const status: InvoiceStatus = (
-      ['draft', 'sent', 'paid', 'overdue', 'void'] as InvoiceStatus[]
-    )[i % 5]!;
+    const status: InvoiceStatus = (['draft', 'sent', 'paid', 'overdue', 'void'] as InvoiceStatus[])[
+      i % 5
+    ]!;
     const issuedOffset = -((i * 4) % 180) - 5;
     const dueOffset = issuedOffset + 30;
     invoices.push({
@@ -378,7 +379,15 @@ function buildDeployments(): Deployment[] {
   for (let i = 0; i < total; i += 1) {
     const env: DeploymentEnv = (['dev', 'staging', 'prod'] as DeploymentEnv[])[i % 3]!;
     const status: DeploymentStatus = (
-      ['queued', 'running', 'success', 'success', 'success', 'failed', 'rolled-back'] as DeploymentStatus[]
+      [
+        'queued',
+        'running',
+        'success',
+        'success',
+        'success',
+        'failed',
+        'rolled-back',
+      ] as DeploymentStatus[]
     )[i % 7]!;
     out.push({
       id: `dep-${String(i + 1).padStart(3, '0')}`,

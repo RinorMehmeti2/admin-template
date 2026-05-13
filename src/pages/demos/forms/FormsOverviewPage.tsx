@@ -135,10 +135,7 @@ function TrailerDemo() {
       z.object({
         customer: z.object({
           name: z.string().min(1, t('forms.zod.required')),
-          email: z
-            .string()
-            .min(1, t('forms.zod.required'))
-            .email(t('forms.zod.invalidEmail')),
+          email: z.string().min(1, t('forms.zod.required')).email(t('forms.zod.invalidEmail')),
           department: z.string().min(1, t('forms.zod.required')),
         }),
         address: z.object({
@@ -152,10 +149,7 @@ function TrailerDemo() {
         }),
         extraEmails: z.array(
           z.object({
-            address: z
-              .string()
-              .min(1, t('forms.zod.required'))
-              .email(t('forms.zod.invalidEmail')),
+            address: z.string().min(1, t('forms.zod.required')).email(t('forms.zod.invalidEmail')),
           }),
         ),
         notes: z.string(),
@@ -173,10 +167,9 @@ function TrailerDemo() {
     resolver: zodResolver(schema),
   });
 
-  const mutation = useApiMutation<{ id: string }, TrailerValues>(
-    () => fakeSubmit(),
-    { meta: { handlesErrors: true } },
-  );
+  const mutation = useApiMutation<{ id: string }, TrailerValues>(() => fakeSubmit(), {
+    meta: { handlesErrors: true },
+  });
   const onSubmit = useApiFormSubmit(form, mutation, {
     onSuccess: (data) => {
       setCreatedId(data.id);

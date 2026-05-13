@@ -1,9 +1,4 @@
-export {
-  DataTable,
-  arrIncludesSome,
-  inDateRange,
-  inNumberRange,
-} from './DataTable';
+export { DataTable, arrIncludesSome, inDateRange, inNumberRange } from './DataTable';
 export type {
   DataTableProps,
   DataTableToolbarSlots,

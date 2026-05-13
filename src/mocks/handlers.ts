@@ -48,4 +48,61 @@ export const handlers = [
     }
     return HttpResponse.json(user);
   }),
+
+  /* -------------------- /forms/* demo endpoints -------------------- */
+
+  // 422 with per-field errors. The demo intentionally hard-codes an
+  // "invalid" branch — submitting with username "taken" returns errors.
+  http.post('/api/demo/forms/validate', async ({ request }) => {
+    await delay(600);
+    const body = (await request.json().catch(() => null)) as
+      | { username?: string; email?: string }
+      | null;
+    const errors: Record<string, string> = {};
+    if (body?.username === 'taken' || body?.username === 'admin') {
+      errors.username = 'That username is already taken';
+    }
+    if (body?.email !== undefined && !body.email.includes('@')) {
+      errors.email = 'Invalid email address';
+    }
+    if (Object.keys(errors).length > 0) {
+      return HttpResponse.json(
+        { code: 'validation_failed', message: 'Validation failed', errors },
+        { status: 422 },
+      );
+    }
+    return HttpResponse.json({ ok: true });
+  }),
+
+  http.post('/api/demo/forms/submit', async () => {
+    await delay(800);
+    return HttpResponse.json({ ok: true, id: `order-${Date.now().toString(36)}` });
+  }),
+
+  http.post('/api/demo/forms/autosave', async () => {
+    await delay(400);
+    return HttpResponse.json({ ok: true, savedAt: new Date().toISOString() });
+  }),
+
+  http.get('/api/demo/forms/defaults', async () => {
+    await delay(600);
+    return HttpResponse.json({
+      name: 'Alex Kowalski',
+      email: 'alex.kowalski@acme.test',
+      bio: 'Builds calm software for serious tools.',
+      timezone: 'America/Los_Angeles',
+      receiveDigest: true,
+    });
+  }),
+
+  http.post('/api/demo/forms/check-username', async ({ request }) => {
+    await delay(400);
+    const body = (await request.json().catch(() => null)) as { username?: string } | null;
+    const username = (body?.username ?? '').trim().toLowerCase();
+    const reserved = new Set(['admin', 'root', 'test', 'system', 'support']);
+    return HttpResponse.json({
+      username,
+      available: username.length > 0 && !reserved.has(username),
+    });
+  }),
 ];

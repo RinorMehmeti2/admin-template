@@ -98,7 +98,9 @@ export function TableFilteringPage() {
         accessorKey: 'amount',
         header: 'Amount',
         cell: ({ row }) => (
-          <span className="tabular-nums">{formatMoney(row.original.amount, row.original.currency)}</span>
+          <span className="tabular-nums">
+            {formatMoney(row.original.amount, row.original.currency)}
+          </span>
         ),
         meta: { filterVariant: 'range' },
       },
@@ -218,8 +220,8 @@ export function TableFilteringPage() {
         title="Multi-select facets"
         description={
           <>
-            meta.filterVariant=&apos;multi-select&apos; on Department + Status. Trigger shows
-            count; chip strip above the table shows active filters with X buttons + Clear all.
+            meta.filterVariant=&apos;multi-select&apos; on Department + Status. Trigger shows count;
+            chip strip above the table shows active filters with X buttons + Clear all.
           </>
         }
       >

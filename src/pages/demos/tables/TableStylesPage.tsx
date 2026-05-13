@@ -97,7 +97,9 @@ function ordersColumns(): ColumnDef<Order, unknown>[] {
       accessorKey: 'total',
       header: 'Total',
       cell: ({ row }) => (
-        <span className="tabular-nums">{formatMoney(row.original.total, row.original.currency)}</span>
+        <span className="tabular-nums">
+          {formatMoney(row.original.total, row.original.currency)}
+        </span>
       ),
     },
     {

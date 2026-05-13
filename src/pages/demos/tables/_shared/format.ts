@@ -1,5 +1,11 @@
 import { format } from 'date-fns';
-import type { DeploymentStatus, EmployeeStatus, InvoiceStatus, OrderStatus, ProjectStatus } from './model';
+import type {
+  DeploymentStatus,
+  EmployeeStatus,
+  InvoiceStatus,
+  OrderStatus,
+  ProjectStatus,
+} from './model';
 
 type AccentVariant = 'neutral' | 'primary' | 'success' | 'warning' | 'danger' | 'info';
 

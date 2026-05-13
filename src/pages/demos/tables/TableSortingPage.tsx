@@ -35,8 +35,7 @@ export function TableSortingPage() {
             {formatDateShort(row.original.startDate)}
           </span>
         ),
-        sortingFn: (a, b) =>
-          a.original.startDate.getTime() - b.original.startDate.getTime(),
+        sortingFn: (a, b) => a.original.startDate.getTime() - b.original.startDate.getTime(),
       },
       {
         accessorKey: 'salary',
@@ -69,7 +68,9 @@ export function TableSortingPage() {
         accessorKey: 'total',
         header: 'Amount',
         cell: ({ row }) => (
-          <span className="tabular-nums">{formatMoney(row.original.total, row.original.currency)}</span>
+          <span className="tabular-nums">
+            {formatMoney(row.original.total, row.original.currency)}
+          </span>
         ),
         sortingFn: (a, b) => a.original.total - b.original.total,
       },
@@ -154,7 +155,9 @@ export function TableSortingPage() {
         accessorKey: 'amount',
         header: 'Amount',
         cell: ({ row }) => (
-          <span className="tabular-nums">{formatMoney(row.original.amount, row.original.currency)}</span>
+          <span className="tabular-nums">
+            {formatMoney(row.original.amount, row.original.currency)}
+          </span>
         ),
       },
       {

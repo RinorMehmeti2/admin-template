@@ -1,14 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Copy,
-  Edit,
-  Eye,
-  Mail,
-  MoreHorizontal,
-  PauseCircle,
-  Trash2,
-} from 'lucide-react';
+import { Copy, Edit, Eye, Mail, MoreHorizontal, PauseCircle, Trash2 } from 'lucide-react';
 import { DataTable, type ColumnDef } from '@/components/data-display/DataTable';
 import { Avatar } from '@/components/primitives/Avatar';
 import { Badge } from '@/components/primitives/Badge';
@@ -202,7 +194,9 @@ export function TableActionsPage() {
         accessorKey: 'total',
         header: 'Total',
         cell: ({ row }) => (
-          <span className="tabular-nums">{formatMoney(row.original.total, row.original.currency)}</span>
+          <span className="tabular-nums">
+            {formatMoney(row.original.total, row.original.currency)}
+          </span>
         ),
       },
       {
@@ -235,7 +229,9 @@ export function TableActionsPage() {
         accessorKey: 'total',
         header: 'Total',
         cell: ({ row }) => (
-          <span className="tabular-nums">{formatMoney(row.original.total, row.original.currency)}</span>
+          <span className="tabular-nums">
+            {formatMoney(row.original.total, row.original.currency)}
+          </span>
         ),
       },
       {
@@ -406,11 +402,7 @@ export function TableActionsPage() {
                 >
                   Export
                 </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setSelectedBulk([])}
-                >
+                <Button size="sm" variant="ghost" onClick={() => setSelectedBulk([])}>
                   Clear
                 </Button>
               </div>
@@ -435,11 +427,7 @@ export function TableActionsPage() {
           if (!open) setPendingDelete(null);
         }}
         variant="danger"
-        title={
-          pendingDelete === null
-            ? 'Delete?'
-            : `Delete ${pendingDelete.name}?`
-        }
+        title={pendingDelete === null ? 'Delete?' : `Delete ${pendingDelete.name}?`}
         description="This is a demo — no one will actually be deleted. The dialog re-uses the ConfirmDialog component."
         confirmLabel="Delete"
         onConfirm={() => {

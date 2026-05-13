@@ -7,11 +7,7 @@ import { Input } from '@/components/forms/Input';
 import { Textarea } from '@/components/forms/Textarea';
 import { Select } from '@/components/forms/Select';
 import { Switch } from '@/components/forms/Switch';
-import {
-  FormWizard,
-  FormWizardStep,
-  type FormWizardHandle,
-} from '@/components/forms/FormWizard';
+import { FormWizard, FormWizardStep, type FormWizardHandle } from '@/components/forms/FormWizard';
 import { Button } from '@/components/primitives/Button';
 import { useToast } from '@/context/ToastProvider';
 import { Section } from '../../_shared/Section';
@@ -37,10 +33,7 @@ export function ClassicWizardSection() {
   const stepAccount = useMemo(
     () =>
       z.object({
-        email: z
-          .string()
-          .min(1, t('forms.zod.required'))
-          .email(t('forms.zod.invalidEmail')),
+        email: z.string().min(1, t('forms.zod.required')).email(t('forms.zod.invalidEmail')),
         password: z.string().min(8, t('forms.zod.minLength', { count: 8 })),
       }),
     [t],
@@ -62,11 +55,10 @@ export function ClassicWizardSection() {
       }),
     [t],
   );
-  const fullSchema = useMemo(() => stepAccount.merge(stepProfile).merge(stepPrefs), [
-    stepAccount,
-    stepProfile,
-    stepPrefs,
-  ]);
+  const fullSchema = useMemo(
+    () => stepAccount.merge(stepProfile).merge(stepPrefs),
+    [stepAccount, stepProfile, stepPrefs],
+  );
 
   if (submitted) {
     return (
@@ -135,11 +127,7 @@ export function ClassicWizardSection() {
                 <Input type="email" autoComplete="email" {...form.register('email')} />
               </FormField>
               <FormField label="Password" required error={form.formState.errors.password?.message}>
-                <Input
-                  type="password"
-                  autoComplete="new-password"
-                  {...form.register('password')}
-                />
+                <Input type="password" autoComplete="new-password" {...form.register('password')} />
               </FormField>
             </div>
           )}
@@ -169,7 +157,11 @@ export function ClassicWizardSection() {
           schema={stepPrefs}
           render={({ form }) => (
             <div className="max-w-md space-y-4">
-              <FormField label="Workspace" required error={form.formState.errors.workspace?.message}>
+              <FormField
+                label="Workspace"
+                required
+                error={form.formState.errors.workspace?.message}
+              >
                 <Input {...form.register('workspace')} />
               </FormField>
               <FormField label="Plan">

@@ -1,6 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DataTable, type ColumnDef, type ColumnPinningState } from '@/components/data-display/DataTable';
+import {
+  DataTable,
+  type ColumnDef,
+  type ColumnPinningState,
+} from '@/components/data-display/DataTable';
 import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
 import { Section } from './_shared/Section';
@@ -59,20 +63,26 @@ function sizedInvoiceColumns(): ColumnDef<Invoice, unknown>[] {
       accessorKey: 'issuedAt',
       header: 'Issued',
       size: 130,
-      cell: ({ row }) => <span className="tabular-nums">{formatDateShort(row.original.issuedAt)}</span>,
+      cell: ({ row }) => (
+        <span className="tabular-nums">{formatDateShort(row.original.issuedAt)}</span>
+      ),
     },
     {
       accessorKey: 'dueAt',
       header: 'Due',
       size: 130,
-      cell: ({ row }) => <span className="tabular-nums">{formatDateShort(row.original.dueAt)}</span>,
+      cell: ({ row }) => (
+        <span className="tabular-nums">{formatDateShort(row.original.dueAt)}</span>
+      ),
     },
     {
       accessorKey: 'amount',
       header: 'Amount',
       size: 140,
       cell: ({ row }) => (
-        <span className="tabular-nums">{formatMoney(row.original.amount, row.original.currency)}</span>
+        <span className="tabular-nums">
+          {formatMoney(row.original.amount, row.original.currency)}
+        </span>
       ),
     },
     {
@@ -125,9 +135,9 @@ export function TableColumnsPage() {
         title="Left + right column pinning"
         description={
           <>
-            enableColumnPinning + defaultColumnPinning lets you stick columns to either edge.
-            The Columns menu adds Pin left / Pin right / Unpin sub-items per column. Pinned
-            columns get sticky positioning with a 1px seam line.
+            enableColumnPinning + defaultColumnPinning lets you stick columns to either edge. The
+            Columns menu adds Pin left / Pin right / Unpin sub-items per column. Pinned columns get
+            sticky positioning with a 1px seam line.
           </>
         }
         actions={
@@ -178,14 +188,14 @@ export function TableColumnsPage() {
         description={
           <>
             Drag-to-reorder is on the roadmap — we already own the <code>useDrag</code> pointer
-            primitive; this page will gain a drag handle in each header once the insertion-line
-            UI lands. See the TODO in <code>DataTable.tsx</code>.
+            primitive; this page will gain a drag handle in each header once the insertion-line UI
+            lands. See the TODO in <code>DataTable.tsx</code>.
           </>
         }
       >
         <div className="rounded-md border border-dashed border-border bg-surface-muted/30 p-6 text-sm text-foreground-muted">
-          The grip-handle + insertion-line affordance will live here. For now, use Pin left /
-          Pin right to lock high-priority columns to the edges.
+          The grip-handle + insertion-line affordance will live here. For now, use Pin left / Pin
+          right to lock high-priority columns to the edges.
         </div>
       </Section>
     </div>

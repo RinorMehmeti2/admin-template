@@ -28,18 +28,12 @@ export function BranchingWizardSection() {
   const labels = useWizardLabels('Finish');
   const [accountType, setAccountType] = useState<AccountType>('personal');
 
-  const typeSchema = useMemo(
-    () => z.object({ accountType: z.enum(['personal', 'business']) }),
-    [],
-  );
+  const typeSchema = useMemo(() => z.object({ accountType: z.enum(['personal', 'business']) }), []);
   const personalSchema = useMemo(
     () =>
       z.object({
         fullName: z.string().min(1, t('forms.zod.required')),
-        email: z
-          .string()
-          .min(1, t('forms.zod.required'))
-          .email(t('forms.zod.invalidEmail')),
+        email: z.string().min(1, t('forms.zod.required')).email(t('forms.zod.invalidEmail')),
       }),
     [t],
   );

@@ -61,10 +61,7 @@ function OrderCard({
             </p>
           ) : (
             fields.map((line, lineIndex) => (
-              <div
-                key={line.id}
-                className="grid grid-cols-[1fr_5rem_auto] items-end gap-2"
-              >
+              <div key={line.id} className="grid grid-cols-[1fr_5rem_auto] items-end gap-2">
                 <FormField label={`SKU ${lineIndex + 1}`} hideLabel>
                   <Input
                     inputSize="sm"

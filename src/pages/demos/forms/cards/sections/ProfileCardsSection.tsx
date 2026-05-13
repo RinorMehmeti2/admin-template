@@ -164,7 +164,10 @@ export function ProfileCardsSection() {
             title="Access"
             description="Toggle permissions for this account."
           >
-            <label htmlFor="profile-isAdmin" className="flex items-center justify-between gap-3 text-sm">
+            <label
+              htmlFor="profile-isAdmin"
+              className="flex items-center justify-between gap-3 text-sm"
+            >
               <span>
                 Admin
                 <span className="block text-xs text-foreground-muted">
@@ -183,7 +186,10 @@ export function ProfileCardsSection() {
                 )}
               />
             </label>
-            <label htmlFor="profile-canPublish" className="flex items-center justify-between gap-3 text-sm">
+            <label
+              htmlFor="profile-canPublish"
+              className="flex items-center justify-between gap-3 text-sm"
+            >
               <span>Can publish content</span>
               <Controller
                 control={form.control}
@@ -197,7 +203,10 @@ export function ProfileCardsSection() {
                 )}
               />
             </label>
-            <label htmlFor="profile-canBilling" className="flex items-center justify-between gap-3 text-sm">
+            <label
+              htmlFor="profile-canBilling"
+              className="flex items-center justify-between gap-3 text-sm"
+            >
               <span>Can manage billing</span>
               <Controller
                 control={form.control}

@@ -34,10 +34,7 @@ export function ModalWizardSection() {
   const stepInvite = useMemo(
     () =>
       z.object({
-        email: z
-          .string()
-          .min(1, t('forms.zod.required'))
-          .email(t('forms.zod.invalidEmail')),
+        email: z.string().min(1, t('forms.zod.required')).email(t('forms.zod.invalidEmail')),
         role: z.string().min(1, t('forms.zod.required')),
       }),
     [t],
@@ -89,11 +86,7 @@ export function ModalWizardSection() {
                 schema={stepInvite}
                 render={({ form }) => (
                   <div className="space-y-4">
-                    <FormField
-                      label="Email"
-                      required
-                      error={form.formState.errors.email?.message}
-                    >
+                    <FormField label="Email" required error={form.formState.errors.email?.message}>
                       <Input type="email" {...form.register('email')} />
                     </FormField>
                     <FormField label="Role" required error={form.formState.errors.role?.message}>
@@ -117,10 +110,7 @@ export function ModalWizardSection() {
                       <Input {...form.register('fullName')} />
                     </FormField>
                     <FormField label="Optional message">
-                      <Input
-                        placeholder="Welcome to the team!"
-                        {...form.register('message')}
-                      />
+                      <Input placeholder="Welcome to the team!" {...form.register('message')} />
                     </FormField>
                   </div>
                 )}

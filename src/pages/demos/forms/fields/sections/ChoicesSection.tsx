@@ -145,18 +145,12 @@ export function ChoicesSection() {
                   getItemLabel={(c) => c.label}
                   getItemValue={(c) => c.code}
                   value={field.value}
-                  onValueChange={(v) =>
-                    field.onChange(typeof v === 'string' ? v : (v[0] ?? ''))
-                  }
+                  onValueChange={(v) => field.onChange(typeof v === 'string' ? v : (v[0] ?? ''))}
                 >
                   <ComboboxTrigger id="fields-country" placeholder="Pick a country…" />
                   <ComboboxContent>
                     {COUNTRY_OPTIONS.map((c, i) => (
-                      <ComboboxItem
-                        key={c.code}
-                        index={i}
-                        comboItem={{ kind: 'item', item: c }}
-                      />
+                      <ComboboxItem key={c.code} index={i} comboItem={{ kind: 'item', item: c }} />
                     ))}
                   </ComboboxContent>
                 </Combobox>
@@ -184,11 +178,7 @@ export function ChoicesSection() {
                   <ComboboxTrigger id="fields-skills" placeholder="Add skills…" />
                   <ComboboxContent>
                     {skillItems.map((s, i) => (
-                      <ComboboxItem
-                        key={s.value}
-                        index={i}
-                        comboItem={{ kind: 'item', item: s }}
-                      />
+                      <ComboboxItem key={s.value} index={i} comboItem={{ kind: 'item', item: s }} />
                     ))}
                   </ComboboxContent>
                 </Combobox>

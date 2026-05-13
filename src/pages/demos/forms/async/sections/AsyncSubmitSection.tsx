@@ -42,10 +42,9 @@ export function AsyncSubmitSection() {
     resolver: zodResolver(schema),
   });
 
-  const mutation = useApiMutation<{ id: string }, FeedbackValues>(
-    (values) => fakeSubmit(values),
-    { meta: { handlesErrors: true } },
-  );
+  const mutation = useApiMutation<{ id: string }, FeedbackValues>((values) => fakeSubmit(values), {
+    meta: { handlesErrors: true },
+  });
   const onSubmit = useApiFormSubmit(form, mutation, {
     onSuccess: (data) => {
       setSubmittedId(data.id);
@@ -62,10 +61,7 @@ export function AsyncSubmitSection() {
       <Form form={form} onSubmit={onSubmit} className="space-y-4">
         <fieldset disabled={mutation.isPending} className="space-y-4">
           <FormField label="Subject" required error={form.formState.errors.subject?.message}>
-            <Input
-              {...form.register('subject')}
-              placeholder="Type 'fail' to see a server error."
-            />
+            <Input {...form.register('subject')} placeholder="Type 'fail' to see a server error." />
           </FormField>
           <FormField label="Message" required error={form.formState.errors.body?.message}>
             <Textarea rows={4} {...form.register('body')} />

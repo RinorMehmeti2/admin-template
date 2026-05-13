@@ -36,12 +36,7 @@ import {
 import { EmptyState } from '@/components/data-display/EmptyState';
 import { Section } from '../../_shared/Section';
 import { PreviewPanel } from '../../_shared/PreviewPanel';
-import {
-  PRODUCTS,
-  TAX_RATES,
-  getProductBySku,
-  type Product,
-} from '../../_shared';
+import { PRODUCTS, TAX_RATES, getProductBySku, type Product } from '../../_shared';
 import { formatMoney } from '../../_shared/format';
 
 interface InvoiceValues {
@@ -110,9 +105,7 @@ function Totals() {
         <TableCell colSpan={4} className="text-right font-medium text-foreground-muted">
           Subtotal
         </TableCell>
-        <TableCell className="text-right tabular-nums">
-          {formatMoney(subtotal, currency)}
-        </TableCell>
+        <TableCell className="text-right tabular-nums">{formatMoney(subtotal, currency)}</TableCell>
         <TableCell />
       </TableRow>
       <TableRow>
@@ -171,7 +164,7 @@ export function InvoiceLineItemsSection() {
         form={form}
         onSubmit={(values) => {
           setSubmitted(true);
-          // eslint-disable-next-line no-console
+
           console.log('Invoice submitted', values);
         }}
         className="space-y-5"
@@ -234,9 +227,7 @@ export function InvoiceLineItemsSection() {
                           variant="primary"
                           size="sm"
                           leftIcon={<Plus className="h-3.5 w-3.5" />}
-                          onClick={() =>
-                            append({ sku: '', qty: 1, unitPrice: 0, taxRatePct: 7 })
-                          }
+                          onClick={() => append({ sku: '', qty: 1, unitPrice: 0, taxRatePct: 7 })}
                         >
                           Add first line
                         </Button>

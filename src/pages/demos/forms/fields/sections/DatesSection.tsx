@@ -45,7 +45,11 @@ export function DatesSection() {
               control={form.control}
               name="date"
               render={({ field }) => (
-                <DatePicker value={field.value} onChange={field.onChange} placeholder="Pick a date" />
+                <DatePicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Pick a date"
+                />
               )}
             />
           </FormField>

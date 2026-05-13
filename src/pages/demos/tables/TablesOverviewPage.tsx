@@ -30,10 +30,7 @@ import {
   DropdownMenuItem,
 } from '@/components/navigation/DropdownMenu';
 import { Section } from './_shared/Section';
-import {
-  EMPLOYEE_DEPARTMENTS,
-  getEmployeesWithReports,
-} from './_shared/data';
+import { EMPLOYEE_DEPARTMENTS, getEmployeesWithReports } from './_shared/data';
 import type { Employee } from './_shared/model';
 import { employeeStatusVariant, formatDateShort, formatMoney } from './_shared/format';
 
@@ -105,11 +102,7 @@ function EmployeeActionsMenu({ employee }: { employee: Employee }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <IconButton
-          aria-label={`Actions for ${employee.name}`}
-          variant="ghost"
-          size="sm"
-        >
+        <IconButton aria-label={`Actions for ${employee.name}`} variant="ghost" size="sm">
           <MoreHorizontal className="h-4 w-4" />
         </IconButton>
       </DropdownMenuTrigger>
@@ -197,8 +190,7 @@ export function TablesOverviewPage() {
             {formatDateShort(row.original.startDate)}
           </span>
         ),
-        sortingFn: (a, b) =>
-          a.original.startDate.getTime() - b.original.startDate.getTime(),
+        sortingFn: (a, b) => a.original.startDate.getTime() - b.original.startDate.getTime(),
       },
       {
         accessorKey: 'salary',

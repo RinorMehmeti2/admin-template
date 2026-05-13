@@ -48,13 +48,8 @@ export function ServerErrorSection() {
     () =>
       z.object({
         name: z.string().min(1, t('forms.zod.required')),
-        email: z
-          .string()
-          .min(1, t('forms.zod.required'))
-          .email(t('forms.zod.invalidEmail')),
-        username: z
-          .string()
-          .min(3, t('forms.zod.minLength', { count: 3 })),
+        email: z.string().min(1, t('forms.zod.required')).email(t('forms.zod.invalidEmail')),
+        username: z.string().min(3, t('forms.zod.minLength', { count: 3 })),
       }),
     [t],
   );
@@ -65,10 +60,9 @@ export function ServerErrorSection() {
   });
   const { errors } = form.formState;
 
-  const mutation = useApiMutation<{ ok: true }, ServerValues>(
-    (values) => fakeSubmit(values),
-    { meta: { handlesErrors: true } },
-  );
+  const mutation = useApiMutation<{ ok: true }, ServerValues>((values) => fakeSubmit(values), {
+    meta: { handlesErrors: true },
+  });
 
   const onSubmit = useApiFormSubmit(form, mutation, {
     onSuccess: () => {

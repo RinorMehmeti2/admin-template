@@ -305,8 +305,12 @@ export function PlanBuilderSection() {
         </div>
 
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold tracking-tight">{t('forms.cards.multiSelect.title')}</h3>
-          <p className="text-xs text-foreground-muted">{t('forms.cards.multiSelect.description')}</p>
+          <h3 className="text-sm font-semibold tracking-tight">
+            {t('forms.cards.multiSelect.title')}
+          </h3>
+          <p className="text-xs text-foreground-muted">
+            {t('forms.cards.multiSelect.description')}
+          </p>
           <Controller
             control={form.control}
             name="addons"

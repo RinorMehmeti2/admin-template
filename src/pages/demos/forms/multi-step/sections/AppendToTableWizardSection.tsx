@@ -29,11 +29,7 @@ import {
   ComboboxItem,
   ComboboxTrigger,
 } from '@/components/forms/Combobox';
-import {
-  FormWizard,
-  FormWizardStep,
-  type FormWizardHandle,
-} from '@/components/forms/FormWizard';
+import { FormWizard, FormWizardStep, type FormWizardHandle } from '@/components/forms/FormWizard';
 import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
 import {
@@ -146,9 +142,7 @@ function ItemsStep({ outer }: ItemsStepProps) {
     // Focus first input of inner form for fast repeat entry
     requestAnimationFrame(() => {
       const root = firstInputRef.current;
-      const focusable = root?.querySelector<HTMLElement>(
-        'input, button, [role="combobox"]',
-      );
+      const focusable = root?.querySelector<HTMLElement>('input, button, [role="combobox"]');
       focusable?.focus();
     });
   }
@@ -161,11 +155,7 @@ function ItemsStep({ outer }: ItemsStepProps) {
     <div className="space-y-5">
       <div ref={firstInputRef} className="rounded-md border border-border bg-surface-muted/30 p-4">
         <p className="mb-3 text-sm font-semibold tracking-tight">Add an item</p>
-        <Form
-          form={inner}
-          onSubmit={handleAdd}
-          className="grid grid-cols-1 gap-3 sm:grid-cols-12"
-        >
+        <Form form={inner} onSubmit={handleAdd} className="grid grid-cols-1 gap-3 sm:grid-cols-12">
           <FormField
             label="Product"
             required
@@ -308,18 +298,14 @@ function ItemsStep({ outer }: ItemsStepProps) {
                     <TableCell>
                       <span className="font-medium">{product?.name ?? item.sku}</span>
                       {item.notes.length > 0 ? (
-                        <span className="ml-2 text-xs text-foreground-muted">
-                          · {item.notes}
-                        </span>
+                        <span className="ml-2 text-xs text-foreground-muted">· {item.notes}</span>
                       ) : null}
                     </TableCell>
                     <TableCell className="text-right tabular-nums">{item.qty}</TableCell>
                     <TableCell className="text-right tabular-nums">
                       {formatMoney(item.unitPrice, 'USD')}
                     </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {item.taxRatePct}%
-                    </TableCell>
+                    <TableCell className="text-right tabular-nums">{item.taxRatePct}%</TableCell>
                     <TableCell className="text-right tabular-nums">
                       {formatMoney(lineTotal(item), 'USD')}
                     </TableCell>
@@ -354,9 +340,7 @@ function ItemsStep({ outer }: ItemsStepProps) {
                 <TableCell colSpan={4} className="text-right font-medium">
                   Tax
                 </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {formatMoney(tax, 'USD')}
-                </TableCell>
+                <TableCell className="text-right tabular-nums">{formatMoney(tax, 'USD')}</TableCell>
                 <TableCell />
               </TableRow>
               <TableRow>
@@ -436,10 +420,7 @@ export function AppendToTableWizardSection() {
       z.object({
         customer: z.object({
           name: z.string().min(1, t('forms.zod.required')),
-          email: z
-            .string()
-            .min(1, t('forms.zod.required'))
-            .email(t('forms.zod.invalidEmail')),
+          email: z.string().min(1, t('forms.zod.required')).email(t('forms.zod.invalidEmail')),
           company: z.string().optional().default(''),
         }),
       }),
@@ -464,10 +445,10 @@ export function AppendToTableWizardSection() {
     [t],
   );
 
-  const fullSchema = useMemo(() => customerSchema.merge(itemsStepSchema), [
-    customerSchema,
-    itemsStepSchema,
-  ]);
+  const fullSchema = useMemo(
+    () => customerSchema.merge(itemsStepSchema),
+    [customerSchema, itemsStepSchema],
+  );
 
   const labels = useWizardLabels('Place order');
 

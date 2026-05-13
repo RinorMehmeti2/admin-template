@@ -89,7 +89,9 @@ export function EditableRosterSection() {
                           selectSize="sm"
                           value={field.value}
                           onChange={(e) =>
-                            field.onChange(e.target.value as RosterValues['members'][number]['role'])
+                            field.onChange(
+                              e.target.value as RosterValues['members'][number]['role'],
+                            )
                           }
                           aria-label={`Member ${i + 1} role`}
                         >

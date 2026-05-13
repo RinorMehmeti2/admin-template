@@ -28,9 +28,7 @@ export const Basic = {
 };
 
 export const WithSelection = {
-  render: () => (
-    <DataTable columns={columns} data={users} enableRowSelection="multi" />
-  ),
+  render: () => <DataTable columns={columns} data={users} enableRowSelection="multi" />,
 };
 
 export const Loading = {
@@ -121,7 +119,7 @@ const people: Person[] = Array.from({ length: 30 }).map((_, i) => ({
   name: `Person ${i + 1}`,
   department: ['Engineering', 'Design', 'Sales'][i % 3]!,
   status: ['active', 'on-leave', 'terminated'][i % 3]!,
-  salary: 60000 + (i * 1737) % 90000,
+  salary: 60000 + ((i * 1737) % 90000),
 }));
 
 const facetedColumns: ColumnDef<Person, unknown>[] = [

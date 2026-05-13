@@ -9,7 +9,18 @@ import {
 import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { PrimitivesPage } from '@/pages/demos/primitives';
-import { FormsPage } from '@/pages/demos/forms';
+import {
+  FormsLayout,
+  FormsOverviewPage,
+  FormFieldsPage,
+  FormLayoutsPage,
+  FormValidationPage,
+  FormCardsPage,
+  FormTablesPage,
+  FormMultiStepPage,
+  FormRepeaterPage,
+  FormAsyncPage,
+} from '@/pages/demos/forms';
 import { FeedbackPage } from '@/pages/demos/feedback';
 import { DataPage } from '@/pages/demos/data';
 import { PositioningPage } from '@/pages/demos/positioning';
@@ -41,12 +52,10 @@ import { DragDropSandboxPage } from '@/pages/demos/drag-drop';
 import { KanbanPage } from '@/pages/demos/kanban';
 import { FileExplorerPage } from '@/pages/file-explorer';
 import { GalleryPage } from '@/pages/demos/gallery';
-import { WizardPage } from '@/pages/demos/wizard';
 import { SearchPage } from '@/pages/demos/search';
 import { MobilePreviewPage } from '@/pages/demos/mobile-preview';
 import { NewComponentsPage } from '@/pages/demos/new-components';
 import { MotionPage } from '@/pages/demos/motion';
-import { RepeaterDemoPage } from '@/pages/demos/repeater';
 import { DropzonePage } from '@/pages/demos/dropzone';
 import { PlaygroundPage } from '@/pages/playground';
 import { ThemeEditorPage } from '@/pages/settings/theme';
@@ -77,7 +86,7 @@ import { TimelineActivityPage } from '@/pages/demos/croissant/timeline-and-activ
  *   - /workspace → FullscreenWorkspace + heavy demo data
  *   - /admin     → only loads after a role check passes anyway
  *
- * RichTextEditor (TipTap + ProseMirror) is lazy-loaded *inside* FormsPage
+ * RichTextEditor (TipTap + ProseMirror) is lazy-loaded inside the Forms hub
  * via React.lazy + Suspense — see components/forms/RichTextEditor/lazy.tsx.
  */
 
@@ -90,14 +99,102 @@ interface NavCommand {
 const NAV_COMMANDS: ReadonlyArray<NavCommand> = [
   { to: '/showcase', labelKey: 'nav.overview', keywords: ['home', 'index', 'showcase'] },
   { to: '/primitives', labelKey: 'nav.primitives', keywords: ['button', 'badge', 'avatar'] },
-  { to: '/forms', labelKey: 'nav.forms', keywords: ['input', 'select', 'checkbox'] },
+  {
+    to: '/forms',
+    labelKey: 'nav.forms.overview',
+    keywords: ['forms', 'overview', 'rhf', 'zod'],
+  },
+  {
+    to: '/forms/fields',
+    labelKey: 'nav.forms.fields',
+    keywords: ['forms', 'input', 'select', 'checkbox', 'combobox', 'rating'],
+  },
+  {
+    to: '/forms/layouts',
+    labelKey: 'nav.forms.layouts',
+    keywords: ['forms', 'layout', 'columns', 'sectioned', 'sidebar'],
+  },
+  {
+    to: '/forms/validation',
+    labelKey: 'nav.forms.validation',
+    keywords: ['forms', 'validation', 'zod', 'async', '422', 'errors'],
+  },
+  {
+    to: '/forms/cards',
+    labelKey: 'nav.forms.cards',
+    keywords: ['forms', 'cards', 'selectable', 'plan', 'nested'],
+  },
+  {
+    to: '/forms/tables',
+    labelKey: 'nav.forms.tables',
+    keywords: ['forms', 'tables', 'line items', 'invoice', 'fieldarray'],
+  },
+  {
+    to: '/forms/multi-step',
+    labelKey: 'nav.forms.multiStep',
+    keywords: ['forms', 'wizard', 'multistep', 'stepper', 'onboarding'],
+  },
+  {
+    to: '/forms/repeater',
+    labelKey: 'nav.forms.repeater',
+    keywords: ['forms', 'repeater', 'array', 'rows', 'add', 'remove'],
+  },
+  {
+    to: '/forms/async',
+    labelKey: 'nav.forms.async',
+    keywords: ['forms', 'async', 'autosave', 'submit', 'dirty', 'optimistic'],
+  },
   { to: '/feedback', labelKey: 'nav.feedback', keywords: ['toast', 'alert', 'dialog'] },
   {
     to: '/data',
     labelKey: 'commandPalette.cmd.dataDisplayLabel',
     keywords: ['card', 'stat', 'list'],
   },
-  { to: '/tables', labelKey: 'nav.tables', keywords: ['datatable', 'rows'] },
+  {
+    to: '/tables',
+    labelKey: 'nav.tables.overview',
+    keywords: ['tables', 'datatable', 'overview'],
+  },
+  {
+    to: '/tables/styles',
+    labelKey: 'nav.tables.styles',
+    keywords: ['tables', 'styles', 'variants', 'density', 'striped', 'bordered'],
+  },
+  {
+    to: '/tables/sorting',
+    labelKey: 'nav.tables.sorting',
+    keywords: ['tables', 'sort', 'sorting', 'multi-sort'],
+  },
+  {
+    to: '/tables/filtering',
+    labelKey: 'nav.tables.filtering',
+    keywords: ['tables', 'filter', 'filtering', 'facet', 'range', 'date'],
+  },
+  {
+    to: '/tables/selection',
+    labelKey: 'nav.tables.selection',
+    keywords: ['tables', 'selection', 'select', 'rows', 'bulk'],
+  },
+  {
+    to: '/tables/columns',
+    labelKey: 'nav.tables.columns',
+    keywords: ['tables', 'columns', 'visibility', 'pin', 'pinning'],
+  },
+  {
+    to: '/tables/sub-rows',
+    labelKey: 'nav.tables.subRows',
+    keywords: ['tables', 'expand', 'tree', 'sub-rows', 'nested'],
+  },
+  {
+    to: '/tables/actions',
+    labelKey: 'nav.tables.actions',
+    keywords: ['tables', 'actions', 'row menu', 'dropdown', 'context menu'],
+  },
+  {
+    to: '/tables/states',
+    labelKey: 'nav.tables.states',
+    keywords: ['tables', 'loading', 'empty', 'error', 'density'],
+  },
   {
     to: '/tree',
     labelKey: 'commandPalette.cmd.treeViewLabel',
@@ -145,11 +242,6 @@ const NAV_COMMANDS: ReadonlyArray<NavCommand> = [
     keywords: ['gallery', 'images', 'lightbox', 'photos', 'media'],
   },
   {
-    to: '/wizard',
-    labelKey: 'nav.formWizard',
-    keywords: ['wizard', 'multistep', 'onboarding', 'form', 'stepper'],
-  },
-  {
     to: '/search',
     labelKey: 'commandPalette.cmd.searchFiltersLabel',
     keywords: ['search', 'filter', 'chips', 'query', 'facets'],
@@ -163,11 +255,6 @@ const NAV_COMMANDS: ReadonlyArray<NavCommand> = [
     to: '/new-components',
     labelKey: 'nav.newComponents',
     keywords: ['carousel', 'accordion', 'repeater', 'statcard', 'sticky'],
-  },
-  {
-    to: '/repeater',
-    labelKey: 'nav.repeater',
-    keywords: ['repeater', 'list', 'rows', 'add', 'remove', 'reorder', 'array', 'fieldarray'],
   },
   {
     to: '/dropzone',
@@ -372,7 +459,23 @@ const router = createBrowserRouter([
           { index: true, element: <Navigate to="/showcase" replace /> },
           { path: 'showcase', element: <ShowcasePage /> },
           { path: 'primitives', element: <PrimitivesPage /> },
-          { path: 'forms', element: <FormsPage /> },
+          {
+            path: 'forms',
+            element: <FormsLayout />,
+            children: [
+              { index: true, element: <FormsOverviewPage /> },
+              { path: 'fields', element: <FormFieldsPage /> },
+              { path: 'layouts', element: <FormLayoutsPage /> },
+              { path: 'validation', element: <FormValidationPage /> },
+              { path: 'cards', element: <FormCardsPage /> },
+              { path: 'tables', element: <FormTablesPage /> },
+              { path: 'multi-step', element: <FormMultiStepPage /> },
+              { path: 'repeater', element: <FormRepeaterPage /> },
+              { path: 'async', element: <FormAsyncPage /> },
+            ],
+          },
+          { path: 'wizard', element: <Navigate to="/forms/multi-step" replace /> },
+          { path: 'repeater', element: <Navigate to="/forms/repeater" replace /> },
           { path: 'feedback', element: <FeedbackPage /> },
           { path: 'errors', element: <ErrorsDemoPage /> },
           {
@@ -386,16 +489,81 @@ const router = createBrowserRouter([
           {
             path: 'tables',
             lazy: async () => {
-              const { TablesPage } = await import('@/pages/demos/tables');
+              const { TablesLayout } = await import('@/pages/demos/tables');
               return {
                 Component: () => (
                   <ProtectedRoute>
-                    <TablesPage />
+                    <TablesLayout />
                   </ProtectedRoute>
                 ),
               };
             },
             errorElement: <RouterErrorElement source="route:/tables" />,
+            children: [
+              {
+                index: true,
+                lazy: async () => {
+                  const { TablesOverviewPage } = await import('@/pages/demos/tables');
+                  return { Component: TablesOverviewPage };
+                },
+              },
+              {
+                path: 'styles',
+                lazy: async () => {
+                  const { TableStylesPage } = await import('@/pages/demos/tables');
+                  return { Component: TableStylesPage };
+                },
+              },
+              {
+                path: 'sorting',
+                lazy: async () => {
+                  const { TableSortingPage } = await import('@/pages/demos/tables');
+                  return { Component: TableSortingPage };
+                },
+              },
+              {
+                path: 'filtering',
+                lazy: async () => {
+                  const { TableFilteringPage } = await import('@/pages/demos/tables');
+                  return { Component: TableFilteringPage };
+                },
+              },
+              {
+                path: 'selection',
+                lazy: async () => {
+                  const { TableSelectionPage } = await import('@/pages/demos/tables');
+                  return { Component: TableSelectionPage };
+                },
+              },
+              {
+                path: 'columns',
+                lazy: async () => {
+                  const { TableColumnsPage } = await import('@/pages/demos/tables');
+                  return { Component: TableColumnsPage };
+                },
+              },
+              {
+                path: 'sub-rows',
+                lazy: async () => {
+                  const { TableSubRowsPage } = await import('@/pages/demos/tables');
+                  return { Component: TableSubRowsPage };
+                },
+              },
+              {
+                path: 'actions',
+                lazy: async () => {
+                  const { TableActionsPage } = await import('@/pages/demos/tables');
+                  return { Component: TableActionsPage };
+                },
+              },
+              {
+                path: 'states',
+                lazy: async () => {
+                  const { TableStatesPage } = await import('@/pages/demos/tables');
+                  return { Component: TableStatesPage };
+                },
+              },
+            ],
           },
           { path: 'positioning', element: <PositioningPage /> },
           { path: 'tree', element: <TreePage /> },
@@ -415,12 +583,10 @@ const router = createBrowserRouter([
           { path: 'kanban', element: <KanbanPage /> },
           { path: 'files', element: <FileExplorerPage /> },
           { path: 'gallery', element: <GalleryPage /> },
-          { path: 'wizard', element: <WizardPage /> },
           { path: 'search', element: <SearchPage /> },
           { path: 'mobile-preview', element: <MobilePreviewPage /> },
           { path: 'new-components', element: <NewComponentsPage /> },
           { path: 'motion', element: <MotionPage /> },
-          { path: 'repeater', element: <RepeaterDemoPage /> },
           { path: 'dropzone', element: <DropzonePage /> },
           { path: 'playground', element: <PlaygroundPage /> },
           { path: 'settings/theme', element: <ThemeEditorPage /> },

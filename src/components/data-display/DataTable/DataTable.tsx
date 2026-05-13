@@ -248,10 +248,7 @@ function buildExpandColumn<TData>(): ColumnDef<TData, unknown> {
           style={{ marginLeft: `${row.depth * 1}rem` }}
         >
           <ChevronRight
-            className={cn(
-              'h-3.5 w-3.5 transition-transform',
-              expanded && 'rotate-90',
-            )}
+            className={cn('h-3.5 w-3.5 transition-transform', expanded && 'rotate-90')}
             aria-hidden="true"
           />
         </button>
@@ -280,8 +277,7 @@ function augmentColumnsWithFilterFns<TData>(
     if (col.filterFn !== undefined) return col;
     if (variant === 'multi-select')
       return { ...col, filterFn: arrIncludesSome as unknown as FilterFnAny };
-    if (variant === 'range')
-      return { ...col, filterFn: inNumberRange as unknown as FilterFnAny };
+    if (variant === 'range') return { ...col, filterFn: inNumberRange as unknown as FilterFnAny };
     if (variant === 'date-range')
       return { ...col, filterFn: inDateRange as unknown as FilterFnAny };
     if (variant === 'select') return { ...col, filterFn: 'equalsString' as const };
@@ -375,9 +371,7 @@ export function DataTable<TData>({
   const isPrinting = usePrintMode();
 
   const enableRowSelectionResolved =
-    typeof enableRowSelection === 'function'
-      ? enableRowSelection
-      : selectionMode !== 'none';
+    typeof enableRowSelection === 'function' ? enableRowSelection : selectionMode !== 'none';
 
   const table = useReactTable<TData>({
     data,
@@ -433,8 +427,7 @@ export function DataTable<TData>({
   const searchId = useId();
 
   const activeFilters = table.getState().columnFilters;
-  const showChips =
-    (showFilterChips ?? enableColumnFilters) && activeFilters.length > 0;
+  const showChips = (showFilterChips ?? enableColumnFilters) && activeFilters.length > 0;
 
   /* ------------------------------- toolbar -------------------------------- */
   const showToolbar =
@@ -501,11 +494,7 @@ export function DataTable<TData>({
                       ...(header.getSize() !== 150 ? { width: header.getSize() } : {}),
                       ...pin.style,
                     }}
-                    className={cn(
-                      isSelectCol && 'w-9',
-                      isExpandCol && 'w-8',
-                      pin.className,
-                    )}
+                    className={cn(isSelectCol && 'w-9', isExpandCol && 'w-8', pin.className)}
                     aria-sort={
                       sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : undefined
                     }
@@ -581,8 +570,7 @@ export function DataTable<TData>({
           ) : (
             pageRows.map((row) => {
               const showCustomPanel =
-                renderExpandedRow !== undefined &&
-                (isPrinting || row.getIsExpanded());
+                renderExpandedRow !== undefined && (isPrinting || row.getIsExpanded());
               return (
                 <Fragment key={row.id}>
                   <TableRow
@@ -595,11 +583,7 @@ export function DataTable<TData>({
                     {row.getVisibleCells().map((cell) => {
                       const pin = pinningProps(cell.column, 'cell', row.getIsSelected());
                       return (
-                        <TableCell
-                          key={cell.id}
-                          style={pin.style}
-                          className={pin.className}
-                        >
+                        <TableCell key={cell.id} style={pin.style} className={pin.className}>
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       );
@@ -608,9 +592,7 @@ export function DataTable<TData>({
                   {showCustomPanel && renderExpandedRow !== undefined ? (
                     <TableRow className="bg-surface-muted/40 hover:bg-surface-muted/40">
                       <TableCell colSpan={visibleColumnCount} className="p-0">
-                        <div className="px-4 py-3 sm:px-6 sm:py-4">
-                          {renderExpandedRow(row)}
-                        </div>
+                        <div className="px-4 py-3 sm:px-6 sm:py-4">{renderExpandedRow(row)}</div>
                       </TableCell>
                     </TableRow>
                   ) : null}
@@ -741,11 +723,7 @@ function summarizeFilterValue<TData>(col: Column<TData, unknown>, value: unknown
     const hi = typeof max === 'number' && Number.isFinite(max) ? String(max) : '+∞';
     return ` · ${lo}–${hi}`;
   }
-  if (
-    variant === 'date-range' &&
-    typeof value === 'object' &&
-    value !== null
-  ) {
+  if (variant === 'date-range' && typeof value === 'object' && value !== null) {
     const { from, to } = value as { from?: Date | null; to?: Date | null };
     const lo = from instanceof Date ? from.toLocaleDateString() : '…';
     const hi = to instanceof Date ? to.toLocaleDateString() : '…';
@@ -771,9 +749,7 @@ function FilterControl<TData>({ column }: { column: Column<TData, unknown> }) {
         aria-label={`Filter ${label}`}
         selectSize="sm"
         value={value}
-        onChange={(e) =>
-          column.setFilterValue(e.target.value === '' ? undefined : e.target.value)
-        }
+        onChange={(e) => column.setFilterValue(e.target.value === '' ? undefined : e.target.value)}
       >
         <option value="">All</option>
         {options.map((opt) => (
@@ -804,9 +780,7 @@ function FilterControl<TData>({ column }: { column: Column<TData, unknown> }) {
       inputSize="sm"
       placeholder="Filter…"
       value={(column.getFilterValue() as string | undefined) ?? ''}
-      onChange={(e) =>
-        column.setFilterValue(e.target.value === '' ? undefined : e.target.value)
-      }
+      onChange={(e) => column.setFilterValue(e.target.value === '' ? undefined : e.target.value)}
     />
   );
 }
@@ -880,15 +854,10 @@ function MultiSelectFilter<TData>({
   );
 }
 
-function RangeFilter<TData>({
-  column,
-  label,
-}: {
-  column: Column<TData, unknown>;
-  label: string;
-}) {
-  const value = (column.getFilterValue() as [number | undefined, number | undefined] | undefined) ??
-    [undefined, undefined];
+function RangeFilter<TData>({ column, label }: { column: Column<TData, unknown>; label: string }) {
+  const value = (column.getFilterValue() as
+    | [number | undefined, number | undefined]
+    | undefined) ?? [undefined, undefined];
   const [min, max] = value;
 
   const setRange = (next: [number | undefined, number | undefined]) => {

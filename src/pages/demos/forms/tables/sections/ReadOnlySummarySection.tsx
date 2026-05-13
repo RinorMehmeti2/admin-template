@@ -25,11 +25,14 @@ interface CheckoutValues {
   itemPrice: number;
 }
 
-function SummaryTable({ control }: { control: ReturnType<typeof useForm<CheckoutValues>>['control'] }) {
+function SummaryTable({
+  control,
+}: {
+  control: ReturnType<typeof useForm<CheckoutValues>>['control'];
+}) {
   const values = useWatch({ control });
   const subtotal = (values.itemCount ?? 0) * (values.itemPrice ?? 0);
-  const shipping =
-    SHIPPING_METHODS.find((m) => m.id === values.shippingMethod)?.flatRate ?? 0;
+  const shipping = SHIPPING_METHODS.find((m) => m.id === values.shippingMethod)?.flatRate ?? 0;
   const total = subtotal + shipping;
   const fmt = (n: number) => `$${n.toFixed(2)}`;
   return (

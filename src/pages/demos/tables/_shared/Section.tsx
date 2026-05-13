@@ -40,10 +40,7 @@ export function Section({
         {actions !== undefined ? <div className="flex shrink-0 gap-2">{actions}</div> : null}
       </header>
       <div
-        className={cn(
-          'rounded-lg border border-border bg-surface p-4 sm:p-6',
-          contentClassName,
-        )}
+        className={cn('rounded-lg border border-border bg-surface p-4 sm:p-6', contentClassName)}
       >
         {children}
       </div>

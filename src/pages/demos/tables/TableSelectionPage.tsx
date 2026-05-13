@@ -62,7 +62,9 @@ export function TableSelectionPage() {
         accessorKey: 'total',
         header: 'Total',
         cell: ({ row }) => (
-          <span className="tabular-nums">{formatMoney(row.original.total, row.original.currency)}</span>
+          <span className="tabular-nums">
+            {formatMoney(row.original.total, row.original.currency)}
+          </span>
         ),
       },
       {
@@ -90,7 +92,7 @@ export function TableSelectionPage() {
   /* -------------------- 1) single-select inspector ----------------------- */
   const [activeId, setActiveId] = useState<string | null>(null);
   const activeEmp = useMemo(
-    () => (activeId === null ? null : employees.find((e) => e.id === activeId) ?? null),
+    () => (activeId === null ? null : (employees.find((e) => e.id === activeId) ?? null)),
     [employees, activeId],
   );
 

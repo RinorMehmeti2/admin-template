@@ -195,9 +195,7 @@ describe('DataTable', () => {
           columns={TREE_COLS}
           data={TREE}
           enableExpanding
-          renderExpandedRow={(row: TableRow<Node>) => (
-            <div>Details for {row.original.name}</div>
-          )}
+          renderExpandedRow={(row: TableRow<Node>) => <div>Details for {row.original.name}</div>}
         />,
       );
       expect(screen.queryByText(/Details for Alpha/)).toBeNull();
