@@ -7,6 +7,7 @@ export * from './PageHeader';
 export * from './PageShell';
 export * from './Sidebar';
 export * from './SplitLayout';
+export * from './StickyCard';
 export * from './ThemePicker';
 export * from './ThemeToggle';
 export * from './Topbar';

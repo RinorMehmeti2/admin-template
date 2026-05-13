@@ -1,0 +1,1 @@
+export { NewComponentsPage } from './NewComponentsPage';

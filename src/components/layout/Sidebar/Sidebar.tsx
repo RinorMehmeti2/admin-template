@@ -181,7 +181,7 @@ export function Sidebar({
           <ChevronLeft className="h-3.5 w-3.5" />
         )}
       </button>
-      <div className="min-h-0 flex-1 overflow-y-auto p-2">{children}</div>
+      <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto p-2">{children}</div>
       {footer !== undefined ? <div className="border-t border-border p-2">{footer}</div> : null}
     </aside>
   );

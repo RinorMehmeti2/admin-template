@@ -28,6 +28,7 @@ import {
   Sparkles,
   SquareDashedMousePointer,
   Table,
+  Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
@@ -66,6 +67,9 @@ interface NavItem {
 
 const NAV_ITEMS: ReadonlyArray<NavItem> = [
   { to: '/showcase', labelKey: 'nav.overview', icon: <Compass className="h-4 w-4" /> },
+  { to: '/new-components', labelKey: 'nav.newComponents', icon: <Sparkles className="h-4 w-4" /> },
+  { to: '/motion', labelKey: 'nav.motion', icon: <Zap className="h-4 w-4" /> },
+  { to: '/repeater', labelKey: 'nav.repeater', icon: <ListChecks className="h-4 w-4" /> },
   { to: '/primitives', labelKey: 'nav.primitives', icon: <Sparkles className="h-4 w-4" /> },
   { to: '/forms', labelKey: 'nav.forms', icon: <FormInput className="h-4 w-4" /> },
   {

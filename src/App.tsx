@@ -44,6 +44,9 @@ import { GalleryPage } from '@/pages/demos/gallery';
 import { WizardPage } from '@/pages/demos/wizard';
 import { SearchPage } from '@/pages/demos/search';
 import { MobilePreviewPage } from '@/pages/demos/mobile-preview';
+import { NewComponentsPage } from '@/pages/demos/new-components';
+import { MotionPage } from '@/pages/demos/motion';
+import { RepeaterDemoPage } from '@/pages/demos/repeater';
 import { PlaygroundPage } from '@/pages/playground';
 import { ThemeEditorPage } from '@/pages/settings/theme';
 import { TypographyEditorPage } from '@/pages/settings/typography';
@@ -147,6 +150,36 @@ const NAV_COMMANDS: ReadonlyArray<NavCommand> = [
     to: '/mobile-preview',
     labelKey: 'commandPalette.cmd.mobilePreviewLabel',
     keywords: ['mobile', 'bottom-sheet', 'touch', 'swipe', 'responsive'],
+  },
+  {
+    to: '/new-components',
+    labelKey: 'nav.newComponents',
+    keywords: ['carousel', 'accordion', 'repeater', 'statcard', 'sticky'],
+  },
+  {
+    to: '/repeater',
+    labelKey: 'nav.repeater',
+    keywords: ['repeater', 'list', 'rows', 'add', 'remove', 'reorder', 'array', 'fieldarray'],
+  },
+  {
+    to: '/motion',
+    labelKey: 'nav.motion',
+    keywords: [
+      'motion',
+      'animation',
+      'animate',
+      'fade',
+      'slide',
+      'bounce',
+      'scale',
+      'rotate',
+      'flip',
+      'stagger',
+      'transition',
+      'pulse',
+      'shimmer',
+      'marquee',
+    ],
   },
   {
     to: '/playground',
@@ -328,6 +361,9 @@ const router = createBrowserRouter([
           { path: 'wizard', element: <WizardPage /> },
           { path: 'search', element: <SearchPage /> },
           { path: 'mobile-preview', element: <MobilePreviewPage /> },
+          { path: 'new-components', element: <NewComponentsPage /> },
+          { path: 'motion', element: <MotionPage /> },
+          { path: 'repeater', element: <RepeaterDemoPage /> },
           { path: 'playground', element: <PlaygroundPage /> },
           { path: 'settings/theme', element: <ThemeEditorPage /> },
           { path: 'settings/typography', element: <TypographyEditorPage /> },

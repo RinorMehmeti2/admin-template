@@ -10,6 +10,9 @@
 
   "nav.ariaPrimary": "Primary",
   "nav.overview": "Overview",
+  "nav.newComponents": "New components",
+  "nav.motion": "Motion & animations",
+  "nav.repeater": "Repeater",
   "nav.primitives": "Primitives",
   "nav.forms": "Forms",
   "nav.feedback": "Feedback",
@@ -103,6 +106,12 @@
   "showcase.entries.layout.description": "Container, PageShell, PageHeader, Sidebar, Topbar plus Tabs, Breadcrumbs, Pagination, Stepper.",
   "showcase.entries.layout.count": "Full app chrome",
 
+  "demos.newComponents.title": "New components",
+  "demos.newComponents.subtitle": "Carousel, Accordion, StatCard, and StickyCard. Repeater and Motion live on their own pages.",
+  "demos.motion.title": "Motion & animations",
+  "demos.motion.subtitle": "Every animation case: 11 entrance presets, Stagger, AnimatePresence, in-view triggers, ambient loops, custom timing, and chained sequences. Toggle 'Force animations' if your OS reduces motion.",
+  "demos.repeater.title": "Repeater",
+  "demos.repeater.subtitle": "Dynamic input groups — add, remove, reorder rows. 6 worked examples covering compound rows, stacked variant, min/max guards, no-reorder, and inline error.",
   "demos.primitives.title": "Primitives",
   "demos.primitives.subtitle": "Foundation components — Button, IconButton, Badge, Avatar, Spinner, Skeleton, Kbd, Separator.",
   "demos.forms.title": "Forms",

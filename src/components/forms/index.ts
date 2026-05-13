@@ -15,6 +15,7 @@ export * from './OtpInput';
 export * from './PhoneInput';
 export * from './Radio';
 export * from './RadioGroup';
+export * from './Repeater';
 export * from './RangeSlider';
 export * from './Rating';
 export * from './RichTextEditor';

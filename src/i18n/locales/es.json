@@ -10,6 +10,9 @@
 
   "nav.ariaPrimary": "Principal",
   "nav.overview": "Resumen",
+  "nav.newComponents": "Nuevos componentes",
+  "nav.motion": "Movimiento y animaciones",
+  "nav.repeater": "Repeater",
   "nav.primitives": "Primitivos",
   "nav.forms": "Formularios",
   "nav.feedback": "Retroalimentación",
@@ -103,6 +106,12 @@
   "showcase.entries.layout.description": "Container, PageShell, PageHeader, Sidebar, Topbar más Tabs, Breadcrumbs, Pagination, Stepper.",
   "showcase.entries.layout.count": "Chrome completo de la app",
 
+  "demos.newComponents.title": "Nuevos componentes",
+  "demos.newComponents.subtitle": "Carousel, Accordion, StatCard y StickyCard. Repeater y Motion tienen sus propias páginas.",
+  "demos.motion.title": "Movimiento y animaciones",
+  "demos.motion.subtitle": "Todos los casos de animación: 11 presets de entrada, Stagger, AnimatePresence, disparadores al entrar en vista, bucles ambientales, tiempos personalizados y secuencias encadenadas. Activa 'Forzar animaciones' si tu sistema operativo reduce el movimiento.",
+  "demos.repeater.title": "Repeater",
+  "demos.repeater.subtitle": "Grupos de campos dinámicos — añadir, eliminar y reordenar filas. 6 ejemplos: filas compuestas, variante apilada, mín/máx, sin reordenar y error en línea.",
   "demos.primitives.title": "Primitivos",
   "demos.primitives.subtitle": "Componentes base — Button, IconButton, Badge, Avatar, Spinner, Skeleton, Kbd, Separator.",
   "demos.forms.title": "Formularios",

@@ -1,3 +1,4 @@
+export * from './Accordion';
 export * from './Breadcrumbs';
 export * from './ContextMenu';
 export * from './DropdownMenu';
