@@ -1,13 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useState } from 'react';
-import {
-  act,
-  createEvent,
-  fireEvent,
-  render,
-  screen,
-  within,
-} from '@testing-library/react';
+import { act, createEvent, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { runAxe } from '@/test-utils/a11y';
 import { Dropzone } from './Dropzone';
@@ -167,11 +160,7 @@ describe('Dropzone', () => {
         onFilesRejected={onFilesRejected}
       />,
     );
-    const files = [
-      makeFile('a.txt'),
-      makeFile('b.txt'),
-      makeFile('c.txt'),
-    ];
+    const files = [makeFile('a.txt'), makeFile('b.txt'), makeFile('c.txt')];
     await user.upload(getHiddenInput(), files);
     const accepted = onFilesChange.mock.calls[0]?.[0] as ReadonlyArray<DropzoneFile>;
     expect(accepted).toHaveLength(2);
@@ -196,13 +185,7 @@ describe('Dropzone', () => {
     const user = userEvent.setup();
     function Harness() {
       const [files, setFiles] = useState<ReadonlyArray<DropzoneFile>>([]);
-      return (
-        <Dropzone
-          label="Upload"
-          files={files}
-          onFilesChange={(f) => setFiles(f)}
-        />
-      );
+      return <Dropzone label="Upload" files={files} onFilesChange={(f) => setFiles(f)} />;
     }
     render(<Harness />);
     await user.upload(getHiddenInput(), [makeFile('a.txt'), makeFile('b.txt')]);
@@ -229,12 +212,7 @@ describe('Dropzone', () => {
       },
     ];
     render(
-      <Dropzone
-        label="Upload"
-        disabled
-        defaultFiles={seeded}
-        onFilesChange={onFilesChange}
-      />,
+      <Dropzone label="Upload" disabled defaultFiles={seeded} onFilesChange={onFilesChange} />,
     );
     await user.click(getRoot('Upload'));
     expect(clickSpy).not.toHaveBeenCalled();
@@ -279,13 +257,7 @@ describe('Dropzone', () => {
     const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
     function Harness() {
       const [files, setFiles] = useState<ReadonlyArray<DropzoneFile>>([]);
-      return (
-        <Dropzone
-          label="Upload"
-          files={files}
-          onFilesChange={(f) => setFiles(f)}
-        />
-      );
+      return <Dropzone label="Upload" files={files} onFilesChange={(f) => setFiles(f)} />;
     }
     const { unmount } = render(<Harness />);
     await user.upload(getHiddenInput(), [
@@ -305,15 +277,11 @@ describe('Dropzone', () => {
   it('avatar variant forces multiple=false even when prop says true', async () => {
     const user = userEvent.setup();
     const onFilesChange = vi.fn();
-    render(
-      <Dropzone
-        label="Avatar"
-        variant="avatar"
-        multiple
-        onFilesChange={onFilesChange}
-      />,
-    );
-    await user.upload(getHiddenInput(), [makeFile('a.png', 'image/png'), makeFile('b.png', 'image/png')]);
+    render(<Dropzone label="Avatar" variant="avatar" multiple onFilesChange={onFilesChange} />);
+    await user.upload(getHiddenInput(), [
+      makeFile('a.png', 'image/png'),
+      makeFile('b.png', 'image/png'),
+    ]);
     const accepted = onFilesChange.mock.calls[0]?.[0] as ReadonlyArray<DropzoneFile>;
     expect(accepted).toHaveLength(1);
     expect(accepted[0]?.name).toBe('a.png');
@@ -345,7 +313,14 @@ describe('Dropzone', () => {
         errorMessage: 'network',
       },
     ];
-    rerender(<Dropzone label="Upload" hint="PDF or images" files={populated} onFilesChange={() => undefined} />);
+    rerender(
+      <Dropzone
+        label="Upload"
+        hint="PDF or images"
+        files={populated}
+        onFilesChange={() => undefined}
+      />,
+    );
     expect(await runAxe(container)).toHaveNoViolations();
     expect(within(container).getByText('q.txt')).toBeInTheDocument();
     expect(within(container).getByText('e.txt')).toBeInTheDocument();

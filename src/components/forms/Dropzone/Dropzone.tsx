@@ -48,8 +48,7 @@ const DEFAULT_LABELS: DropzoneLabels = {
   changeAvatar: 'Change',
   removeAvatar: 'Remove',
   filesAdded: (count) => `${count} file${count === 1 ? '' : 's'} added`,
-  filesRejected: (count, reasons) =>
-    `${count} file${count === 1 ? '' : 's'} rejected: ${reasons}`,
+  filesRejected: (count, reasons) => `${count} file${count === 1 ? '' : 's'} rejected: ${reasons}`,
   reasonType: 'unsupported type',
   reasonSize: 'too large',
   reasonCount: 'too many files',
@@ -63,8 +62,7 @@ const rootStyles = cva(
   {
     variants: {
       variant: {
-        card:
-          'flex min-h-56 w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-6 text-center',
+        card: 'flex min-h-56 w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-6 text-center',
         inline:
           'flex w-full flex-col items-start gap-3 rounded-md border-2 border-dashed p-4 sm:flex-row sm:items-center',
         compact:
@@ -83,11 +81,7 @@ function getFileIcon(type: string): LucideIcon {
   if (type.startsWith('image/')) return FileImage;
   if (type.startsWith('video/')) return FileVideo;
   if (type.startsWith('audio/')) return FileAudio;
-  if (
-    type === 'text/csv' ||
-    type.includes('spreadsheet') ||
-    type.includes('excel')
-  ) {
+  if (type === 'text/csv' || type.includes('spreadsheet') || type.includes('excel')) {
     return FileSpreadsheet;
   }
   if (
@@ -186,14 +180,7 @@ interface FileListProps {
   onRetry: (id: string) => void;
 }
 
-function DropzoneFileList({
-  files,
-  layout,
-  disabled,
-  labels,
-  onRemove,
-  onRetry,
-}: FileListProps) {
+function DropzoneFileList({ files, layout, disabled, labels, onRemove, onRetry }: FileListProps) {
   if (files.length === 0) return null;
   const wrapper =
     layout === 'grid'
@@ -218,11 +205,7 @@ function DropzoneFileList({
             )}
           >
             {f.previewUrl !== undefined ? (
-              <img
-                src={f.previewUrl}
-                alt=""
-                className="h-10 w-10 shrink-0 rounded object-cover"
-              />
+              <img src={f.previewUrl} alt="" className="h-10 w-10 shrink-0 rounded object-cover" />
             ) : (
               <span
                 aria-hidden="true"
@@ -237,9 +220,7 @@ function DropzoneFileList({
                 {formatBytes(f.size)}
                 {f.status === 'success' ? ' · uploaded' : ''}
               </p>
-              {isUploading ? (
-                <Progress value={f.progress} size="sm" className="mt-1" />
-              ) : null}
+              {isUploading ? <Progress value={f.progress} size="sm" className="mt-1" /> : null}
               {isError ? (
                 <p className="mt-1 text-xs text-danger">
                   {f.errorMessage !== undefined && f.errorMessage !== ''
@@ -334,19 +315,15 @@ export function Dropzone({
       id,
       'aria-describedby': ariaDescribedByProp,
       'aria-labelledby': ariaLabelledByProp,
-      'aria-invalid':
-        errorMessage !== undefined && errorMessage !== '' ? true : undefined,
+      'aria-invalid': errorMessage !== undefined && errorMessage !== '' ? true : undefined,
     },
     errorMessage !== undefined && errorMessage !== '',
   );
 
-  const describedByParts = [
-    fieldAria['aria-describedby'],
-    hintId,
-    errorId,
-  ].filter((s): s is string => typeof s === 'string' && s.length > 0);
-  const ariaDescribedBy =
-    describedByParts.length > 0 ? describedByParts.join(' ') : undefined;
+  const describedByParts = [fieldAria['aria-describedby'], hintId, errorId].filter(
+    (s): s is string => typeof s === 'string' && s.length > 0,
+  );
+  const ariaDescribedBy = describedByParts.length > 0 ? describedByParts.join(' ') : undefined;
 
   // Compact + avatar variants don't render a visible <p id={labelId}>, so a
   // labelledby pointing at it would dangle. Fall back to aria-label for those.
@@ -370,9 +347,8 @@ export function Dropzone({
   const [isDragging, setIsDragging] = useState(false);
 
   // Transient zone-level error from last drop's rejections, auto-clear 5s.
-  const [transientRejections, setTransientRejections] = useState<
-    ReadonlyArray<DropzoneRejection> | null
-  >(null);
+  const [transientRejections, setTransientRejections] =
+    useState<ReadonlyArray<DropzoneRejection> | null>(null);
   useEffect(() => {
     if (transientRejections === null) return;
     const t = window.setTimeout(() => setTransientRejections(null), 5000);
@@ -642,21 +618,12 @@ export function Dropzone({
           <div
             {...rest}
             {...rootCommon}
-            className={cn(
-              rootStyles({ variant }),
-              stateClasses,
-              cursorClass,
-              className,
-            )}
+            className={cn(rootStyles({ variant }), stateClasses, cursorClass, className)}
             id={fieldAria.id}
           >
             {previewUrl !== undefined ? (
               <>
-                <img
-                  src={previewUrl}
-                  alt=""
-                  className="h-full w-full rounded-full object-cover"
-                />
+                <img src={previewUrl} alt="" className="h-full w-full rounded-full object-cover" />
                 {isUploadingAvatar ? (
                   <span
                     aria-hidden="true"
@@ -675,10 +642,7 @@ export function Dropzone({
                 ) : null}
               </>
             ) : (
-              <Camera
-                className="h-7 w-7 text-foreground-muted"
-                aria-hidden="true"
-              />
+              <Camera className="h-7 w-7 text-foreground-muted" aria-hidden="true" />
             )}
             {renderLoadingOverlay()}
           </div>
@@ -704,12 +668,9 @@ export function Dropzone({
             {hint}
           </p>
         ) : null}
-        {(errorMessage !== undefined && errorMessage !== '') ||
-        rejectionInlineText !== null ? (
+        {(errorMessage !== undefined && errorMessage !== '') || rejectionInlineText !== null ? (
           <p id={errorId} role="alert" className="mt-1 text-xs text-danger">
-            {errorMessage !== undefined && errorMessage !== ''
-              ? errorMessage
-              : rejectionInlineText}
+            {errorMessage !== undefined && errorMessage !== '' ? errorMessage : rejectionInlineText}
           </p>
         ) : null}
       </div>
@@ -725,12 +686,7 @@ export function Dropzone({
         <div
           {...rest}
           {...rootCommon}
-          className={cn(
-            rootStyles({ variant }),
-            stateClasses,
-            cursorClass,
-            className,
-          )}
+          className={cn(rootStyles({ variant }), stateClasses, cursorClass, className)}
           id={fieldAria.id}
         >
           {singleAndPresent && first.previewUrl !== undefined ? (
@@ -766,12 +722,9 @@ export function Dropzone({
             {hint}
           </p>
         ) : null}
-        {(errorMessage !== undefined && errorMessage !== '') ||
-        rejectionInlineText !== null ? (
+        {(errorMessage !== undefined && errorMessage !== '') || rejectionInlineText !== null ? (
           <p id={errorId} role="alert" className="text-xs text-danger">
-            {errorMessage !== undefined && errorMessage !== ''
-              ? errorMessage
-              : rejectionInlineText}
+            {errorMessage !== undefined && errorMessage !== '' ? errorMessage : rejectionInlineText}
           </p>
         ) : null}
       </div>
@@ -783,20 +736,12 @@ export function Dropzone({
       <div
         {...rest}
         {...rootCommon}
-        className={cn(
-          rootStyles({ variant }),
-          stateClasses,
-          cursorClass,
-          className,
-        )}
+        className={cn(rootStyles({ variant }), stateClasses, cursorClass, className)}
         id={fieldAria.id}
       >
         {variant === 'card' ? (
           <>
-            <UploadCloud
-              className="h-10 w-10 text-foreground-muted"
-              aria-hidden="true"
-            />
+            <UploadCloud className="h-10 w-10 text-foreground-muted" aria-hidden="true" />
             <div className="space-y-1">
               {label !== undefined ? (
                 <p id={labelId} className="text-sm font-medium text-foreground">
@@ -821,13 +766,8 @@ export function Dropzone({
                 {hint}
               </p>
             ) : null}
-            {rejectionInlineText !== null ||
-            (errorMessage !== undefined && errorMessage !== '') ? (
-              <p
-                id={errorId}
-                role="alert"
-                className="text-xs text-danger"
-              >
+            {rejectionInlineText !== null || (errorMessage !== undefined && errorMessage !== '') ? (
+              <p id={errorId} role="alert" className="text-xs text-danger">
                 {errorMessage !== undefined && errorMessage !== ''
                   ? errorMessage
                   : rejectionInlineText}
@@ -837,10 +777,7 @@ export function Dropzone({
         ) : null}
         {variant === 'inline' ? (
           <>
-            <UploadCloud
-              className="h-6 w-6 shrink-0 text-foreground-muted"
-              aria-hidden="true"
-            />
+            <UploadCloud className="h-6 w-6 shrink-0 text-foreground-muted" aria-hidden="true" />
             <div className="min-w-0 flex-1 text-left">
               {label !== undefined ? (
                 <p id={labelId} className="text-sm font-medium text-foreground">
@@ -865,13 +802,8 @@ export function Dropzone({
             >
               {labels.browse}
             </span>
-            {rejectionInlineText !== null ||
-            (errorMessage !== undefined && errorMessage !== '') ? (
-              <p
-                id={errorId}
-                role="alert"
-                className="basis-full text-xs text-danger"
-              >
+            {rejectionInlineText !== null || (errorMessage !== undefined && errorMessage !== '') ? (
+              <p id={errorId} role="alert" className="basis-full text-xs text-danger">
                 {errorMessage !== undefined && errorMessage !== ''
                   ? errorMessage
                   : rejectionInlineText}
@@ -894,4 +826,3 @@ export function Dropzone({
     </div>
   );
 }
-

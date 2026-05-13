@@ -50,15 +50,11 @@ export const Inline = {
 };
 
 export const Compact = {
-  render: () => (
-    <Dropzone variant="compact" label="Add" accept="image/*" />
-  ),
+  render: () => <Dropzone variant="compact" label="Add" accept="image/*" />,
 };
 
 export const Avatar = {
-  render: () => (
-    <Dropzone variant="avatar" label="Profile picture" hint="PNG or JPG" />
-  ),
+  render: () => <Dropzone variant="avatar" label="Profile picture" hint="PNG or JPG" />,
 };
 
 export const WithQueuedFiles = {
@@ -109,11 +105,7 @@ export const Loading = {
 export const ErrorState = {
   render: () => (
     <div className="w-full max-w-xl">
-      <Dropzone
-        label="Upload"
-        hint="JPG or PNG"
-        errorMessage="Last upload failed — please retry"
-      />
+      <Dropzone label="Upload" hint="JPG or PNG" errorMessage="Last upload failed — please retry" />
     </div>
   ),
 };

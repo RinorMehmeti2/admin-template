@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropzone } from '@/components/forms/Dropzone';
-import type {
-  DropzoneFile,
-  DropzoneLabels,
-} from '@/components/forms/Dropzone';
+import type { DropzoneFile, DropzoneLabels } from '@/components/forms/Dropzone';
 import { Card } from '@/components/data-display/Card';
 import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
@@ -27,7 +24,9 @@ function Section({
         <h2 className="text-xl font-semibold tracking-tight text-foreground">{title}</h2>
         <p className="text-sm text-foreground-muted">{description}</p>
       </header>
-      <Card variant="outlined" className="p-6 sm:p-8">{children}</Card>
+      <Card variant="outlined" className="p-6 sm:p-8">
+        {children}
+      </Card>
     </section>
   );
 }
@@ -85,8 +84,7 @@ function useLabels(): DropzoneLabels {
       remove: (name) => t('dropzone.label.remove', { name }),
       retry: (name) => t('dropzone.label.retry', { name }),
       filesAdded: (count) => t('dropzone.label.filesAdded', { count }),
-      filesRejected: (count, reasons) =>
-        t('dropzone.label.filesRejected', { count, reasons }),
+      filesRejected: (count, reasons) => t('dropzone.label.filesRejected', { count, reasons }),
       reasonType: t('dropzone.label.reasonType'),
       reasonSize: t('dropzone.label.reasonSize'),
       reasonCount: t('dropzone.label.reasonCount'),
@@ -173,10 +171,7 @@ function AvatarDemo() {
           labels={labels}
         />
       </div>
-      <form
-        className="flex w-full max-w-sm flex-col gap-4"
-        onSubmit={(e) => e.preventDefault()}
-      >
+      <form className="flex w-full max-w-sm flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
         <FormField label={t('dropzone.profile.name')} id={nameId}>
           <Input placeholder={t('dropzone.profile.namePlaceholder')} />
         </FormField>
@@ -241,9 +236,7 @@ export function DropzonePage() {
   return (
     <div className="mx-auto max-w-6xl space-y-12">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {t('dropzone.page.title')}
-        </h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t('dropzone.page.title')}</h1>
         <p className="text-foreground-muted">{t('dropzone.page.subtitle')}</p>
       </header>
 

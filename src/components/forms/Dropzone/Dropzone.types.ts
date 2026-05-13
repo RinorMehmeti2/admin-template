@@ -36,8 +36,7 @@ export interface DropzoneLabels {
   reasonCount: string;
 }
 
-export interface DropzoneProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, 'onDrop' | 'onChange'> {
+export interface DropzoneProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onDrop' | 'onChange'> {
   ref?: Ref<HTMLDivElement>;
   variant?: DropzoneVariant;
   files?: ReadonlyArray<DropzoneFile>;

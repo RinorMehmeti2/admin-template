@@ -1,1 +1,10 @@
-export { TablesPage } from './TablesPage';
+export { TablesLayout } from './TablesLayout';
+export { TablesOverviewPage } from './TablesOverviewPage';
+export { TableStylesPage } from './TableStylesPage';
+export { TableSortingPage } from './TableSortingPage';
+export { TableFilteringPage } from './TableFilteringPage';
+export { TableSelectionPage } from './TableSelectionPage';
+export { TableSubRowsPage } from './TableSubRowsPage';
+export { TableActionsPage } from './TableActionsPage';
+export { TableColumnsPage } from './TableColumnsPage';
+export { TableStatesPage } from './TableStatesPage';

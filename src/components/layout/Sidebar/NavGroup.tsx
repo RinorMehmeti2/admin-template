@@ -107,10 +107,7 @@ export function NavGroup({
   });
 
   useClickOutside<HTMLElement>(
-    [
-      triggerRef as RefObject<HTMLElement | null>,
-      flyoutRef as RefObject<HTMLElement | null>,
-    ],
+    [triggerRef as RefObject<HTMLElement | null>, flyoutRef as RefObject<HTMLElement | null>],
     closeOwnFlyout,
     { enabled: flyoutOpen },
   );
@@ -156,11 +153,7 @@ export function NavGroup({
             aria-hidden="true"
           />
         </button>
-        <ul
-          id={listId}
-          hidden={!open}
-          className={cn('mt-0.5 space-y-0.5', !open && 'hidden')}
-        >
+        <ul id={listId} hidden={!open} className={cn('mt-0.5 space-y-0.5', !open && 'hidden')}>
           {decoratedChildren}
         </ul>
       </li>

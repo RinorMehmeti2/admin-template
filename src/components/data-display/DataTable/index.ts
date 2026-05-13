@@ -1,4 +1,9 @@
-export { DataTable } from './DataTable';
+export {
+  DataTable,
+  arrIncludesSome,
+  inDateRange,
+  inNumberRange,
+} from './DataTable';
 export type {
   DataTableProps,
   DataTableToolbarSlots,
@@ -7,4 +12,6 @@ export type {
   SortingState,
   RowSelectionState,
   VisibilityState,
+  ColumnPinningState,
+  ExpandedState,
 } from './DataTable';
