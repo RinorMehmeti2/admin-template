@@ -241,7 +241,16 @@ const NAV_COMMANDS: ReadonlyArray<NavCommand> = [
   {
     to: '/croissant/navigation-trail',
     labelKey: 'nav.croissant.navigationTrail',
-    keywords: ['croissant', 'navigation', 'breadcrumbs', 'tabs', 'stepper', 'menu', 'pagination', 'accordion'],
+    keywords: [
+      'croissant',
+      'navigation',
+      'breadcrumbs',
+      'tabs',
+      'stepper',
+      'menu',
+      'pagination',
+      'accordion',
+    ],
   },
   {
     to: '/croissant/timeline-and-activity',

@@ -93,10 +93,7 @@ export function NavigationTrailPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <PageHeader
-        title={t('croissant.nav.title')}
-        description={t('croissant.nav.subtitle')}
-      />
+      <PageHeader title={t('croissant.nav.title')} description={t('croissant.nav.subtitle')} />
 
       <Breadcrumbs>
         <BreadcrumbItem>
@@ -105,9 +102,7 @@ export function NavigationTrailPage() {
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbItem>
-          <BreadcrumbLink to="/croissant/data-lab">
-            {t('croissant.nav.crumbs.menu')}
-          </BreadcrumbLink>
+          <BreadcrumbLink to="/croissant/data-lab">{t('croissant.nav.crumbs.menu')}</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbItem>
           <BreadcrumbCurrent>{t('croissant.nav.crumbs.croissants')}</BreadcrumbCurrent>
@@ -126,13 +121,9 @@ export function NavigationTrailPage() {
             <CardContent>
               <Tabs defaultValue="dropdowns" variant="pills">
                 <TabsList>
-                  <TabsTrigger value="dropdowns">
-                    {t('croissant.nav.tabs.dropdowns')}
-                  </TabsTrigger>
+                  <TabsTrigger value="dropdowns">{t('croissant.nav.tabs.dropdowns')}</TabsTrigger>
                   <TabsTrigger value="stepper">{t('croissant.nav.tabs.stepper')}</TabsTrigger>
-                  <TabsTrigger value="pagination">
-                    {t('croissant.nav.tabs.pagination')}
-                  </TabsTrigger>
+                  <TabsTrigger value="pagination">{t('croissant.nav.tabs.pagination')}</TabsTrigger>
                   <TabsTrigger value="menu">{t('croissant.nav.tabs.menu')}</TabsTrigger>
                 </TabsList>
 
@@ -165,7 +156,9 @@ export function NavigationTrailPage() {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    <Badge variant="info" size="sm">DropdownMenu</Badge>
+                    <Badge variant="info" size="sm">
+                      DropdownMenu
+                    </Badge>
                   </div>
 
                   <ContextMenu>
@@ -262,7 +255,11 @@ export function NavigationTrailPage() {
                       <MenuItem
                         to="/croissant/data-lab"
                         icon={<ShoppingBag className="h-4 w-4" />}
-                        badge={<Badge variant="primary" size="sm">12</Badge>}
+                        badge={
+                          <Badge variant="primary" size="sm">
+                            12
+                          </Badge>
+                        }
                       >
                         {t('croissant.nav.menu.orders')}
                       </MenuItem>
@@ -273,7 +270,10 @@ export function NavigationTrailPage() {
                         {t('croissant.nav.menu.customers')}
                       </MenuItem>
                     </MenuGroup>
-                    <MenuItem to="/croissant/timeline-and-activity" icon={<UserPlus className="h-4 w-4" />}>
+                    <MenuItem
+                      to="/croissant/timeline-and-activity"
+                      icon={<UserPlus className="h-4 w-4" />}
+                    >
                       {t('croissant.nav.menu.staff')}
                     </MenuItem>
                   </Menu>

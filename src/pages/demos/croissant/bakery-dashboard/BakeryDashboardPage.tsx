@@ -15,11 +15,7 @@ import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
 import { Badge } from '@/components/primitives/Badge';
 import { Avatar } from '@/components/primitives/Avatar';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/feedback/Tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/feedback/Tooltip';
 import { StatCard } from '@/components/data-display/StatCard';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/data-display/Card';
 import { AreaChart } from '@/components/data-display/charts/AreaChart';
@@ -43,12 +39,42 @@ interface OrderRow {
 }
 
 const ORDERS: ReadonlyArray<OrderRow> = [
-  { id: '#1042', customer: 'Ada Lovelace', items: '3 × croissant, 1 × latte', status: 'paid', total: 18.5 },
-  { id: '#1041', customer: 'Grace Hopper', items: '6 × pain au chocolat', status: 'pending', total: 24.0 },
+  {
+    id: '#1042',
+    customer: 'Ada Lovelace',
+    items: '3 × croissant, 1 × latte',
+    status: 'paid',
+    total: 18.5,
+  },
+  {
+    id: '#1041',
+    customer: 'Grace Hopper',
+    items: '6 × pain au chocolat',
+    status: 'pending',
+    total: 24.0,
+  },
   { id: '#1040', customer: 'Linus Torvalds', items: '2 × sourdough', status: 'paid', total: 14.0 },
-  { id: '#1039', customer: 'Margaret Hamilton', items: '1 × kouign-amann', status: 'refunded', total: 6.5 },
-  { id: '#1038', customer: 'Edsger Dijkstra', items: '4 × almond croissant', status: 'paid', total: 28.0 },
-  { id: '#1037', customer: 'Alan Turing', items: '2 × cinnamon roll, 1 × cappuccino', status: 'pending', total: 16.75 },
+  {
+    id: '#1039',
+    customer: 'Margaret Hamilton',
+    items: '1 × kouign-amann',
+    status: 'refunded',
+    total: 6.5,
+  },
+  {
+    id: '#1038',
+    customer: 'Edsger Dijkstra',
+    items: '4 × almond croissant',
+    status: 'paid',
+    total: 28.0,
+  },
+  {
+    id: '#1037',
+    customer: 'Alan Turing',
+    items: '2 × cinnamon roll, 1 × cappuccino',
+    status: 'pending',
+    total: 16.75,
+  },
 ];
 
 const REVENUE = [
@@ -86,9 +112,23 @@ const COMPONENTS = [
 ];
 
 function statusBadge(status: OrderRow['status'], t: (k: string) => string) {
-  if (status === 'paid') return <Badge variant="success" dot>{t('croissant.bakery.status.paid')}</Badge>;
-  if (status === 'pending') return <Badge variant="warning" dot>{t('croissant.bakery.status.pending')}</Badge>;
-  return <Badge variant="danger" dot>{t('croissant.bakery.status.refunded')}</Badge>;
+  if (status === 'paid')
+    return (
+      <Badge variant="success" dot>
+        {t('croissant.bakery.status.paid')}
+      </Badge>
+    );
+  if (status === 'pending')
+    return (
+      <Badge variant="warning" dot>
+        {t('croissant.bakery.status.pending')}
+      </Badge>
+    );
+  return (
+    <Badge variant="danger" dot>
+      {t('croissant.bakery.status.refunded')}
+    </Badge>
+  );
 }
 
 export function BakeryDashboardPage() {
@@ -274,13 +314,17 @@ export function BakeryDashboardPage() {
                 <TableHead>{t('croissant.bakery.orders.col.customer')}</TableHead>
                 <TableHead>{t('croissant.bakery.orders.col.items')}</TableHead>
                 <TableHead>{t('croissant.bakery.orders.col.status')}</TableHead>
-                <TableHead className="text-right">{t('croissant.bakery.orders.col.total')}</TableHead>
+                <TableHead className="text-right">
+                  {t('croissant.bakery.orders.col.total')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {ORDERS.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell className="font-mono text-xs text-foreground-muted">{row.id}</TableCell>
+                  <TableCell className="font-mono text-xs text-foreground-muted">
+                    {row.id}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2.5">
                       <Avatar size="sm" name={row.customer} />

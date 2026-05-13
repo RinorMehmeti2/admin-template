@@ -37,19 +37,8 @@ export function SectionHeader({
   className,
 }: SectionHeaderProps) {
   return (
-    <header
-      className={cn(
-        'rounded-md border-l-4 px-4 py-3',
-        TONE[tone],
-        className,
-      )}
-    >
-      <p
-        className={cn(
-          'text-[11px] font-semibold uppercase tracking-wide',
-          EYEBROW[tone],
-        )}
-      >
+    <header className={cn('rounded-md border-l-4 px-4 py-3', TONE[tone], className)}>
+      <p className={cn('text-[11px] font-semibold uppercase tracking-wide', EYEBROW[tone])}>
         {eyebrow}
       </p>
       <h2 className="mt-0.5 text-lg font-semibold tracking-tight text-foreground">{title}</h2>

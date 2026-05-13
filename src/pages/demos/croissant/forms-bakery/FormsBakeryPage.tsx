@@ -184,10 +184,7 @@ export function FormsBakeryPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <PageHeader
-        title={t('croissant.forms.title')}
-        description={t('croissant.forms.subtitle')}
-      />
+      <PageHeader title={t('croissant.forms.title')} description={t('croissant.forms.subtitle')} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <section className="space-y-4 lg:col-span-2" aria-labelledby="order-heading">
@@ -282,12 +279,8 @@ export function FormsBakeryPage() {
                           value={field.value}
                           onValueChange={(v) => field.onChange(v as Delivery)}
                         >
-                          <Radio value="pickup">
-                            {t('croissant.forms.field.deliveryPickup')}
-                          </Radio>
-                          <Radio value="dine-in">
-                            {t('croissant.forms.field.deliveryDineIn')}
-                          </Radio>
+                          <Radio value="pickup">{t('croissant.forms.field.deliveryPickup')}</Radio>
+                          <Radio value="dine-in">{t('croissant.forms.field.deliveryDineIn')}</Radio>
                           <Radio value="courier">
                             {t('croissant.forms.field.deliveryCourier')}
                           </Radio>

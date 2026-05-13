@@ -28,14 +28,72 @@ const NOW = Date.now();
 const minutesAgo = (n: number) => new Date(NOW - n * 60_000);
 
 const EVENTS: ReadonlyArray<ActivityEvent> = [
-  { id: 1, kind: 'created', name: 'Ada Lovelace', orderId: 1042, at: minutesAgo(5), variant: 'default' },
-  { id: 2, kind: 'statusChange', name: 'Grace Hopper', orderId: 1041, status: 'pending', at: minutesAgo(18), variant: 'info' },
-  { id: 3, kind: 'delivered', name: 'Linus Torvalds', orderId: 1040, at: minutesAgo(45), variant: 'success' },
-  { id: 4, kind: 'refunded', name: 'Margaret Hamilton', orderId: 1039, at: minutesAgo(75), variant: 'danger' },
-  { id: 5, kind: 'comment', name: 'Alan Turing', orderId: 1038, at: minutesAgo(120), variant: 'muted' },
-  { id: 6, kind: 'created', name: 'Edsger Dijkstra', orderId: 1037, at: minutesAgo(180), variant: 'default' },
-  { id: 7, kind: 'statusChange', name: 'Hedy Lamarr', orderId: 1036, status: 'paid', at: minutesAgo(240), variant: 'success' },
-  { id: 8, kind: 'comment', name: 'Donald Knuth', orderId: 1035, at: minutesAgo(360), variant: 'muted' },
+  {
+    id: 1,
+    kind: 'created',
+    name: 'Ada Lovelace',
+    orderId: 1042,
+    at: minutesAgo(5),
+    variant: 'default',
+  },
+  {
+    id: 2,
+    kind: 'statusChange',
+    name: 'Grace Hopper',
+    orderId: 1041,
+    status: 'pending',
+    at: minutesAgo(18),
+    variant: 'info',
+  },
+  {
+    id: 3,
+    kind: 'delivered',
+    name: 'Linus Torvalds',
+    orderId: 1040,
+    at: minutesAgo(45),
+    variant: 'success',
+  },
+  {
+    id: 4,
+    kind: 'refunded',
+    name: 'Margaret Hamilton',
+    orderId: 1039,
+    at: minutesAgo(75),
+    variant: 'danger',
+  },
+  {
+    id: 5,
+    kind: 'comment',
+    name: 'Alan Turing',
+    orderId: 1038,
+    at: minutesAgo(120),
+    variant: 'muted',
+  },
+  {
+    id: 6,
+    kind: 'created',
+    name: 'Edsger Dijkstra',
+    orderId: 1037,
+    at: minutesAgo(180),
+    variant: 'default',
+  },
+  {
+    id: 7,
+    kind: 'statusChange',
+    name: 'Hedy Lamarr',
+    orderId: 1036,
+    status: 'paid',
+    at: minutesAgo(240),
+    variant: 'success',
+  },
+  {
+    id: 8,
+    kind: 'comment',
+    name: 'Donald Knuth',
+    orderId: 1035,
+    at: minutesAgo(360),
+    variant: 'muted',
+  },
 ];
 
 const COMMENTS = [
@@ -64,17 +122,35 @@ export function TimelineActivityPage() {
   const eventBadge = (kind: EventKind) => {
     switch (kind) {
       case 'created':
-        return <Badge variant="info" size="sm">{t('croissant.timeline.event.tag.paid')}</Badge>;
+        return (
+          <Badge variant="info" size="sm">
+            {t('croissant.timeline.event.tag.paid')}
+          </Badge>
+        );
       case 'delivered':
         return (
-          <Badge variant="success" size="sm">{t('croissant.timeline.event.tag.delivered')}</Badge>
+          <Badge variant="success" size="sm">
+            {t('croissant.timeline.event.tag.delivered')}
+          </Badge>
         );
       case 'refunded':
-        return <Badge variant="danger" size="sm">{t('croissant.timeline.event.tag.refunded')}</Badge>;
+        return (
+          <Badge variant="danger" size="sm">
+            {t('croissant.timeline.event.tag.refunded')}
+          </Badge>
+        );
       case 'comment':
-        return <Badge variant="neutral" size="sm">{t('croissant.timeline.event.tag.comment')}</Badge>;
+        return (
+          <Badge variant="neutral" size="sm">
+            {t('croissant.timeline.event.tag.comment')}
+          </Badge>
+        );
       case 'statusChange':
-        return <Badge variant="warning" size="sm">{t('croissant.timeline.event.tag.status')}</Badge>;
+        return (
+          <Badge variant="warning" size="sm">
+            {t('croissant.timeline.event.tag.status')}
+          </Badge>
+        );
     }
   };
 
@@ -116,7 +192,9 @@ export function TimelineActivityPage() {
             <p className="text-sm font-medium text-foreground">
               {t('croissant.timeline.progress.label')}
             </p>
-            <Badge variant="primary" size="sm">64%</Badge>
+            <Badge variant="primary" size="sm">
+              64%
+            </Badge>
           </div>
           <Progress value={64} label={t('croissant.timeline.progress.label')} />
         </CardContent>

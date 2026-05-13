@@ -6,11 +6,7 @@ import { Button } from '@/components/primitives/Button';
 import { Spinner } from '@/components/primitives/Spinner';
 import { Skeleton } from '@/components/primitives/Skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/data-display/Card';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/feedback/Tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/feedback/Tooltip';
 import { Alert } from '@/components/feedback/Alert';
 import { Progress } from '@/components/feedback/Progress';
 import {

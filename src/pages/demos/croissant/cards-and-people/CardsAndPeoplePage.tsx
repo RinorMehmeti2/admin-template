@@ -1,12 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import {
-  CheckCircle2,
-  Heart,
-  MoreVertical,
-  Pencil,
-  Star,
-  Trash2,
-} from 'lucide-react';
+import { CheckCircle2, Heart, MoreVertical, Pencil, Star, Trash2 } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Badge } from '@/components/primitives/Badge';
 import { Avatar } from '@/components/primitives/Avatar';
@@ -65,10 +58,7 @@ export function CardsAndPeoplePage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <PageHeader
-        title={t('croissant.cards.title')}
-        description={t('croissant.cards.subtitle')}
-      />
+      <PageHeader title={t('croissant.cards.title')} description={t('croissant.cards.subtitle')} />
 
       <section className="space-y-4" aria-labelledby="cards-heading">
         <SectionHeader
@@ -123,14 +113,9 @@ export function CardsAndPeoplePage() {
             </CardFooter>
           </Card>
 
-          <Card
-            variant="outlined"
-            className="border-danger/30 bg-danger/5"
-          >
+          <Card variant="outlined" className="border-danger/30 bg-danger/5">
             <CardHeader>
-              <CardTitle className="text-danger">
-                {t('croissant.cards.card.dangerTint')}
-              </CardTitle>
+              <CardTitle className="text-danger">{t('croissant.cards.card.dangerTint')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-danger/80">{t('croissant.cards.card.body')}</p>
@@ -156,10 +141,18 @@ export function CardsAndPeoplePage() {
               <Badge variant="info">Info</Badge>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="success" dot>Online</Badge>
-              <Badge variant="warning" dot>Pending</Badge>
-              <Badge variant="danger" dot>Failed</Badge>
-              <Badge variant="info" dot>Beta</Badge>
+              <Badge variant="success" dot>
+                Online
+              </Badge>
+              <Badge variant="warning" dot>
+                Pending
+              </Badge>
+              <Badge variant="danger" dot>
+                Failed
+              </Badge>
+              <Badge variant="info" dot>
+                Beta
+              </Badge>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="primary" size="md">
@@ -173,8 +166,12 @@ export function CardsAndPeoplePage() {
               </Badge>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="primary" size="sm">Small</Badge>
-              <Badge variant="primary" size="md">Medium</Badge>
+              <Badge variant="primary" size="sm">
+                Small
+              </Badge>
+              <Badge variant="primary" size="md">
+                Medium
+              </Badge>
             </div>
           </CardContent>
         </Card>
@@ -227,12 +224,7 @@ export function CardsAndPeoplePage() {
           {TEAM.map((m) => (
             <Card key={m.name} variant="outlined">
               <CardContent className="flex items-start gap-3">
-                <Avatar
-                  size="lg"
-                  name={m.name}
-                  status={m.status}
-                  className="overflow-visible"
-                />
+                <Avatar size="lg" name={m.name} status={m.status} className="overflow-visible" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium text-foreground">{m.name}</p>
                   <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
