@@ -2,12 +2,14 @@ import { useEffect, useRef } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
+  Activity,
   BarChart3,
   Boxes,
   ChevronDown,
   Clock,
   Columns2,
   Compass,
+  Croissant,
   Database,
   FolderOpen,
   FolderTree,
@@ -20,6 +22,7 @@ import {
   ListChecks,
   LogIn,
   LogOut,
+  MapPin,
   MessageSquareWarning,
   Move,
   Palette as PaletteIcon,
@@ -30,9 +33,12 @@ import {
   SlidersHorizontal,
   Sparkles,
   SquareDashedMousePointer,
+  Stethoscope,
   Table,
   Type as TypeIcon,
+  UsersRound,
   Wand2,
+  Wheat,
   Zap,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
@@ -85,7 +91,62 @@ type NavEntry =
 // from <AppLayout>. Clicking the link leaves this sidebar entirely. Keeping it
 // here so the surface stays reachable from the primary nav; existing behavior.
 const NAV_TREE: ReadonlyArray<NavEntry> = [
-  { kind: 'link', to: '/showcase', labelKey: 'nav.overview', icon: <Compass className="h-4 w-4" /> },
+  {
+    kind: 'link',
+    to: '/showcase',
+    labelKey: 'nav.overview',
+    icon: <Compass className="h-4 w-4" />,
+  },
+  {
+    kind: 'group',
+    id: 'croissant',
+    labelKey: 'nav.group.croissant',
+    // Brand mascot — always filled brown regardless of palette or theme.
+    icon: (
+      <Croissant
+        aria-hidden="true"
+        className="h-4 w-4"
+        style={{ color: '#a3621f', fill: '#a3621f' }}
+      />
+    ),
+    children: [
+      {
+        to: '/croissant/bakery-dashboard',
+        labelKey: 'nav.croissant.bakeryDashboard',
+        icon: <LayoutDashboard className="h-4 w-4" />,
+      },
+      {
+        to: '/croissant/cards-and-people',
+        labelKey: 'nav.croissant.cardsAndPeople',
+        icon: <UsersRound className="h-4 w-4" />,
+      },
+      {
+        to: '/croissant/forms-bakery',
+        labelKey: 'nav.croissant.formsBakery',
+        icon: <Wheat className="h-4 w-4" />,
+      },
+      {
+        to: '/croissant/feedback-theater',
+        labelKey: 'nav.croissant.feedbackTheater',
+        icon: <Stethoscope className="h-4 w-4" />,
+      },
+      {
+        to: '/croissant/data-lab',
+        labelKey: 'nav.croissant.dataLab',
+        icon: <Database className="h-4 w-4" />,
+      },
+      {
+        to: '/croissant/navigation-trail',
+        labelKey: 'nav.croissant.navigationTrail',
+        icon: <MapPin className="h-4 w-4" />,
+      },
+      {
+        to: '/croissant/timeline-and-activity',
+        labelKey: 'nav.croissant.timelineActivity',
+        icon: <Activity className="h-4 w-4" />,
+      },
+    ],
+  },
   {
     kind: 'group',
     id: 'components',
@@ -293,7 +354,7 @@ function PrimaryNav() {
   useEffect(() => {
     if (pathname === initialPathRef.current) return;
     initialPathRef.current = pathname;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+
     setOpenGroupIds((prev) => (prev.size === 0 ? prev : new Set()));
   }, [pathname, setOpenGroupIds]);
 
@@ -303,12 +364,7 @@ function PrimaryNav() {
         {NAV_TREE.map((entry) => {
           if (entry.kind === 'link') {
             return (
-              <NavLink
-                key={entry.to}
-                to={entry.to}
-                label={t(entry.labelKey)}
-                icon={entry.icon}
-              />
+              <NavLink key={entry.to} to={entry.to} label={t(entry.labelKey)} icon={entry.icon} />
             );
           }
           return (
@@ -320,12 +376,7 @@ function PrimaryNav() {
               {...(entry.defaultOpen === true ? { defaultOpen: true } : {})}
             >
               {entry.children.map((child) => (
-                <NavLink
-                  key={child.to}
-                  to={child.to}
-                  label={t(child.labelKey)}
-                  icon={child.icon}
-                />
+                <NavLink key={child.to} to={child.to} label={t(child.labelKey)} icon={child.icon} />
               ))}
             </NavGroup>
           );

@@ -50,6 +50,13 @@ import { RepeaterDemoPage } from '@/pages/demos/repeater';
 import { PlaygroundPage } from '@/pages/playground';
 import { ThemeEditorPage } from '@/pages/settings/theme';
 import { TypographyEditorPage } from '@/pages/settings/typography';
+import { BakeryDashboardPage } from '@/pages/demos/croissant/bakery-dashboard';
+import { CardsAndPeoplePage } from '@/pages/demos/croissant/cards-and-people';
+import { FormsBakeryPage } from '@/pages/demos/croissant/forms-bakery';
+import { FeedbackTheaterPage } from '@/pages/demos/croissant/feedback-theater';
+import { DataLabPage } from '@/pages/demos/croissant/data-lab';
+import { NavigationTrailPage } from '@/pages/demos/croissant/navigation-trail';
+import { TimelineActivityPage } from '@/pages/demos/croissant/timeline-and-activity';
 
 /*
  * Code splitting strategy.
@@ -205,6 +212,41 @@ const NAV_COMMANDS: ReadonlyArray<NavCommand> = [
     to: '/errors',
     labelKey: 'commandPalette.cmd.errorBoundariesLabel',
     keywords: ['error', 'boundary', 'crash', 'fallback'],
+  },
+  {
+    to: '/croissant/bakery-dashboard',
+    labelKey: 'nav.croissant.bakeryDashboard',
+    keywords: ['croissant', 'bakery', 'dashboard', 'kpi', 'stats', 'overview'],
+  },
+  {
+    to: '/croissant/cards-and-people',
+    labelKey: 'nav.croissant.cardsAndPeople',
+    keywords: ['croissant', 'card', 'badge', 'avatar', 'people', 'team', 'roster', 'chip'],
+  },
+  {
+    to: '/croissant/forms-bakery',
+    labelKey: 'nav.croissant.formsBakery',
+    keywords: ['croissant', 'form', 'order', 'rhf', 'zod', 'input', 'combobox', 'wizard'],
+  },
+  {
+    to: '/croissant/feedback-theater',
+    labelKey: 'nav.croissant.feedbackTheater',
+    keywords: ['croissant', 'feedback', 'dialog', 'drawer', 'toast', 'alert', 'overlay', 'modal'],
+  },
+  {
+    to: '/croissant/data-lab',
+    labelKey: 'nav.croissant.dataLab',
+    keywords: ['croissant', 'data', 'datatable', 'inventory', 'filter', 'pagination', 'sort'],
+  },
+  {
+    to: '/croissant/navigation-trail',
+    labelKey: 'nav.croissant.navigationTrail',
+    keywords: ['croissant', 'navigation', 'breadcrumbs', 'tabs', 'stepper', 'menu', 'pagination', 'accordion'],
+  },
+  {
+    to: '/croissant/timeline-and-activity',
+    labelKey: 'nav.croissant.timelineActivity',
+    keywords: ['croissant', 'timeline', 'activity', 'audit', 'history', 'feed', 'comments'],
   },
 ];
 
@@ -367,6 +409,14 @@ const router = createBrowserRouter([
           { path: 'playground', element: <PlaygroundPage /> },
           { path: 'settings/theme', element: <ThemeEditorPage /> },
           { path: 'settings/typography', element: <TypographyEditorPage /> },
+          { path: 'croissant', element: <Navigate to="/croissant/bakery-dashboard" replace /> },
+          { path: 'croissant/bakery-dashboard', element: <BakeryDashboardPage /> },
+          { path: 'croissant/cards-and-people', element: <CardsAndPeoplePage /> },
+          { path: 'croissant/forms-bakery', element: <FormsBakeryPage /> },
+          { path: 'croissant/feedback-theater', element: <FeedbackTheaterPage /> },
+          { path: 'croissant/data-lab', element: <DataLabPage /> },
+          { path: 'croissant/navigation-trail', element: <NavigationTrailPage /> },
+          { path: 'croissant/timeline-and-activity', element: <TimelineActivityPage /> },
           {
             path: 'workspace',
             lazy: async () => {
