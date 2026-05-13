@@ -1,7 +1,9 @@
-import { useMemo, type CSSProperties, type ReactNode } from 'react';
+import { useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import { z } from 'zod';
 import {
   ChevronDown,
+  CircleUserRound,
+  CreditCard,
   FileText,
   Folder,
   Inbox,
@@ -11,6 +13,7 @@ import {
 } from 'lucide-react';
 
 import { Button } from '@/components/primitives/Button';
+import { AvatarGroup } from '@/components/primitives/AvatarGroup';
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/feedback/Tooltip';
 import {
@@ -43,6 +46,7 @@ import {
   BottomSheetTrigger,
 } from '@/components/feedback/BottomSheet';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
+import { NotificationsBell } from '@/components/feedback/NotificationsCenter';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/navigation/Tabs';
 import {
@@ -67,6 +71,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/navigation/DropdownMenu';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  type AccordionType,
+  type AccordionVariant,
+} from '@/components/navigation/Accordion';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/navigation/ContextMenu';
+import { Menu, MenuGroup, MenuItem } from '@/components/navigation/Menu';
 
 import { Combobox, ComboboxContent, ComboboxTrigger } from '@/components/forms/Combobox';
 import { Select } from '@/components/forms/Select';
@@ -76,6 +96,9 @@ import { RadioGroup } from '@/components/forms/RadioGroup';
 import { FormWizard, FormWizardStep } from '@/components/forms/FormWizard';
 import { Input } from '@/components/forms/Input';
 import { FormField } from '@/components/forms/FormField';
+import { Repeater } from '@/components/forms/Repeater';
+import { LazyRichTextEditor } from '@/components/forms/RichTextEditor/lazy';
+import type { RichTextToolbarOption } from '@/components/forms/RichTextEditor';
 
 import { List, ListItem } from '@/components/data-display/List';
 import { Timeline, TimelineContent, TimelineItem } from '@/components/data-display/Timeline';
@@ -87,7 +110,40 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/data-display/Table';
-import { AvatarGroup } from '@/components/primitives/AvatarGroup';
+import {
+  DataTable,
+  type ColumnDef as DataColumnDef,
+} from '@/components/data-display/DataTable';
+import { FileExplorer } from '@/components/data-display/FileExplorer';
+import type { FileNode } from '@/components/data-display/FileExplorer';
+import { FilterableSearch } from '@/components/data-display/FilterableSearch';
+import type { FilterDef } from '@/components/data-display/FilterableSearch';
+import { ImageGallery } from '@/components/data-display/ImageGallery';
+import type { GalleryAspect, GalleryImage } from '@/components/data-display/ImageGallery';
+import { KanbanBoard } from '@/components/data-display/Kanban';
+import { TreeView } from '@/components/data-display/TreeView';
+import type { TreeNode } from '@/components/data-display/TreeView';
+import { Carousel } from '@/components/data-display/Carousel';
+
+import { AreaChart } from '@/components/data-display/charts/AreaChart';
+import { BarChart } from '@/components/data-display/charts/BarChart';
+import { LineChart } from '@/components/data-display/charts/LineChart';
+import { PieChart } from '@/components/data-display/charts/PieChart';
+import { DonutChart } from '@/components/data-display/charts/DonutChart';
+import { RadialChart } from '@/components/data-display/charts/RadialChart';
+import { StackedBarChart } from '@/components/data-display/charts/StackedBarChart';
+import { ComposedChart } from '@/components/data-display/charts/ComposedChart';
+
+import { PageHeader } from '@/components/layout/PageHeader';
+import { SplitLayout } from '@/components/layout/SplitLayout';
+import { StickyCard } from '@/components/layout/StickyCard';
+
+import {
+  CommandPalette,
+  CommandRegistryProvider,
+  useCommandRegistry,
+  useRegisterCommands,
+} from '@/components/overlays/CommandPalette';
 
 /*
  * Shim wrappers for components whose useful preview is a composition (not a
@@ -460,6 +516,126 @@ export function DropdownMenuShim({ defaultOpen = true, className, style }: Dropd
   );
 }
 
+/* -------------------------------- Accordion ------------------------------ */
+
+interface AccordionShimProps extends Forwarded {
+  type?: AccordionType;
+  variant?: AccordionVariant;
+  collapsible?: boolean;
+  defaultValue?: string;
+}
+
+export function AccordionShim({
+  type = 'single',
+  variant = 'default',
+  collapsible = true,
+  defaultValue = 'item-1',
+  className,
+}: AccordionShimProps) {
+  const common = {
+    variant,
+    ...(className !== undefined ? { className } : {}),
+  };
+  if (type === 'multiple') {
+    return (
+      <Accordion type="multiple" defaultValue={[defaultValue]} {...common}>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>What is this template?</AccordionTrigger>
+          <AccordionContent>An in-house admin UI template.</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>Does it ship a UI kit?</AccordionTrigger>
+          <AccordionContent>No — every component is owned in-repo.</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>How do I theme it?</AccordionTrigger>
+          <AccordionContent>Through tokens + the theme picker.</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+  }
+  return (
+    <Accordion type="single" collapsible={collapsible} defaultValue={defaultValue} {...common}>
+      <AccordionItem value="item-1">
+        <AccordionTrigger>What is this template?</AccordionTrigger>
+        <AccordionContent>An in-house admin UI template.</AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-2">
+        <AccordionTrigger>Does it ship a UI kit?</AccordionTrigger>
+        <AccordionContent>No — every component is owned in-repo.</AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-3">
+        <AccordionTrigger>How do I theme it?</AccordionTrigger>
+        <AccordionContent>Through tokens + the theme picker.</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+}
+
+/* ---------------------------------- Menu --------------------------------- */
+
+interface MenuShimProps extends Forwarded {
+  iconOnly?: boolean;
+  ariaLabel?: string;
+}
+
+export function MenuShim({
+  iconOnly = false,
+  ariaLabel = 'Sidebar',
+  className,
+  style,
+}: MenuShimProps) {
+  return (
+    <div className="w-60" style={style}>
+      <Menu
+        iconOnly={iconOnly}
+        ariaLabel={ariaLabel}
+        {...(className !== undefined ? { className } : {})}
+      >
+        <MenuItem to="/showcase" icon={<Inbox />}>
+          Overview
+        </MenuItem>
+        <MenuItem to="/primitives" icon={<CircleUserRound />}>
+          People
+        </MenuItem>
+        <MenuGroup label="Billing" icon={<CreditCard />}>
+          <MenuItem to="/billing/invoices">Invoices</MenuItem>
+          <MenuItem to="/billing/plans">Plans</MenuItem>
+        </MenuGroup>
+        <MenuItem to="/settings" icon={<Settings />}>
+          Settings
+        </MenuItem>
+      </Menu>
+    </div>
+  );
+}
+
+/* ----------------------------- ContextMenu ------------------------------- */
+
+export function ContextMenuShim({ className, style }: Forwarded) {
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <div className="flex h-32 w-72 items-center justify-center rounded-md border border-dashed border-border bg-surface-muted/40 text-sm text-foreground-muted">
+          Right-click me
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent className={className} style={style}>
+        <ContextMenuItem>
+          <Settings className="h-4 w-4" /> Open
+        </ContextMenuItem>
+        <ContextMenuItem>
+          <LinkIcon className="h-4 w-4" /> Copy link
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem className="text-danger">
+          <Trash2 className="h-4 w-4" /> Delete
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+}
+
 /* ------------------------------- Combobox ------------------------------- */
 
 interface ComboboxShimProps extends Forwarded {
@@ -538,6 +714,32 @@ export function SelectShim({
       <option value="banana">Banana</option>
       <option value="cherry">Cherry</option>
     </Select>
+  );
+}
+
+/* ---------------------------------- Radio -------------------------------- */
+
+interface RadioShimProps extends Forwarded {
+  value?: string;
+  disabled?: boolean;
+  children?: string;
+}
+
+export function RadioShim({
+  value = 'standard',
+  disabled = false,
+  children = 'Standard',
+  className,
+  style,
+}: RadioShimProps) {
+  return (
+    <div style={style}>
+      <RadioGroup name="radio-shim" defaultValue={value}>
+        <Radio value={value} disabled={disabled} className={className}>
+          {children}
+        </Radio>
+      </RadioGroup>
+    </div>
   );
 }
 
@@ -875,6 +1077,931 @@ export function FormWizardShim({
           )}
         />
       </FormWizard>
+    </div>
+  );
+}
+
+/* -------------------------------- Repeater ------------------------------- */
+
+interface RepeaterShimProps extends Forwarded {
+  min?: number;
+  max?: number;
+  addLabel?: string;
+  variant?: 'separated' | 'stacked';
+}
+
+interface RepeaterRow {
+  text: string;
+}
+
+export function RepeaterShim({
+  min = 1,
+  max = 5,
+  addLabel = 'Add row',
+  variant = 'separated',
+  className,
+  style,
+}: RepeaterShimProps) {
+  return (
+    <div className="w-full" style={style}>
+      <Repeater<RepeaterRow>
+        defaultItems={[{ text: 'First row' }, { text: 'Second row' }]}
+        createItem={() => ({ text: '' })}
+        min={min}
+        max={max}
+        addLabel={addLabel}
+        variant={variant}
+        label="Items"
+        {...(className !== undefined ? { className } : {})}
+        renderItem={({ item, update }) => (
+          <Input
+            value={item.text}
+            placeholder="Enter text…"
+            onChange={(e) => update({ text: e.target.value })}
+          />
+        )}
+      />
+    </div>
+  );
+}
+
+/* ----------------------------- DataTable shim ---------------------------- */
+
+interface DataTableShimProps extends Forwarded {
+  pageSize?: number;
+  enableSorting?: boolean;
+  enableGlobalFilter?: boolean;
+  enableRowSelection?: boolean;
+  size?: 'dense' | 'default' | 'comfortable';
+  variant?: 'default' | 'striped' | 'bordered';
+}
+
+interface DataRow {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+}
+
+const DATA_ROWS: DataRow[] = [
+  { id: 1, name: 'Ada Lovelace', email: 'ada@analytical.dev', role: 'Admin', status: 'Active' },
+  { id: 2, name: 'Grace Hopper', email: 'grace@cobol.org', role: 'Editor', status: 'Active' },
+  { id: 3, name: 'Alan Turing', email: 'alan@bletchley.uk', role: 'Viewer', status: 'Invited' },
+  { id: 4, name: 'Linus Torvalds', email: 'linus@kernel.org', role: 'Admin', status: 'Active' },
+];
+
+const DATA_COLUMNS: DataColumnDef<DataRow, unknown>[] = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+export function DataTableShim({
+  pageSize = 4,
+  enableSorting = true,
+  enableGlobalFilter = false,
+  enableRowSelection = false,
+  size = 'default',
+  variant = 'default',
+  className,
+  style,
+}: DataTableShimProps) {
+  return (
+    <div style={style}>
+      <DataTable<DataRow>
+        columns={DATA_COLUMNS}
+        data={DATA_ROWS}
+        pageSize={pageSize}
+        enableSorting={enableSorting}
+        enableGlobalFilter={enableGlobalFilter}
+        enableRowSelection={enableRowSelection}
+        size={size}
+        variant={variant}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+/* ----------------------------- FileExplorer ------------------------------ */
+
+interface FileExplorerShimProps extends Forwarded {
+  viewMode?: 'list' | 'grid';
+  multiSelect?: boolean;
+}
+
+const FILE_TREE: FileNode = {
+  id: 'root',
+  name: 'Home',
+  kind: 'folder',
+  children: [
+    {
+      id: 'docs',
+      name: 'Documents',
+      kind: 'folder',
+      children: [
+        {
+          id: 'invoice.pdf',
+          name: 'Invoice.pdf',
+          kind: 'file',
+          size: 24_500,
+          modifiedAt: new Date('2026-04-12'),
+        },
+        {
+          id: 'plan.md',
+          name: 'plan.md',
+          kind: 'file',
+          size: 8_200,
+          modifiedAt: new Date('2026-05-01'),
+        },
+      ],
+    },
+    {
+      id: 'images',
+      name: 'Images',
+      kind: 'folder',
+      children: [
+        {
+          id: 'logo.svg',
+          name: 'logo.svg',
+          kind: 'file',
+          size: 4_100,
+          modifiedAt: new Date('2026-03-22'),
+        },
+      ],
+    },
+  ],
+};
+
+export function FileExplorerShim({
+  viewMode = 'list',
+  multiSelect = true,
+  className,
+}: FileExplorerShimProps) {
+  return (
+    <div className="h-72 w-full overflow-hidden rounded-md border border-border">
+      <FileExplorer
+        root={FILE_TREE}
+        viewMode={viewMode}
+        multiSelect={multiSelect}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+/* ---------------------------- FilterableSearch --------------------------- */
+
+interface FilterableSearchShimProps extends Forwarded {
+  placeholder?: string;
+  hideAddFilter?: boolean;
+  debounceMs?: number;
+}
+
+const SEARCH_FILTERS: ReadonlyArray<FilterDef> = [
+  {
+    id: 'status',
+    label: 'Status',
+    type: 'select',
+    options: [
+      { value: 'active', label: 'Active' },
+      { value: 'invited', label: 'Invited' },
+      { value: 'suspended', label: 'Suspended' },
+    ],
+  },
+  {
+    id: 'role',
+    label: 'Role',
+    type: 'multi-select',
+    options: [
+      { value: 'admin', label: 'Admin' },
+      { value: 'editor', label: 'Editor' },
+      { value: 'viewer', label: 'Viewer' },
+    ],
+  },
+  { id: 'email', label: 'Email', type: 'text', placeholder: 'contains…' },
+];
+
+export function FilterableSearchShim({
+  placeholder = 'Search users…',
+  hideAddFilter = false,
+  debounceMs = 250,
+  className,
+  style,
+}: FilterableSearchShimProps) {
+  return (
+    <div style={style} className="w-full">
+      <FilterableSearch
+        filters={SEARCH_FILTERS}
+        placeholder={placeholder}
+        hideAddFilter={hideAddFilter}
+        debounceMs={debounceMs}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+/* ------------------------------ ImageGallery ----------------------------- */
+
+interface ImageGalleryShimProps extends Forwarded {
+  columns?: number;
+  gap?: number;
+  aspectRatio?: GalleryAspect;
+  disableLightbox?: boolean;
+}
+
+const GALLERY_IMAGES: ReadonlyArray<GalleryImage> = [
+  { id: 'a', src: 'https://picsum.photos/seed/admin-1/400/300', alt: 'Mountain skyline' },
+  { id: 'b', src: 'https://picsum.photos/seed/admin-2/400/300', alt: 'Coastline cliffs' },
+  { id: 'c', src: 'https://picsum.photos/seed/admin-3/400/300', alt: 'Desert dunes' },
+  { id: 'd', src: 'https://picsum.photos/seed/admin-4/400/300', alt: 'Pine forest' },
+  { id: 'e', src: 'https://picsum.photos/seed/admin-5/400/300', alt: 'River bend' },
+  { id: 'f', src: 'https://picsum.photos/seed/admin-6/400/300', alt: 'City night' },
+];
+
+export function ImageGalleryShim({
+  columns,
+  gap = 8,
+  aspectRatio = 'video',
+  disableLightbox = false,
+  className,
+  style,
+}: ImageGalleryShimProps) {
+  return (
+    <div style={style} className="w-full">
+      <ImageGallery
+        images={GALLERY_IMAGES}
+        {...(columns !== undefined ? { columns } : {})}
+        gap={gap}
+        aspectRatio={aspectRatio}
+        disableLightbox={disableLightbox}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+/* --------------------------------- Kanban -------------------------------- */
+
+interface KanbanShimProps extends Forwarded {
+  allowReorderWithinColumn?: boolean;
+}
+
+interface KanbanCard {
+  id: string;
+  column: string;
+  title: string;
+}
+
+const KANBAN_COLUMNS = [
+  { id: 'todo', title: 'To do' },
+  { id: 'doing', title: 'In progress' },
+  { id: 'done', title: 'Done' },
+];
+
+const KANBAN_CARDS_INITIAL: KanbanCard[] = [
+  { id: 'k1', column: 'todo', title: 'Spec the design tokens' },
+  { id: 'k2', column: 'todo', title: 'Pick the audit firm' },
+  { id: 'k3', column: 'doing', title: 'Migrate auth middleware' },
+  { id: 'k4', column: 'doing', title: 'Rewrite notifications panel' },
+  { id: 'k5', column: 'done', title: 'Ship the showcase page' },
+];
+
+export function KanbanShim({
+  allowReorderWithinColumn = true,
+  className,
+  style,
+}: KanbanShimProps) {
+  const [items, setItems] = useState<KanbanCard[]>(KANBAN_CARDS_INITIAL);
+  return (
+    <div style={style} className="w-full">
+      <KanbanBoard<KanbanCard>
+        columns={KANBAN_COLUMNS}
+        items={items}
+        getItemId={(c: KanbanCard) => c.id}
+        getItemColumn={(c: KanbanCard) => c.column}
+        onItemMove={(itemId: string, _from: string, toColId: string, toIndex: number) => {
+          setItems((prev) => {
+            const card = prev.find((c) => c.id === itemId);
+            if (card === undefined) return prev;
+            const others = prev.filter((c) => c.id !== itemId);
+            const moved: KanbanCard = { ...card, column: toColId };
+            const inTarget = others.filter((c) => c.column === toColId);
+            const inserted = [...inTarget.slice(0, toIndex), moved, ...inTarget.slice(toIndex)];
+            const elsewhere = others.filter((c) => c.column !== toColId);
+            return [...elsewhere, ...inserted];
+          });
+        }}
+        renderCard={(card: KanbanCard) => (
+          <div className="rounded-md border border-border bg-surface p-3 text-sm">{card.title}</div>
+        )}
+        allowReorderWithinColumn={allowReorderWithinColumn}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+/* -------------------------------- TreeView ------------------------------- */
+
+interface TreeViewShimProps extends Forwarded {
+  selectionMode?: 'none' | 'single' | 'multiple';
+}
+
+const TREE_NODES: TreeNode<unknown>[] = [
+  {
+    id: 'src',
+    label: 'src',
+    children: [
+      {
+        id: 'components',
+        label: 'components',
+        children: [
+          { id: 'Button.tsx', label: 'Button.tsx', isLeaf: true },
+          { id: 'Card.tsx', label: 'Card.tsx', isLeaf: true },
+        ],
+      },
+      { id: 'App.tsx', label: 'App.tsx', isLeaf: true },
+    ],
+  },
+  {
+    id: 'public',
+    label: 'public',
+    children: [{ id: 'favicon.svg', label: 'favicon.svg', isLeaf: true }],
+  },
+];
+
+export function TreeViewShim({
+  selectionMode = 'single',
+  className,
+  style,
+}: TreeViewShimProps) {
+  return (
+    <div style={style} className="w-full">
+      <TreeView
+        items={TREE_NODES}
+        selectionMode={selectionMode}
+        defaultExpandedIds={['src', 'components']}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+/* --------------------------------- Carousel ------------------------------ */
+
+interface CarouselShimProps extends Forwarded {
+  loop?: boolean;
+  autoplayMs?: number;
+  showArrows?: boolean;
+  showDots?: boolean;
+  arrowPosition?: 'overlay' | 'outside';
+}
+
+const CAROUSEL_SLIDES = [
+  { id: 's1', label: 'Slide 1', tone: 'primary' as const },
+  { id: 's2', label: 'Slide 2', tone: 'success' as const },
+  { id: 's3', label: 'Slide 3', tone: 'warning' as const },
+];
+
+const SLIDE_TONE_CLASS: Record<'primary' | 'success' | 'warning', string> = {
+  primary: 'bg-primary/10 text-foreground',
+  success: 'bg-success/10 text-foreground',
+  warning: 'bg-warning/10 text-foreground',
+};
+
+export function CarouselShim({
+  loop = true,
+  autoplayMs = 0,
+  showArrows = true,
+  showDots = true,
+  arrowPosition = 'overlay',
+  className,
+  style,
+}: CarouselShimProps) {
+  const slides = useMemo(
+    () =>
+      CAROUSEL_SLIDES.map((slide) => ({
+        id: slide.id,
+        content: (
+          <div
+            className={`flex h-40 items-center justify-center rounded-md text-sm font-medium ${SLIDE_TONE_CLASS[slide.tone]}`}
+          >
+            {slide.label}
+          </div>
+        ),
+      })),
+    [],
+  );
+  return (
+    <div style={style} className="w-full max-w-md">
+      <Carousel
+        aria-label="Carousel preview"
+        slides={slides}
+        loop={loop}
+        autoplayMs={autoplayMs}
+        showArrows={showArrows}
+        showDots={showDots}
+        arrowPosition={arrowPosition}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+/* ---------------------------------- PageHeader --------------------------- */
+
+interface PageHeaderShimProps extends Forwarded {
+  title?: string;
+  description?: string;
+  showActions?: boolean;
+  showBreadcrumbs?: boolean;
+}
+
+export function PageHeaderShim({
+  title = 'Settings',
+  description = 'Manage your account and workspace preferences.',
+  showActions = true,
+  showBreadcrumbs = false,
+  className,
+  style,
+}: PageHeaderShimProps) {
+  return (
+    <PageHeader
+      title={title}
+      description={description}
+      breadcrumbs={
+        showBreadcrumbs ? (
+          <Breadcrumbs>
+            <BreadcrumbItem>
+              <BreadcrumbLink to="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbCurrent>Settings</BreadcrumbCurrent>
+            </BreadcrumbItem>
+          </Breadcrumbs>
+        ) : undefined
+      }
+      actions={
+        showActions ? (
+          <>
+            <Button variant="outline">Cancel</Button>
+            <Button>Save</Button>
+          </>
+        ) : undefined
+      }
+      className={className}
+      style={style}
+    />
+  );
+}
+
+/* ------------------------------ SplitLayout ------------------------------ */
+
+interface SplitLayoutShimProps extends Forwarded {
+  defaultLeftWidth?: number;
+  minLeftWidth?: number;
+  maxLeftWidth?: number;
+  resizable?: boolean;
+  collapsible?: boolean;
+}
+
+export function SplitLayoutShim({
+  defaultLeftWidth = 200,
+  minLeftWidth = 140,
+  maxLeftWidth = 320,
+  resizable = true,
+  collapsible = true,
+  className,
+  style,
+}: SplitLayoutShimProps) {
+  return (
+    <div className="h-72 w-full overflow-hidden rounded-md border border-border" style={style}>
+      <SplitLayout
+        defaultLeftWidth={defaultLeftWidth}
+        minLeftWidth={minLeftWidth}
+        maxLeftWidth={maxLeftWidth}
+        resizable={resizable}
+        collapsible={collapsible}
+        {...(className !== undefined ? { className } : {})}
+        left={
+          <div className="p-3">
+            <p className="text-xs font-semibold uppercase text-foreground-subtle">List</p>
+            <ul className="mt-2 space-y-1 text-sm text-foreground-muted">
+              <li>Item one</li>
+              <li>Item two</li>
+              <li>Item three</li>
+            </ul>
+          </div>
+        }
+        right={
+          <div className="p-4 text-sm text-foreground-muted">
+            <p className="font-medium text-foreground">Detail pane</p>
+            <p>Resizable + collapsible split layout. Drag the divider.</p>
+          </div>
+        }
+      />
+    </div>
+  );
+}
+
+/* ------------------------------- StickyCard ------------------------------ */
+
+interface StickyCardShimProps extends Forwarded {
+  offset?: number;
+  variant?: 'default' | 'outlined' | 'elevated';
+  shadowWhenStuck?: boolean;
+  compactWhenStuck?: boolean;
+}
+
+export function StickyCardShim({
+  offset = 0,
+  variant = 'outlined',
+  shadowWhenStuck = true,
+  compactWhenStuck = false,
+  className,
+  style,
+}: StickyCardShimProps) {
+  return (
+    <div className="h-64 w-full overflow-auto rounded-md border border-border">
+      <div className="flex flex-col gap-3 p-3">
+        <StickyCard
+          offset={offset}
+          variant={variant}
+          shadowWhenStuck={shadowWhenStuck}
+          compactWhenStuck={compactWhenStuck}
+          className={className}
+          style={style}
+        >
+          <p className="text-sm font-medium text-foreground">Sticky header</p>
+          <p className="text-xs text-foreground-muted">Scroll the container to see me stick.</p>
+        </StickyCard>
+        <div className="h-24 rounded-md border border-dashed border-border bg-surface-muted/30 p-3 text-xs text-foreground-subtle">
+          Filler block #1
+        </div>
+        <div className="h-24 rounded-md border border-dashed border-border bg-surface-muted/30 p-3 text-xs text-foreground-subtle">
+          Filler block #2
+        </div>
+        <div className="h-24 rounded-md border border-dashed border-border bg-surface-muted/30 p-3 text-xs text-foreground-subtle">
+          Filler block #3
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------- NotificationsBell -------------------------- */
+
+interface NotificationsBellShimProps extends Forwarded {
+  size?: 'sm' | 'md';
+  persistOpen?: boolean;
+}
+
+export function NotificationsBellShim({
+  size = 'md',
+  persistOpen = false,
+  className,
+}: NotificationsBellShimProps) {
+  // Direct render — NotificationsProvider is mounted at the app root, so the
+  // bell pulls from the real notification store. `persistOpen` defaults false
+  // so toggling in the playground doesn't bleed across components.
+  return (
+    <NotificationsBell
+      size={size}
+      persistOpen={persistOpen}
+      {...(className !== undefined ? { className } : {})}
+    />
+  );
+}
+
+/* ----------------------------- CommandPalette ---------------------------- */
+
+interface CommandPaletteShimProps {
+  placeholder?: string;
+}
+
+export function CommandPaletteShim({ placeholder }: CommandPaletteShimProps) {
+  // Nest a private CommandRegistryProvider so the shim's palette + commands
+  // are scoped to the playground preview rather than fighting the global
+  // one that lives in RootShell.
+  return (
+    <CommandRegistryProvider>
+      <CommandPaletteShimInner {...(placeholder !== undefined ? { placeholder } : {})} />
+    </CommandRegistryProvider>
+  );
+}
+
+function CommandPaletteShimInner({ placeholder }: CommandPaletteShimProps) {
+  const { openPalette } = useCommandRegistry();
+  useRegisterCommands(
+    [
+      {
+        id: 'preview-nav',
+        label: 'Go to dashboard',
+        group: 'Navigation',
+        keywords: ['home', 'overview'],
+        perform: () => undefined,
+      },
+      {
+        id: 'preview-new',
+        label: 'Create document',
+        group: 'Actions',
+        keywords: ['new', 'add'],
+        perform: () => undefined,
+      },
+      {
+        id: 'preview-theme',
+        label: 'Toggle theme',
+        group: 'Settings',
+        keywords: ['dark', 'light', 'theme'],
+        perform: () => undefined,
+      },
+    ],
+    [],
+  );
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <Button onClick={openPalette}>Open command palette</Button>
+      <p className="text-xs text-foreground-subtle">
+        Palette mounts inside its own provider — Esc closes.
+      </p>
+      <CommandPalette {...(placeholder !== undefined ? { placeholder } : {})} />
+    </div>
+  );
+}
+
+/* ----------------------------- RichTextEditor ---------------------------- */
+
+interface RichTextEditorShimProps extends Forwarded {
+  placeholder?: string;
+  readOnly?: boolean;
+  minHeight?: number;
+  toolbar?: 'full' | 'minimal' | 'hidden';
+  bubbleMenu?: boolean;
+  error?: boolean;
+}
+
+export function RichTextEditorShim({
+  placeholder = 'Write something…',
+  readOnly = false,
+  minHeight = 160,
+  toolbar = 'full',
+  bubbleMenu = true,
+  error = false,
+  className,
+  style,
+}: RichTextEditorShimProps) {
+  const resolvedToolbar: RichTextToolbarOption =
+    toolbar === 'hidden' ? false : (toolbar as 'full' | 'minimal');
+  return (
+    <div className="w-full" style={style}>
+      <LazyRichTextEditor
+        placeholder={placeholder}
+        readOnly={readOnly}
+        minHeight={minHeight}
+        toolbar={resolvedToolbar}
+        bubbleMenu={bubbleMenu}
+        error={error}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+/* ------------------------------- Chart fixtures -------------------------- */
+
+const SERIES_DATA = [
+  { day: 'Mon', signups: 240, churn: 80 },
+  { day: 'Tue', signups: 300, churn: 90 },
+  { day: 'Wed', signups: 520, churn: 110 },
+  { day: 'Thu', signups: 480, churn: 120 },
+  { day: 'Fri', signups: 610, churn: 140 },
+  { day: 'Sat', signups: 380, churn: 70 },
+];
+
+const SLICE_DATA = [
+  { region: 'NA', value: 480 },
+  { region: 'EU', value: 320 },
+  { region: 'APAC', value: 210 },
+  { region: 'LATAM', value: 95 },
+];
+
+interface AxisChartShimProps extends Forwarded {
+  height?: number;
+  showGrid?: boolean;
+  showLegend?: boolean;
+  showTooltip?: boolean;
+}
+
+export function AreaChartShim({
+  height = 220,
+  showGrid = true,
+  showLegend = true,
+  showTooltip = true,
+  className,
+}: AxisChartShimProps) {
+  return (
+    <div className="w-full max-w-xl">
+      <AreaChart
+        xKey="day"
+        data={SERIES_DATA}
+        height={height}
+        showGrid={showGrid}
+        showLegend={showLegend}
+        showTooltip={showTooltip}
+        series={[
+          { key: 'signups', label: 'Sign-ups', color: 'primary' },
+          { key: 'churn', label: 'Churn', color: 'danger' },
+        ]}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+export function LineChartShim({
+  height = 220,
+  showGrid = true,
+  showLegend = true,
+  showTooltip = true,
+  className,
+}: AxisChartShimProps) {
+  return (
+    <div className="w-full max-w-xl">
+      <LineChart
+        xKey="day"
+        data={SERIES_DATA}
+        height={height}
+        showGrid={showGrid}
+        showLegend={showLegend}
+        showTooltip={showTooltip}
+        series={[
+          { key: 'signups', label: 'Sign-ups', color: 'primary' },
+          { key: 'churn', label: 'Churn', color: 'danger' },
+        ]}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+export function BarChartShim({
+  height = 220,
+  showGrid = true,
+  showLegend = true,
+  showTooltip = true,
+  className,
+}: AxisChartShimProps) {
+  return (
+    <div className="w-full max-w-xl">
+      <BarChart
+        xKey="day"
+        data={SERIES_DATA}
+        height={height}
+        showGrid={showGrid}
+        showLegend={showLegend}
+        showTooltip={showTooltip}
+        series={[{ key: 'signups', label: 'Sign-ups', color: 'primary' }]}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+export function StackedBarChartShim({
+  height = 220,
+  showGrid = true,
+  showLegend = true,
+  showTooltip = true,
+  className,
+}: AxisChartShimProps) {
+  return (
+    <div className="w-full max-w-xl">
+      <StackedBarChart
+        xKey="day"
+        data={SERIES_DATA}
+        height={height}
+        showGrid={showGrid}
+        showLegend={showLegend}
+        showTooltip={showTooltip}
+        series={[
+          { key: 'signups', label: 'Sign-ups', color: 'primary' },
+          { key: 'churn', label: 'Churn', color: 'danger' },
+        ]}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+export function ComposedChartShim({
+  height = 220,
+  showGrid = true,
+  showLegend = true,
+  showTooltip = true,
+  className,
+}: AxisChartShimProps) {
+  return (
+    <div className="w-full max-w-xl">
+      <ComposedChart
+        xKey="day"
+        data={SERIES_DATA}
+        height={height}
+        showGrid={showGrid}
+        showLegend={showLegend}
+        showTooltip={showTooltip}
+        series={[
+          { key: 'signups', label: 'Sign-ups', color: 'primary', type: 'bar' },
+          { key: 'churn', label: 'Churn', color: 'danger', type: 'line' },
+        ]}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+interface SliceChartShimProps extends Forwarded {
+  height?: number;
+  showLegend?: boolean;
+  showTooltip?: boolean;
+  innerRadius?: number;
+  outerRadius?: number;
+}
+
+export function PieChartShim({
+  height = 240,
+  showLegend = true,
+  showTooltip = true,
+  innerRadius,
+  outerRadius,
+  className,
+}: SliceChartShimProps) {
+  return (
+    <div className="w-full max-w-md">
+      <PieChart
+        xKey="region"
+        data={SLICE_DATA}
+        height={height}
+        showLegend={showLegend}
+        showTooltip={showTooltip}
+        {...(innerRadius !== undefined ? { innerRadius } : {})}
+        {...(outerRadius !== undefined ? { outerRadius } : {})}
+        series={[{ key: 'value', label: 'Users' }]}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+export function DonutChartShim({
+  height = 240,
+  showLegend = true,
+  showTooltip = true,
+  innerRadius = 60,
+  outerRadius = 100,
+  className,
+}: SliceChartShimProps) {
+  return (
+    <div className="w-full max-w-md">
+      <DonutChart
+        xKey="region"
+        data={SLICE_DATA}
+        height={height}
+        showLegend={showLegend}
+        showTooltip={showTooltip}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius}
+        series={[{ key: 'value', label: 'Users' }]}
+        {...(className !== undefined ? { className } : {})}
+      />
+    </div>
+  );
+}
+
+export function RadialChartShim({
+  height = 260,
+  showLegend = true,
+  showTooltip = true,
+  innerRadius = 30,
+  outerRadius = 110,
+  className,
+}: SliceChartShimProps) {
+  return (
+    <div className="w-full max-w-md">
+      <RadialChart
+        xKey="region"
+        data={SLICE_DATA}
+        height={height}
+        showLegend={showLegend}
+        showTooltip={showTooltip}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius}
+        series={[{ key: 'value', label: 'Users' }]}
+        {...(className !== undefined ? { className } : {})}
+      />
     </div>
   );
 }

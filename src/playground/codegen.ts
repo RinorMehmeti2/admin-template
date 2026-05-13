@@ -6,6 +6,7 @@ import {
   type StyleOverlayValues,
 } from './types';
 import { overlayToClassAttr, overlayToStyleAttr } from './styleOverlayResolve';
+import { filterByProfile } from './profile';
 
 /*
  * Code generation for the playground "Copy code" button.
@@ -18,9 +19,11 @@ import { overlayToClassAttr, overlayToStyleAttr } from './styleOverlayResolve';
  * Output is plain JSX text — not formatted via prettier. Long prop lists
  * wrap onto separate lines.
  *
- * Style-overlay: `__style` values become a `style={{...}}` attribute and a
- * `className="..."` attribute appended after schema-driven props. Box-shadow
- * goes through Tailwind utility classes for theme-token alignment.
+ * Style-overlay: `__style` values are filtered through the entry's
+ * `styleProfile` so disabled sections never leak into the generated code.
+ * What remains becomes a `style={{...}}` attribute and a `className="..."`
+ * attribute appended after schema-driven props. Box-shadow goes through
+ * Tailwind utility classes for theme-token alignment.
  */
 
 function isDefault(schema: PropSchema, value: unknown): boolean {
@@ -80,9 +83,10 @@ export function generateCode(entry: PlaygroundEntry, values: PropValues): string
     if (attr !== null) attrs.push(attr);
   }
 
-  // Style overlay attrs (style + className). Appended after schema attrs so
-  // they read like the user-applied "polish" pass on top of the variant.
-  const overlayValues = values[STYLE_OVERLAY_KEY] as StyleOverlayValues | undefined;
+  // Style overlay attrs (style + className) — filtered by profile so
+  // disabled sections never appear in generated JSX.
+  const rawOverlay = values[STYLE_OVERLAY_KEY] as StyleOverlayValues | undefined;
+  const overlayValues = filterByProfile(rawOverlay, entry.styleProfile);
   const styleAttr = overlayToStyleAttr(overlayValues);
   const classAttr = overlayToClassAttr(overlayValues);
   if (classAttr !== null) attrs.push(classAttr);

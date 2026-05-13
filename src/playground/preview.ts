@@ -6,6 +6,7 @@ import {
   type StyleOverlayValues,
 } from './types';
 import { resolveOverlay } from './styleOverlayResolve';
+import { filterByProfile } from './profile';
 
 /*
  * Translates raw playground values into props ready to spread onto the
@@ -25,6 +26,8 @@ import { resolveOverlay } from './styleOverlayResolve';
  *
  * The reserved `__style` key holds StyleOverlayValues that are merged into
  * the final `style` + `className` (Tailwind shadow classes + free className).
+ * Values are filtered through the entry's `styleProfile` first so hidden
+ * sections never leak into the preview.
  */
 
 export function resolvePreviewProps(
@@ -71,9 +74,10 @@ export function resolvePreviewProps(
     childrenNode = entry.children;
   }
 
-  // Merge style overlay (always — even when entry.advancedStyle is false the
-  // panel is hidden upstream, so __style stays empty).
-  const overlayValues = values[STYLE_OVERLAY_KEY] as StyleOverlayValues | undefined;
+  // Style overlay — filter through the entry's profile so hidden sections
+  // don't bleed into the preview.
+  const rawOverlay = values[STYLE_OVERLAY_KEY] as StyleOverlayValues | undefined;
+  const overlayValues = filterByProfile(rawOverlay, entry.styleProfile);
   const overlay = resolveOverlay(overlayValues);
   const hasInlineStyle = Object.keys(overlay.style).length > 0;
   const hasInlineClass = overlay.className !== '';

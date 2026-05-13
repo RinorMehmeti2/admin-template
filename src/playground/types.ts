@@ -74,7 +74,8 @@ export type PropValues = Record<string, unknown>;
 /**
  * Per-component visual override applied via inline `style` + `className` on
  * the rendered element. Owned by the playground (not the component schema)
- * — every entry gets the same overlay panel unless `advancedStyle: false`.
+ * — every entry gets the same overlay panel unless its `styleProfile`
+ * gates it out.
  *
  * `__style` is a reserved key in PropValues that holds StyleOverlayValues.
  */
@@ -107,6 +108,35 @@ export interface StyleOverlayValues {
 
 export const STYLE_OVERLAY_KEY = '__style';
 
+/**
+ * Per-section bucket of the style overlay panel. Profiles opt entries in/out
+ * of specific buckets. New buckets must be added here AND in
+ * `STYLE_SECTION_KEYS` (profile.ts) so filterByProfile knows which keys belong.
+ */
+export type StyleOverlaySection =
+  | 'spacing'
+  | 'border'
+  | 'colors'
+  | 'size'
+  | 'typography'
+  | 'effects'
+  | 'className';
+
+/**
+ * Discriminated union that tells the overlay which sections to render.
+ *
+ *  - `all`  — every section. Default when an entry omits `styleProfile`.
+ *  - `none` — panel hidden entirely. Use for composite controls (Slider,
+ *             Rating, ColorPicker) where overrides break the widget.
+ *  - `pick` — render only the listed sections.
+ *  - `omit` — render every section except the listed ones.
+ */
+export type StyleOverlayProfile =
+  | { kind: 'none' }
+  | { kind: 'all' }
+  | { kind: 'pick'; sections: ReadonlyArray<StyleOverlaySection> }
+  | { kind: 'omit'; sections: ReadonlyArray<StyleOverlaySection> };
+
 export interface PlaygroundEntry {
   /** Display name shown in the list. */
   name: string;
@@ -131,11 +161,10 @@ export interface PlaygroundEntry {
   /** Free-text keywords surfaced by the searchable list. */
   keywords?: ReadonlyArray<string>;
   /**
-   * Show the advanced style-overlay panel for this entry. Default: true.
-   * Set false for components that don't spread style/className to their root
-   * (composite slot containers, headless wrappers).
+   * Which overlay sections to expose. Default `{ kind: 'all' }`. Use
+   * `{ kind: 'none' }` to hide the panel entirely. See StyleOverlayProfile.
    */
-  advancedStyle?: boolean;
+  styleProfile?: StyleOverlayProfile;
 }
 
 export type PlaygroundRegistry = ReadonlyArray<PlaygroundEntry>;

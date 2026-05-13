@@ -36,6 +36,9 @@ export function PropControls({ entry, values, onChange, onReset }: PropControlsP
     onChange({ ...values, [key]: next });
   };
 
+  const profile = entry.styleProfile ?? { kind: 'all' };
+  const showPanel = profile.kind !== 'none';
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -60,10 +63,11 @@ export function PropControls({ entry, values, onChange, onReset }: PropControlsP
           />
         ))}
       </div>
-      {entry.advancedStyle !== false ? (
+      {showPanel ? (
         <StyleOverlay
           values={(values[STYLE_OVERLAY_KEY] as StyleOverlayValues | undefined) ?? {}}
           onChange={(next) => setKey(STYLE_OVERLAY_KEY, next)}
+          profile={profile}
         />
       ) : null}
     </div>
