@@ -110,10 +110,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/data-display/Table';
-import {
-  DataTable,
-  type ColumnDef as DataColumnDef,
-} from '@/components/data-display/DataTable';
+import { DataTable, type ColumnDef as DataColumnDef } from '@/components/data-display/DataTable';
 import { FileExplorer } from '@/components/data-display/FileExplorer';
 import type { FileNode } from '@/components/data-display/FileExplorer';
 import { FilterableSearch } from '@/components/data-display/FilterableSearch';
@@ -1370,11 +1367,7 @@ const KANBAN_CARDS_INITIAL: KanbanCard[] = [
   { id: 'k5', column: 'done', title: 'Ship the showcase page' },
 ];
 
-export function KanbanShim({
-  allowReorderWithinColumn = true,
-  className,
-  style,
-}: KanbanShimProps) {
+export function KanbanShim({ allowReorderWithinColumn = true, className, style }: KanbanShimProps) {
   const [items, setItems] = useState<KanbanCard[]>(KANBAN_CARDS_INITIAL);
   return (
     <div style={style} className="w-full">
@@ -1434,11 +1427,7 @@ const TREE_NODES: TreeNode<unknown>[] = [
   },
 ];
 
-export function TreeViewShim({
-  selectionMode = 'single',
-  className,
-  style,
-}: TreeViewShimProps) {
+export function TreeViewShim({ selectionMode = 'single', className, style }: TreeViewShimProps) {
   return (
     <div style={style} className="w-full">
       <TreeView

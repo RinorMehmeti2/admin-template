@@ -53,7 +53,10 @@
       "mcp__playwright__browser_type",
       "Bash(Select-String \"playwright-mcp\")",
       "Bash(git check-ignore *)",
-      "Bash(pnpm format *)"
+      "Bash(pnpm format *)",
+      "Bash(dir /b \".playwright-mcp\")",
+      "Bash(dir *)",
+      "Bash(taskkill /F /IM node.exe /T)"
     ]
   }
 }

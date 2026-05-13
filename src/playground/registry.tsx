@@ -1348,8 +1348,7 @@ export const SKIPPED_BY_DESIGN: Record<string, string> = {
   // Feedback -------------------------------------------------------------
   Toast:
     'Transient — surfaced via useToast() context. Preview is the trigger that calls toast.success(...), not a component-in-isolation.',
-  Toaster:
-    'Singleton portal mount for toasts. Always-on at the app root; no useful prop matrix.',
+  Toaster: 'Singleton portal mount for toasts. Always-on at the app root; no useful prop matrix.',
   ErrorBoundary:
     'Renders children when no error and a fallback otherwise. Useful preview requires a thrown error inside an inner subtree.',
   LoadingBoundary:

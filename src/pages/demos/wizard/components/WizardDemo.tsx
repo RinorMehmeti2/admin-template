@@ -2,14 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { Briefcase, Building2, User } from 'lucide-react';
-import {
-  FormField,
-  Input,
-  RadioGroup,
-  Radio,
-  Switch,
-  Textarea,
-} from '@/components/forms';
+import { FormField, Input, RadioGroup, Radio, Switch, Textarea } from '@/components/forms';
 import {
   FormWizard,
   FormWizardStep,
@@ -40,9 +33,7 @@ export function WizardDemo({ orientation, variant }: WizardDemoProps) {
         password: z.string().min(8, t('wizardDemo.validation.passwordMin')),
         fullName: z.string().min(1, t('wizardDemo.validation.nameRequired')),
         bio: z.string().min(1, t('wizardDemo.validation.bioRequired')),
-        workspace: z
-          .string()
-          .min(1, t('wizardDemo.validation.workspaceRequired')),
+        workspace: z.string().min(1, t('wizardDemo.validation.workspaceRequired')),
         plan: z.string().min(1, t('wizardDemo.validation.planRequired')),
         agreeMarketing: z.boolean(),
       }),
@@ -70,9 +61,7 @@ export function WizardDemo({ orientation, variant }: WizardDemoProps) {
   const stepWorkspace = useMemo(
     () =>
       z.object({
-        workspace: z
-          .string()
-          .min(1, t('wizardDemo.validation.workspaceRequired')),
+        workspace: z.string().min(1, t('wizardDemo.validation.workspaceRequired')),
         plan: z.string().min(1, t('wizardDemo.validation.planRequired')),
       }),
     [t],
@@ -90,8 +79,7 @@ export function WizardDemo({ orientation, variant }: WizardDemoProps) {
       restoreDialogDescription: t('forms.wizard.restoreDescription'),
       restoreConfirmLabel: t('forms.wizard.restoreConfirm'),
       restoreCancelLabel: t('forms.wizard.restoreCancel'),
-      blockedToast: (step: string) =>
-        t('forms.wizard.blockedToast', { step }),
+      blockedToast: (step: string) => t('forms.wizard.blockedToast', { step }),
       compactSummaryText: (current: number, total: number) =>
         t('forms.wizard.compactSummary', { current, total }),
     }),
@@ -135,11 +123,7 @@ export function WizardDemo({ orientation, variant }: WizardDemoProps) {
                   label={t('wizardDemo.field.email')}
                   error={form.formState.errors.email?.message}
                 >
-                  <Input
-                    type="email"
-                    autoComplete="email"
-                    {...form.register('email')}
-                  />
+                  <Input type="email" autoComplete="email" {...form.register('email')} />
                 </FormField>
                 <FormField
                   label={t('wizardDemo.field.password')}
@@ -198,9 +182,7 @@ export function WizardDemo({ orientation, variant }: WizardDemoProps) {
                   <RadioGroup
                     name="plan"
                     value={form.watch('plan') ?? ''}
-                    onValueChange={(v) =>
-                      form.setValue('plan', v, { shouldDirty: true })
-                    }
+                    onValueChange={(v) => form.setValue('plan', v, { shouldDirty: true })}
                     orientation="horizontal"
                   >
                     <Radio value="free">Free</Radio>

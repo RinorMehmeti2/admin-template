@@ -176,13 +176,7 @@ function TimelineGroup({ date, children }: TimelineGroupProps) {
 /*  TimelineItem                                                              */
 /* -------------------------------------------------------------------------- */
 
-export type TimelineVariant =
-  | 'default'
-  | 'success'
-  | 'warning'
-  | 'danger'
-  | 'info'
-  | 'muted';
+export type TimelineVariant = 'default' | 'success' | 'warning' | 'danger' | 'info' | 'muted';
 
 const dotStyles = cva('inline-block rounded-full ring-2 ring-surface', {
   variants: {
@@ -209,8 +203,7 @@ const iconBoxStyles = cva(
           'bg-[color-mix(in_srgb,var(--color-success)_15%,var(--color-surface))] text-success',
         warning:
           'bg-[color-mix(in_srgb,var(--color-warning)_15%,var(--color-surface))] text-warning',
-        danger:
-          'bg-[color-mix(in_srgb,var(--color-danger)_15%,var(--color-surface))] text-danger',
+        danger: 'bg-[color-mix(in_srgb,var(--color-danger)_15%,var(--color-surface))] text-danger',
         info: 'bg-[color-mix(in_srgb,var(--color-info)_15%,var(--color-surface))] text-info',
         muted: 'bg-surface-muted text-foreground-muted',
       },
@@ -226,8 +219,7 @@ const iconBoxStyles = cva(
  * `first:` trims the line to start at the first marker's center; `last:`
  * trims it to end at the last marker's center. */
 const itemStyles = cva(
-  'relative ' +
-    "before:pointer-events-none before:absolute before:bg-border before:content-['']",
+  'relative ' + "before:pointer-events-none before:absolute before:bg-border before:content-['']",
   {
     variants: {
       orientation: {
@@ -249,7 +241,8 @@ const itemStyles = cva(
 );
 
 export interface TimelineItemProps
-  extends Omit<LiHTMLAttributes<HTMLLIElement>, 'title' | 'children'>,
+  extends
+    Omit<LiHTMLAttributes<HTMLLIElement>, 'title' | 'children'>,
     VariantProps<typeof dotStyles> {
   ref?: Ref<HTMLLIElement>;
   timestamp: Date | string | number;
@@ -290,9 +283,7 @@ export function TimelineItem({
       <span className="text-sm font-medium text-foreground">{title}</span>
     ) : actor !== undefined || action !== undefined ? (
       <span className="text-sm text-foreground">
-        {actor !== undefined ? (
-          <span className="font-medium text-foreground">{actor}</span>
-        ) : null}
+        {actor !== undefined ? <span className="font-medium text-foreground">{actor}</span> : null}
         {actor !== undefined && action !== undefined ? ' ' : null}
         {action !== undefined ? <span className="text-foreground-muted">{action}</span> : null}
       </span>
@@ -319,10 +310,7 @@ export function TimelineItem({
             </time>
           ) : null
         ) : (
-          <time
-            dateTime={iso}
-            className="mt-1 block text-xs tabular-nums text-foreground-subtle"
-          >
+          <time dateTime={iso} className="mt-1 block text-xs tabular-nums text-foreground-subtle">
             {label}
           </time>
         )}
@@ -380,11 +368,7 @@ export function TimelineContent({ ref, className, ...rest }: TimelineContentProp
   return (
     <div
       ref={ref}
-      className={cn(
-        'min-w-0',
-        orientation === 'vertical' ? 'flex-1' : 'text-center',
-        className,
-      )}
+      className={cn('min-w-0', orientation === 'vertical' ? 'flex-1' : 'text-center', className)}
       {...rest}
     />
   );

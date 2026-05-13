@@ -1,41 +1,47 @@
 import { useEffect, useRef } from 'react';
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   BarChart3,
+  Boxes,
   ChevronDown,
   Clock,
   Columns2,
   Compass,
+  Database,
   FolderOpen,
   FolderTree,
   FormInput,
   Frame,
   Images,
   KanbanSquare,
-  ListChecks,
   LayoutDashboard,
+  LayoutTemplate,
+  ListChecks,
   LogIn,
   LogOut,
   MessageSquareWarning,
   Move,
   Palette as PaletteIcon,
   PanelsTopLeft,
-  Type as TypeIcon,
   Search,
+  Settings as SettingsIcon,
   ShieldCheck,
   SlidersHorizontal,
   Sparkles,
   SquareDashedMousePointer,
   Table,
+  Type as TypeIcon,
+  Wand2,
   Zap,
 } from 'lucide-react';
-import { cn } from '@/lib/cn';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { ThemePicker } from '@/components/layout/ThemePicker';
 import { TypographyPicker } from '@/components/layout/TypographyPicker';
 import { LocaleSwitcher } from '@/components/layout/LocaleSwitcher';
 import {
+  NavGroup,
+  NavLink,
   Sidebar,
   SidebarMobileToggle,
   SidebarProvider,
@@ -45,7 +51,6 @@ import { Avatar } from '@/components/primitives/Avatar';
 import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
 import { Kbd } from '@/components/primitives/Kbd';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/feedback/Tooltip';
 import { useCommandRegistry } from '@/components/overlays/CommandPalette';
 import {
   DropdownMenu,
@@ -59,50 +64,122 @@ import { NotificationsBell } from '@/components/feedback/NotificationsCenter';
 import { useAuth } from '@/auth';
 import { useLocale } from '@/context/LocaleProvider';
 
-interface NavItem {
+interface NavLeaf {
   to: string;
   labelKey: string;
   icon: React.ReactNode;
 }
 
-const NAV_ITEMS: ReadonlyArray<NavItem> = [
-  { to: '/showcase', labelKey: 'nav.overview', icon: <Compass className="h-4 w-4" /> },
-  { to: '/new-components', labelKey: 'nav.newComponents', icon: <Sparkles className="h-4 w-4" /> },
-  { to: '/motion', labelKey: 'nav.motion', icon: <Zap className="h-4 w-4" /> },
-  { to: '/repeater', labelKey: 'nav.repeater', icon: <ListChecks className="h-4 w-4" /> },
-  { to: '/primitives', labelKey: 'nav.primitives', icon: <Sparkles className="h-4 w-4" /> },
-  { to: '/forms', labelKey: 'nav.forms', icon: <FormInput className="h-4 w-4" /> },
+type NavEntry =
+  | ({ kind: 'link' } & NavLeaf)
+  | {
+      kind: 'group';
+      id: string;
+      labelKey: string;
+      icon: React.ReactNode;
+      defaultOpen?: boolean;
+      children: ReadonlyArray<NavLeaf>;
+    };
+
+// Note: `/layout` mounts <LayoutDemo /> at the router level — a different shell
+// from <AppLayout>. Clicking the link leaves this sidebar entirely. Keeping it
+// here so the surface stays reachable from the primary nav; existing behavior.
+const NAV_TREE: ReadonlyArray<NavEntry> = [
+  { kind: 'link', to: '/showcase', labelKey: 'nav.overview', icon: <Compass className="h-4 w-4" /> },
   {
-    to: '/feedback',
-    labelKey: 'nav.feedback',
-    icon: <MessageSquareWarning className="h-4 w-4" />,
+    kind: 'group',
+    id: 'components',
+    labelKey: 'nav.group.components',
+    icon: <Boxes className="h-4 w-4" />,
+    children: [
+      { to: '/primitives', labelKey: 'nav.primitives', icon: <Sparkles className="h-4 w-4" /> },
+      { to: '/forms', labelKey: 'nav.forms', icon: <FormInput className="h-4 w-4" /> },
+      {
+        to: '/feedback',
+        labelKey: 'nav.feedback',
+        icon: <MessageSquareWarning className="h-4 w-4" />,
+      },
+      { to: '/data', labelKey: 'nav.dataDisplay', icon: <LayoutDashboard className="h-4 w-4" /> },
+      { to: '/motion', labelKey: 'nav.motion', icon: <Zap className="h-4 w-4" /> },
+      {
+        to: '/new-components',
+        labelKey: 'nav.newComponents',
+        icon: <Sparkles className="h-4 w-4" />,
+      },
+    ],
   },
-  { to: '/data', labelKey: 'nav.dataDisplay', icon: <LayoutDashboard className="h-4 w-4" /> },
-  { to: '/tables', labelKey: 'nav.tables', icon: <Table className="h-4 w-4" /> },
-  { to: '/tree', labelKey: 'nav.tree', icon: <FolderTree className="h-4 w-4" /> },
-  { to: '/timeline', labelKey: 'nav.timeline', icon: <Clock className="h-4 w-4" /> },
-  { to: '/charts', labelKey: 'nav.charts', icon: <BarChart3 className="h-4 w-4" /> },
-  { to: '/kanban', labelKey: 'nav.kanban', icon: <KanbanSquare className="h-4 w-4" /> },
-  { to: '/files', labelKey: 'nav.fileExplorer', icon: <FolderOpen className="h-4 w-4" /> },
-  { to: '/gallery', labelKey: 'nav.gallery', icon: <Images className="h-4 w-4" /> },
-  { to: '/wizard', labelKey: 'nav.formWizard', icon: <ListChecks className="h-4 w-4" /> },
-  { to: '/positioning', labelKey: 'nav.positioning', icon: <Move className="h-4 w-4" /> },
-  { to: '/layout', labelKey: 'nav.layout', icon: <PanelsTopLeft className="h-4 w-4" /> },
-  { to: '/split', labelKey: 'nav.split', icon: <Columns2 className="h-4 w-4" /> },
-  { to: '/focus', labelKey: 'nav.focus', icon: <SquareDashedMousePointer className="h-4 w-4" /> },
   {
+    kind: 'group',
+    id: 'data',
+    labelKey: 'nav.group.data',
+    icon: <Database className="h-4 w-4" />,
+    children: [
+      { to: '/tables', labelKey: 'nav.tables', icon: <Table className="h-4 w-4" /> },
+      { to: '/tree', labelKey: 'nav.tree', icon: <FolderTree className="h-4 w-4" /> },
+      { to: '/timeline', labelKey: 'nav.timeline', icon: <Clock className="h-4 w-4" /> },
+      { to: '/charts', labelKey: 'nav.charts', icon: <BarChart3 className="h-4 w-4" /> },
+      { to: '/kanban', labelKey: 'nav.kanban', icon: <KanbanSquare className="h-4 w-4" /> },
+      { to: '/files', labelKey: 'nav.fileExplorer', icon: <FolderOpen className="h-4 w-4" /> },
+      { to: '/gallery', labelKey: 'nav.gallery', icon: <Images className="h-4 w-4" /> },
+    ],
+  },
+  {
+    kind: 'group',
+    id: 'forms-wizards',
+    labelKey: 'nav.group.formsWizards',
+    icon: <Wand2 className="h-4 w-4" />,
+    children: [
+      { to: '/wizard', labelKey: 'nav.formWizard', icon: <ListChecks className="h-4 w-4" /> },
+      { to: '/repeater', labelKey: 'nav.repeater', icon: <ListChecks className="h-4 w-4" /> },
+    ],
+  },
+  {
+    kind: 'group',
+    id: 'layout',
+    labelKey: 'nav.group.layout',
+    icon: <LayoutTemplate className="h-4 w-4" />,
+    children: [
+      { to: '/layout', labelKey: 'nav.layout', icon: <PanelsTopLeft className="h-4 w-4" /> },
+      { to: '/split', labelKey: 'nav.split', icon: <Columns2 className="h-4 w-4" /> },
+      {
+        to: '/focus',
+        labelKey: 'nav.focus',
+        icon: <SquareDashedMousePointer className="h-4 w-4" />,
+      },
+      { to: '/positioning', labelKey: 'nav.positioning', icon: <Move className="h-4 w-4" /> },
+      { to: '/workspace', labelKey: 'nav.workspace', icon: <Frame className="h-4 w-4" /> },
+    ],
+  },
+  {
+    kind: 'link',
     to: '/playground',
     labelKey: 'nav.playground',
     icon: <SlidersHorizontal className="h-4 w-4" />,
   },
-  { to: '/settings/theme', labelKey: 'nav.themeEditor', icon: <PaletteIcon className="h-4 w-4" /> },
   {
-    to: '/settings/typography',
-    labelKey: 'nav.typography',
-    icon: <TypeIcon className="h-4 w-4" />,
+    kind: 'group',
+    id: 'settings',
+    labelKey: 'nav.group.settings',
+    icon: <SettingsIcon className="h-4 w-4" />,
+    children: [
+      {
+        to: '/settings/theme',
+        labelKey: 'nav.themeEditor',
+        icon: <PaletteIcon className="h-4 w-4" />,
+      },
+      {
+        to: '/settings/typography',
+        labelKey: 'nav.typography',
+        icon: <TypeIcon className="h-4 w-4" />,
+      },
+    ],
   },
-  { to: '/workspace', labelKey: 'nav.workspace', icon: <Frame className="h-4 w-4" /> },
-  { to: '/admin', labelKey: 'nav.admin', icon: <ShieldCheck className="h-4 w-4" /> },
+  {
+    kind: 'link',
+    to: '/admin',
+    labelKey: 'nav.admin',
+    icon: <ShieldCheck className="h-4 w-4" />,
+  },
 ];
 
 function AuthMenu() {
@@ -192,14 +269,15 @@ function SidebarBrand() {
 }
 
 function PrimaryNav() {
-  const { isMobile, collapsed, mobileOpen, setMobileOpen } = useSidebar();
+  const { isMobile, mobileOpen, setOpenGroupIds } = useSidebar();
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const navRef = useRef<HTMLElement>(null);
-  const showLabels = isMobile || !collapsed;
+  const initialPathRef = useRef(pathname);
 
-  // Scroll the active NavLink into view on route change / mount. If sidebar
-  // is overflowed, the active item is otherwise hidden below the fold.
+  // Scroll active NavLink into view on route change / mount. If the sidebar
+  // is taller than the viewport, the active item is otherwise hidden below
+  // the fold.
   useEffect(() => {
     if (isMobile && !mobileOpen) return;
     const active = navRef.current?.querySelector<HTMLElement>('[aria-current="page"]');
@@ -208,50 +286,48 @@ function PrimaryNav() {
     active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }, [pathname, isMobile, mobileOpen]);
 
+  // On route change (after first mount), clear any manually-opened NavGroup ids
+  // so auto-follow resumes for the new route's parent (and only that one stays open).
+  // First-mount pathname is captured by ref so we don't wipe state before any
+  // NavGroup has rendered.
+  useEffect(() => {
+    if (pathname === initialPathRef.current) return;
+    initialPathRef.current = pathname;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setOpenGroupIds((prev) => (prev.size === 0 ? prev : new Set()));
+  }, [pathname, setOpenGroupIds]);
+
   return (
     <nav ref={navRef} aria-label={t('nav.ariaPrimary')}>
       <ul className="space-y-0.5">
-        {NAV_ITEMS.map((item) => {
-          const label = t(item.labelKey);
-          const link = (
-            <NavLink
-              to={item.to}
-              onClick={() => {
-                if (isMobile) setMobileOpen(false);
-              }}
-              aria-label={!showLabels ? label : undefined}
-              className={({ isActive }) =>
-                cn(
-                  'group flex items-center gap-2.5 rounded-md py-2 text-sm transition-colors',
-                  showLabels ? 'px-3' : 'justify-center px-2',
-                  isActive
-                    ? 'bg-surface-muted font-medium text-foreground'
-                    : 'text-foreground-muted hover:bg-surface-muted hover:text-foreground',
-                )
-              }
-            >
-              <span
-                style={{ color: 'var(--color-primary)' }}
-                className={cn('shrink-0', !showLabels && '[&>svg]:h-5 [&>svg]:w-5')}
-              >
-                {item.icon}
-              </span>
-              {showLabels ? <span className="truncate">{label}</span> : null}
-            </NavLink>
-          );
+        {NAV_TREE.map((entry) => {
+          if (entry.kind === 'link') {
+            return (
+              <NavLink
+                key={entry.to}
+                to={entry.to}
+                label={t(entry.labelKey)}
+                icon={entry.icon}
+              />
+            );
+          }
           return (
-            <li key={item.to}>
-              {!showLabels ? (
-                <Tooltip>
-                  <TooltipTrigger>{link}</TooltipTrigger>
-                  <TooltipContent side="right" sideOffset={10}>
-                    {label}
-                  </TooltipContent>
-                </Tooltip>
-              ) : (
-                link
-              )}
-            </li>
+            <NavGroup
+              key={entry.id}
+              id={entry.id}
+              label={t(entry.labelKey)}
+              icon={entry.icon}
+              {...(entry.defaultOpen === true ? { defaultOpen: true } : {})}
+            >
+              {entry.children.map((child) => (
+                <NavLink
+                  key={child.to}
+                  to={child.to}
+                  label={t(child.labelKey)}
+                  icon={child.icon}
+                />
+              ))}
+            </NavGroup>
           );
         })}
       </ul>
@@ -369,7 +445,7 @@ export function AppLayout() {
 
         <div className="flex min-w-0 flex-1 flex-col">
           <AppTopbar notificationsLabels={notificationsLabels} locale={locale} />
-          <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+          <main className="relative flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
             <Outlet />
           </main>
         </div>

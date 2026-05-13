@@ -40,12 +40,22 @@ import {
 
 const STORAGE_KEY = 'sidebar-collapsed';
 
+type OpenGroupUpdater = (prev: ReadonlySet<string>) => ReadonlySet<string>;
+
 interface SidebarContextValue {
   collapsed: boolean;
   setCollapsed: (next: boolean) => void;
   mobileOpen: boolean;
   setMobileOpen: (next: boolean) => void;
   isMobile: boolean;
+  /**
+   * Set of NavGroup ids the user has manually opened. Multi-open accordion in
+   * inline mode; collapsed mode keeps the set single-element via the toggle
+   * helpers in NavGroup. Cleared on route change so auto-follow resumes for
+   * the new active parent.
+   */
+  openGroupIds: ReadonlySet<string>;
+  setOpenGroupIds: (updater: OpenGroupUpdater) => void;
 }
 
 const SidebarContext = createContext<SidebarContextValue | null>(null);
@@ -77,6 +87,12 @@ export function SidebarProvider({ children, defaultCollapsed }: SidebarProviderP
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useMediaQuery('(max-width: 767px)');
 
+  const [openGroupIds, setOpenGroupIdsState] = useState<ReadonlySet<string>>(() => new Set());
+
+  const setOpenGroupIds = useCallback((updater: OpenGroupUpdater) => {
+    setOpenGroupIdsState((prev) => updater(prev));
+  }, []);
+
   const setCollapsed = useCallback((next: boolean) => {
     setCollapsedState(next);
     try {
@@ -95,8 +111,16 @@ export function SidebarProvider({ children, defaultCollapsed }: SidebarProviderP
   }, [isMobile, mobileOpen]);
 
   const value = useMemo<SidebarContextValue>(
-    () => ({ collapsed, setCollapsed, mobileOpen, setMobileOpen, isMobile }),
-    [collapsed, setCollapsed, mobileOpen, isMobile],
+    () => ({
+      collapsed,
+      setCollapsed,
+      mobileOpen,
+      setMobileOpen,
+      isMobile,
+      openGroupIds,
+      setOpenGroupIds,
+    }),
+    [collapsed, setCollapsed, mobileOpen, isMobile, openGroupIds, setOpenGroupIds],
   );
 
   return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;

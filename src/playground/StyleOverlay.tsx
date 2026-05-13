@@ -5,11 +5,7 @@ import { NumberInput } from '@/components/forms/NumberInput';
 import { ColorPicker } from '@/components/forms/ColorPicker';
 import { Combobox, ComboboxContent, ComboboxTrigger } from '@/components/forms/Combobox';
 import { cn } from '@/lib/cn';
-import {
-  ALL_STYLE_SECTIONS,
-  STYLE_SECTION_KEYS,
-  resolveSections,
-} from './profile';
+import { ALL_STYLE_SECTIONS, STYLE_SECTION_KEYS, resolveSections } from './profile';
 import type { StyleOverlayProfile, StyleOverlaySection, StyleOverlayValues } from './types';
 
 /*

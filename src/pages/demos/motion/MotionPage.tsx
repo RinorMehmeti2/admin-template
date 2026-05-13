@@ -593,11 +593,7 @@ function CustomTimingDemo() {
         </label>
         <label className="space-y-1.5 text-xs">
           <span className="block text-foreground-muted">Easing</span>
-          <Select
-            selectSize="sm"
-            value={easing}
-            onChange={(e) => setEasing(e.target.value)}
-          >
+          <Select selectSize="sm" value={easing} onChange={(e) => setEasing(e.target.value)}>
             <option value="ease-out">ease-out</option>
             <option value="ease-in">ease-in</option>
             <option value="ease-in-out">ease-in-out</option>

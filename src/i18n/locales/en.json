@@ -9,6 +9,11 @@
   "brand.subtitle": "Component library",
 
   "nav.ariaPrimary": "Primary",
+  "nav.group.components": "Components",
+  "nav.group.data": "Data",
+  "nav.group.formsWizards": "Forms & wizards",
+  "nav.group.layout": "Layout",
+  "nav.group.settings": "Settings",
   "nav.overview": "Overview",
   "nav.newComponents": "New components",
   "nav.motion": "Motion & animations",

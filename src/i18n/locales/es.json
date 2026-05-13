@@ -9,6 +9,11 @@
   "brand.subtitle": "Biblioteca de componentes",
 
   "nav.ariaPrimary": "Principal",
+  "nav.group.components": "Componentes",
+  "nav.group.data": "Datos",
+  "nav.group.formsWizards": "Formularios y asistentes",
+  "nav.group.layout": "Diseño",
+  "nav.group.settings": "Ajustes",
   "nav.overview": "Resumen",
   "nav.newComponents": "Nuevos componentes",
   "nav.motion": "Movimiento y animaciones",
