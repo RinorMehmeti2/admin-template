@@ -69,30 +69,6 @@ export const BUILT_IN_TYPOGRAPHIES: ReadonlyArray<TypographyConfig> = [
     scale: 1,
   },
   {
-    id: 'compact',
-    name: 'Compact',
-    builtIn: true,
-    fonts: {
-      '--font-sans': SYSTEM_SANS,
-      '--font-serif': SYSTEM_SERIF,
-      '--font-mono': SYSTEM_MONO,
-      '--font-heading': SYSTEM_SANS,
-    },
-    scale: 0.9,
-  },
-  {
-    id: 'comfortable',
-    name: 'Comfortable',
-    builtIn: true,
-    fonts: {
-      '--font-sans': SYSTEM_SANS,
-      '--font-serif': SYSTEM_SERIF,
-      '--font-mono': SYSTEM_MONO,
-      '--font-heading': SYSTEM_SANS,
-    },
-    scale: 1.1,
-  },
-  {
     id: 'serif-heading',
     name: 'Serif headings',
     builtIn: true,

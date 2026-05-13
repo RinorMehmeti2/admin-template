@@ -130,19 +130,6 @@ export function Timeline({
         className={cn(timelineStyles({ orientation }), className)}
         {...rest}
       >
-        {/* Axis line — only visible on the vertical layout. The horizontal
-         * variant draws its own axis inside the marker row below.            */}
-        {orientation === 'vertical' ? (
-          <span
-            aria-hidden="true"
-            className="absolute left-4 top-3 bottom-3 w-px bg-border"
-          />
-        ) : (
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute left-6 right-6 top-4 h-px bg-border"
-          />
-        )}
         {rendered}
       </ol>
     </TimelineContext.Provider>
@@ -166,8 +153,17 @@ function TimelineGroup({ date, children }: TimelineGroupProps) {
   const label = formatDayHeader(date);
   return (
     <>
-      <li className="relative pl-12 py-2">
-        <h3 className="sticky top-0 z-10 -ml-12 inline-flex bg-surface px-3 py-1 text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+      <li
+        className={cn(
+          'relative pl-9 py-2',
+          // Continue the axis line through day-header rows so the timeline
+          // reads as one column. Trim the top half if this is the very first
+          // row in the <ol> (no marker exists above it).
+          "before:pointer-events-none before:absolute before:left-4 before:top-0 before:bottom-0 before:w-0.5 before:bg-border before:-translate-x-1/2 before:content-['']",
+          'first:before:top-4',
+        )}
+      >
+        <h3 className="sticky top-0 z-10 inline-flex bg-surface px-3 py-1 text-xs font-semibold uppercase tracking-wide text-foreground-muted">
           <time dateTime={date.toISOString()}>{label}</time>
         </h3>
       </li>
@@ -188,7 +184,7 @@ export type TimelineVariant =
   | 'info'
   | 'muted';
 
-const dotStyles = cva('inline-block rounded-full ring-2 ring-background', {
+const dotStyles = cva('inline-block rounded-full ring-2 ring-surface', {
   variants: {
     variant: {
       default: 'bg-primary',
@@ -203,15 +199,19 @@ const dotStyles = cva('inline-block rounded-full ring-2 ring-background', {
 });
 
 const iconBoxStyles = cva(
-  'inline-flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-background',
+  'inline-flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-surface',
   {
     variants: {
       variant: {
-        default: 'bg-primary/15 text-primary',
-        success: 'bg-success/15 text-success',
-        warning: 'bg-warning/15 text-warning',
-        danger: 'bg-danger/15 text-danger',
-        info: 'bg-info/15 text-info',
+        default:
+          'bg-[color-mix(in_srgb,var(--color-primary)_15%,var(--color-surface))] text-primary',
+        success:
+          'bg-[color-mix(in_srgb,var(--color-success)_15%,var(--color-surface))] text-success',
+        warning:
+          'bg-[color-mix(in_srgb,var(--color-warning)_15%,var(--color-surface))] text-warning',
+        danger:
+          'bg-[color-mix(in_srgb,var(--color-danger)_15%,var(--color-surface))] text-danger',
+        info: 'bg-[color-mix(in_srgb,var(--color-info)_15%,var(--color-surface))] text-info',
         muted: 'bg-surface-muted text-foreground-muted',
       },
     },
@@ -219,15 +219,34 @@ const iconBoxStyles = cva(
   },
 );
 
-const itemStyles = cva('relative', {
-  variants: {
-    orientation: {
-      vertical: 'flex gap-4 pb-6 last:pb-0',
-      horizontal: 'flex flex-col items-center gap-2 min-w-[10rem]',
+/* Per-item axis connector — drawn as a ::before pseudo so its position is
+ * tied to the marker (not the <ol>'s padding-box). Marker center sits at
+ * 16px from the li's leading edge (vertical: x=16, horizontal: y=16) because
+ * the marker is a 32px-square first child of the li with no padding.
+ * `first:` trims the line to start at the first marker's center; `last:`
+ * trims it to end at the last marker's center. */
+const itemStyles = cva(
+  'relative ' +
+    "before:pointer-events-none before:absolute before:bg-border before:content-['']",
+  {
+    variants: {
+      orientation: {
+        vertical:
+          'flex gap-4 pb-6 last:pb-0 ' +
+          'before:left-4 before:top-0 before:bottom-0 before:w-0.5 before:-translate-x-1/2 ' +
+          'first:before:top-4 last:before:bottom-auto last:before:h-4',
+        horizontal:
+          'flex flex-col items-center gap-2 min-w-[10rem] ' +
+          // Extend the line by half the parent `gap-6` (12px = -mx-3) so the
+          // axis bridges the inter-item gutter; first/last collapse to the
+          // marker center to avoid overhang at the ends.
+          'before:top-4 before:-left-3 before:-right-3 before:h-0.5 before:-translate-y-1/2 ' +
+          'first:before:left-1/2 last:before:right-1/2',
+      },
     },
+    defaultVariants: { orientation: 'vertical' },
   },
-  defaultVariants: { orientation: 'vertical' },
-});
+);
 
 export interface TimelineItemProps
   extends Omit<LiHTMLAttributes<HTMLLIElement>, 'title' | 'children'>,
