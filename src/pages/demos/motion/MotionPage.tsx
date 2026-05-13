@@ -42,6 +42,7 @@ import { IconButton } from '@/components/primitives/IconButton';
 import { Badge } from '@/components/primitives/Badge';
 import { Separator } from '@/components/primitives/Separator';
 import { Switch } from '@/components/forms/Switch';
+import { Select } from '@/components/forms/Select';
 import { Card, CardContent, CardTitle } from '@/components/data-display/Card';
 
 /* --------------- Context: force-motion toggle propagates to demos --------------- */
@@ -301,13 +302,14 @@ function StaggerDemo() {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <label className="inline-flex items-center gap-1.5 text-xs">
+      <div className="flex flex-wrap items-center gap-3">
+        <label className="inline-flex items-center gap-2 text-xs">
           <span className="text-foreground-muted">Preset</span>
-          <select
+          <Select
+            selectSize="sm"
             value={preset}
             onChange={(e) => setPreset(e.target.value as MotionPreset)}
-            className="h-8 rounded-md border border-border bg-surface px-2 text-sm"
+            className="w-40"
           >
             <option value="slide-in-up">slide-in-up</option>
             <option value="slide-in-down">slide-in-down</option>
@@ -318,9 +320,9 @@ function StaggerDemo() {
             <option value="rotate-in">rotate-in</option>
             <option value="flip-in">flip-in</option>
             <option value="blur-in">blur-in</option>
-          </select>
+          </Select>
         </label>
-        <label className="inline-flex items-center gap-1.5 text-xs">
+        <label className="inline-flex items-center gap-2 text-xs">
           <span className="text-foreground-muted">Stagger</span>
           <input
             type="range"
@@ -545,13 +547,13 @@ function CustomTimingDemo() {
 
   return (
     <Demo label="Tweak duration / delay / easing — click Play">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <label className="space-y-1 text-xs">
-          <span className="text-foreground-muted">Preset</span>
-          <select
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <label className="space-y-1.5 text-xs">
+          <span className="block text-foreground-muted">Preset</span>
+          <Select
+            selectSize="sm"
             value={preset}
             onChange={(e) => setPreset(e.target.value as MotionPreset)}
-            className="h-9 w-full rounded-md border border-border bg-surface px-2 text-sm"
           >
             <option value="fade-in">fade-in</option>
             <option value="slide-in-up">slide-in-up</option>
@@ -563,10 +565,10 @@ function CustomTimingDemo() {
             <option value="rotate-in">rotate-in</option>
             <option value="flip-in">flip-in</option>
             <option value="blur-in">blur-in</option>
-          </select>
+          </Select>
         </label>
-        <label className="space-y-1 text-xs">
-          <span className="text-foreground-muted">Duration ({duration}ms)</span>
+        <label className="space-y-1.5 text-xs">
+          <span className="block text-foreground-muted">Duration ({duration}ms)</span>
           <input
             type="range"
             min={100}
@@ -577,8 +579,8 @@ function CustomTimingDemo() {
             className="w-full"
           />
         </label>
-        <label className="space-y-1 text-xs">
-          <span className="text-foreground-muted">Delay ({delay}ms)</span>
+        <label className="space-y-1.5 text-xs">
+          <span className="block text-foreground-muted">Delay ({delay}ms)</span>
           <input
             type="range"
             min={0}
@@ -589,12 +591,12 @@ function CustomTimingDemo() {
             className="w-full"
           />
         </label>
-        <label className="space-y-1 text-xs">
-          <span className="text-foreground-muted">Easing</span>
-          <select
+        <label className="space-y-1.5 text-xs">
+          <span className="block text-foreground-muted">Easing</span>
+          <Select
+            selectSize="sm"
             value={easing}
             onChange={(e) => setEasing(e.target.value)}
-            className="h-9 w-full rounded-md border border-border bg-surface px-2 text-sm"
           >
             <option value="ease-out">ease-out</option>
             <option value="ease-in">ease-in</option>
@@ -602,7 +604,7 @@ function CustomTimingDemo() {
             <option value="cubic-bezier(0.22, 1, 0.36, 1)">smooth (out-quint)</option>
             <option value="cubic-bezier(0.34, 1.56, 0.64, 1)">spring</option>
             <option value="linear">linear</option>
-          </select>
+          </Select>
         </label>
       </div>
 

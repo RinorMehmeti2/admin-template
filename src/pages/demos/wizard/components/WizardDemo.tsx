@@ -130,7 +130,7 @@ export function WizardDemo({ orientation, variant }: WizardDemoProps) {
             icon={<User className="h-4 w-4" />}
             schema={stepAccount}
             render={({ form }) => (
-              <div className="space-y-3 max-w-md">
+              <div className="space-y-4 max-w-md">
                 <FormField
                   label={t('wizardDemo.field.email')}
                   error={form.formState.errors.email?.message}
@@ -161,7 +161,7 @@ export function WizardDemo({ orientation, variant }: WizardDemoProps) {
             icon={<Briefcase className="h-4 w-4" />}
             schema={stepProfile}
             render={({ form }) => (
-              <div className="space-y-3 max-w-md">
+              <div className="space-y-4 max-w-md">
                 <FormField
                   label={t('wizardDemo.field.fullName')}
                   error={form.formState.errors.fullName?.message}

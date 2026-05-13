@@ -82,7 +82,7 @@ function PropControl({ name, schema, value, onChange }: PropControlProps) {
   const inputId = `${reactId}-${name}`;
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       <div className="flex items-center justify-between gap-2">
         <label htmlFor={inputId} className="text-xs font-medium text-foreground-muted">
           <span className="font-mono">{name}</span>

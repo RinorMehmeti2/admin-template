@@ -29,11 +29,11 @@ function BottomSheetDemo() {
             Active snap: <strong>{snap}vh</strong>. Drag the handle.
           </p>
           <div className="space-y-3">
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <Label htmlFor="task-title">Title</Label>
               <Input id="task-title" placeholder="Pick up groceries" />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <Label htmlFor="task-note">Note</Label>
               <Input id="task-note" placeholder="Optional" />
             </div>

@@ -120,9 +120,9 @@ export function Repeater<T>({
   const isAtMax = list.length >= max;
 
   return (
-    <div ref={ref} className={cn('space-y-3', className)} {...rest}>
+    <div ref={ref} className={cn(className)} {...rest}>
       {label !== undefined ? (
-        <div className="flex items-start justify-between gap-3">
+        <div className="mb-3 flex items-start justify-between gap-3">
           <div>
             <p id={labelId} className="text-sm font-medium text-foreground">
               {label}
@@ -220,13 +220,14 @@ export function Repeater<T>({
           onClick={add}
           disabled={isAtMax}
           leftIcon={<Plus className="h-4 w-4" />}
+          className="mt-5"
         >
           {addLabel}
         </Button>
       ) : null}
 
       {error !== undefined && error !== null && error !== false ? (
-        <p role="alert" className="text-xs text-danger">
+        <p role="alert" className="mt-3 text-xs text-danger">
           {error}
         </p>
       ) : null}

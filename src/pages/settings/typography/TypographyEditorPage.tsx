@@ -147,8 +147,8 @@ export function TypographyEditorPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
               <label htmlFor="typo-name" className="text-xs font-medium text-foreground-muted">
                 {t('typography.editor.nameLabel')}
               </label>
