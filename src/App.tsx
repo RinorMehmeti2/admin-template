@@ -47,6 +47,7 @@ import { MobilePreviewPage } from '@/pages/demos/mobile-preview';
 import { NewComponentsPage } from '@/pages/demos/new-components';
 import { MotionPage } from '@/pages/demos/motion';
 import { RepeaterDemoPage } from '@/pages/demos/repeater';
+import { DropzonePage } from '@/pages/demos/dropzone';
 import { PlaygroundPage } from '@/pages/playground';
 import { ThemeEditorPage } from '@/pages/settings/theme';
 import { TypographyEditorPage } from '@/pages/settings/typography';
@@ -167,6 +168,11 @@ const NAV_COMMANDS: ReadonlyArray<NavCommand> = [
     to: '/repeater',
     labelKey: 'nav.repeater',
     keywords: ['repeater', 'list', 'rows', 'add', 'remove', 'reorder', 'array', 'fieldarray'],
+  },
+  {
+    to: '/dropzone',
+    labelKey: 'nav.dropzone',
+    keywords: ['dropzone', 'upload', 'file', 'drag', 'drop', 'attach', 'attachment'],
   },
   {
     to: '/motion',
@@ -415,6 +421,7 @@ const router = createBrowserRouter([
           { path: 'new-components', element: <NewComponentsPage /> },
           { path: 'motion', element: <MotionPage /> },
           { path: 'repeater', element: <RepeaterDemoPage /> },
+          { path: 'dropzone', element: <DropzonePage /> },
           { path: 'playground', element: <PlaygroundPage /> },
           { path: 'settings/theme', element: <ThemeEditorPage /> },
           { path: 'settings/typography', element: <TypographyEditorPage /> },

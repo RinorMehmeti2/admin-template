@@ -5,6 +5,7 @@ export * from './Combobox';
 export * from './DatePicker';
 export * from './DateRangePicker';
 export * from './DateTimePicker';
+export * from './Dropzone';
 export * from './Form';
 export * from './FormField';
 export * from './FormWizard';

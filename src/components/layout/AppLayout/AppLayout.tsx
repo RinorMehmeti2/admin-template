@@ -36,6 +36,7 @@ import {
   Stethoscope,
   Table,
   Type as TypeIcon,
+  UploadCloud,
   UsersRound,
   Wand2,
   Wheat,
@@ -192,6 +193,7 @@ const NAV_TREE: ReadonlyArray<NavEntry> = [
     children: [
       { to: '/wizard', labelKey: 'nav.formWizard', icon: <ListChecks className="h-4 w-4" /> },
       { to: '/repeater', labelKey: 'nav.repeater', icon: <ListChecks className="h-4 w-4" /> },
+      { to: '/dropzone', labelKey: 'nav.dropzone', icon: <UploadCloud className="h-4 w-4" /> },
     ],
   },
   {

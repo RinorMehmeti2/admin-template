@@ -1,0 +1,1 @@
+export { DropzonePage } from './DropzonePage';
