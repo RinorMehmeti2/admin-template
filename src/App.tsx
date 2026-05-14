@@ -67,6 +67,23 @@ import { FeedbackTheaterPage } from '@/pages/demos/croissant/feedback-theater';
 import { DataLabPage } from '@/pages/demos/croissant/data-lab';
 import { NavigationTrailPage } from '@/pages/demos/croissant/navigation-trail';
 import { TimelineActivityPage } from '@/pages/demos/croissant/timeline-and-activity';
+import {
+  SimsLayout,
+  DashboardPage as SimsDashboardPage,
+  UsersPage as SimsUsersPage,
+  RolesPage as SimsRolesPage,
+  ModulesPage as SimsModulesPage,
+  MenuPage as SimsMenuPage,
+  HolidaysPage as SimsHolidaysPage,
+  EmailConfigPage as SimsEmailConfigPage,
+  NotificationsPage as SimsNotificationsPage,
+  ReportsPage as SimsReportsPage,
+  StatisticsPage as SimsStatisticsPage,
+  LogsPage as SimsLogsPage,
+  LookupTablesPage as SimsLookupTablesPage,
+  ThemeConfigPage as SimsThemeConfigPage,
+  SchemaDriftPage as SimsSchemaDriftPage,
+} from '@/pages/sims';
 
 /*
  * Code splitting strategy.
@@ -643,6 +660,29 @@ const router = createBrowserRouter([
           { index: true, element: <DashboardPage /> },
           { path: 'users', element: <UsersPage /> },
           { path: 'settings', element: <SettingsPage /> },
+        ],
+      },
+      // SIMS uses its own SimsLayout shell (replaces AppLayout chrome).
+      {
+        path: '/sims',
+        element: <SimsLayout />,
+        children: [
+          { index: true, element: <Navigate to="/sims/dashboard" replace /> },
+          { path: 'dashboard', element: <SimsDashboardPage /> },
+          { path: 'administration', element: <Navigate to="/sims/administration/users" replace /> },
+          { path: 'administration/users', element: <SimsUsersPage /> },
+          { path: 'administration/roles', element: <SimsRolesPage /> },
+          { path: 'administration/modules', element: <SimsModulesPage /> },
+          { path: 'administration/menu', element: <SimsMenuPage /> },
+          { path: 'administration/holidays', element: <SimsHolidaysPage /> },
+          { path: 'administration/email-configuration', element: <SimsEmailConfigPage /> },
+          { path: 'administration/notifications', element: <SimsNotificationsPage /> },
+          { path: 'administration/reports', element: <SimsReportsPage /> },
+          { path: 'administration/statistics', element: <SimsStatisticsPage /> },
+          { path: 'administration/logs', element: <SimsLogsPage /> },
+          { path: 'administration/lookup-tables', element: <SimsLookupTablesPage /> },
+          { path: 'administration/theme-configuration', element: <SimsThemeConfigPage /> },
+          { path: 'administration/schema-drift', element: <SimsSchemaDriftPage /> },
         ],
       },
     ],

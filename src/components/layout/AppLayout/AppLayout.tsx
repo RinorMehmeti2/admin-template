@@ -35,6 +35,7 @@ import {
   Palette as PaletteIcon,
   PanelsTopLeft,
   Rows,
+  School,
   Search,
   Settings as SettingsIcon,
   ShieldCheck,
@@ -330,6 +331,84 @@ const NAV_TREE: ReadonlyArray<NavEntry> = [
     to: '/admin',
     labelKey: 'nav.admin',
     icon: <ShieldCheck className="h-4 w-4" />,
+  },
+  {
+    kind: 'group',
+    id: 'sims',
+    labelKey: 'nav.group.sims',
+    icon: <School className="h-4 w-4" />,
+    children: [
+      {
+        to: '/sims/dashboard',
+        labelKey: 'nav.sims.dashboard',
+        icon: <LayoutDashboard className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/users',
+        labelKey: 'nav.sims.users',
+        icon: <UsersRound className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/roles',
+        labelKey: 'nav.sims.roles',
+        icon: <ShieldCheck className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/modules',
+        labelKey: 'nav.sims.modules',
+        icon: <LayoutGrid className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/menu',
+        labelKey: 'nav.sims.menu',
+        icon: <ListChecks className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/holidays',
+        labelKey: 'nav.sims.holidays',
+        icon: <Clock className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/email-configuration',
+        labelKey: 'nav.sims.email',
+        icon: <MessageSquareWarning className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/notifications',
+        labelKey: 'nav.sims.notifications',
+        icon: <MessageSquareWarning className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/reports',
+        labelKey: 'nav.sims.reports',
+        icon: <LayoutTemplate className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/statistics',
+        labelKey: 'nav.sims.statistics',
+        icon: <BarChart3 className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/logs',
+        labelKey: 'nav.sims.logs',
+        icon: <Activity className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/lookup-tables',
+        labelKey: 'nav.sims.lookup',
+        icon: <Table className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/theme-configuration',
+        labelKey: 'nav.sims.theme',
+        icon: <PaletteIcon className="h-4 w-4" />,
+      },
+      {
+        to: '/sims/administration/schema-drift',
+        labelKey: 'nav.sims.schemaDrift',
+        icon: <Database className="h-4 w-4" />,
+      },
+    ],
   },
 ];
 
