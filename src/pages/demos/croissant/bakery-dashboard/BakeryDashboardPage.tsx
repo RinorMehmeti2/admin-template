@@ -10,22 +10,22 @@ import {
   AlertTriangle,
   Target,
 } from 'lucide-react';
+import type { ComponentType } from 'react';
 import { Avatar } from '@/components/primitives/Avatar';
 import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/data-display/Card';
 import { AreaChart } from '@/components/data-display/charts/AreaChart';
 import { DataTable, type ColumnDef } from '@/components/data-display/DataTable';
 import { useToast } from '@/context/ToastProvider';
-import { PulseRing, TypingDots } from '@/components/motion';
-import {
-  ChartFrame,
-  Chip,
-  ComponentsUsedFooter,
-  SceneHeader,
-  StagedSection,
-  StatRail,
-  type StatRailItem,
-} from '../_shared';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
+import { SimsStatCard } from '@/pages/sims/components/SimsStatCard';
 import { OvenBoard } from './components/OvenBoard';
 import { TopSellers } from './components/TopSellers';
 
@@ -134,27 +134,13 @@ const REVENUE_DATA: Record<Range, Array<{ label: string; revenue: number; target
   ],
 };
 
-const COMPONENTS = [
-  'SceneHeader',
-  'StagedSection',
-  'StatRail',
-  'StatCard',
-  'AreaChart',
-  'ChartFrame',
-  'Progress',
-  'Card',
-  'Badge',
-  'Avatar',
-  'Button',
-  'IconButton',
-  'DataTable',
-  'PulseRing',
-  'TypingDots',
-  'Float',
-  'BounceIn',
-  'RotateIn',
-  'Stagger',
-];
+interface StatDef {
+  id: string;
+  label: string;
+  Icon: ComponentType<{ className?: string }>;
+  value: string | number;
+  delta: number;
+}
 
 function statusBadge(status: OrderRow['status'], t: (k: string) => string) {
   if (status === 'paid')
@@ -174,6 +160,17 @@ function statusBadge(status: OrderRow['status'], t: (k: string) => string) {
       {t('croissant.bakery.status.refunded')}
     </Badge>
   );
+}
+
+function trendFor(delta: number): 'up' | 'down' | 'flat' {
+  if (delta > 0) return 'up';
+  if (delta < 0) return 'down';
+  return 'flat';
+}
+
+function trendLabel(delta: number): string {
+  const sign = delta > 0 ? '+' : '';
+  return `${sign}${delta}%`;
 }
 
 export function BakeryDashboardPage() {
@@ -208,70 +205,48 @@ export function BakeryDashboardPage() {
     };
   }, [revenueSeries, currency]);
 
-  const stats: ReadonlyArray<StatRailItem> = [
+  const stats: ReadonlyArray<StatDef> = [
     {
       id: 'revenue',
       label: t('croissant.bakery.kpi.revenue'),
-      value: 48210,
-      formatValue: (n) => currency.format(n),
+      Icon: Coins,
+      value: currency.format(48210),
       delta: 12.4,
-      deltaLabel: t('croissant.bakery.kpi.deltaLabel'),
-      icon: <Coins className="h-4 w-4" />,
-      spark: [12, 18, 14, 24, 20, 28, 32, 36, 41, 38, 44, 48],
-      tone: 'warning',
     },
     {
       id: 'orders',
       label: t('croissant.bakery.kpi.orders'),
+      Icon: ShoppingCart,
       value: 1280,
       delta: 6.2,
-      deltaLabel: t('croissant.bakery.kpi.deltaLabel'),
-      icon: <ShoppingCart className="h-4 w-4" />,
-      spark: [42, 48, 60, 51, 72, 86, 70, 88, 92, 100, 110, 128],
-      tone: 'primary',
     },
     {
       id: 'aov',
       label: t('croissant.bakery.kpi.aov'),
-      value: 26.4,
-      formatValue: (n) => currency.format(Math.round(n)),
+      Icon: Receipt,
+      value: currency.format(26),
       delta: -1.8,
-      deltaLabel: t('croissant.bakery.kpi.deltaLabel'),
-      icon: <Receipt className="h-4 w-4" />,
-      spark: [28, 27, 26, 25, 24, 26, 26, 25, 24, 25, 26, 26],
-      tone: 'info',
     },
     {
       id: 'baked',
       label: t('croissant.bakery.kpi.itemsBaked'),
+      Icon: Flame,
       value: 2140,
       delta: 8.4,
-      deltaLabel: t('croissant.bakery.kpi.deltaLabel'),
-      icon: <Flame className="h-4 w-4" />,
-      spark: [180, 210, 240, 260, 240, 220, 280, 300, 310, 320, 360, 400],
-      tone: 'warning',
     },
     {
       id: 'refunds',
       label: t('croissant.bakery.kpi.refunds'),
+      Icon: AlertTriangle,
       value: 14,
       delta: -2.1,
-      deltaLabel: t('croissant.bakery.kpi.deltaLabel'),
-      icon: <AlertTriangle className="h-4 w-4" />,
-      spark: [4, 3, 5, 2, 3, 1, 2, 3, 1, 2, 1, 0],
-      tone: 'danger',
     },
     {
       id: 'conv',
       label: t('croissant.bakery.kpi.conversion'),
-      value: 62.1,
-      unit: '%',
+      Icon: Target,
+      value: '62.1%',
       delta: 3.4,
-      deltaLabel: t('croissant.bakery.kpi.deltaLabel'),
-      icon: <Target className="h-4 w-4" />,
-      spark: [55, 57, 58, 60, 59, 61, 62, 60, 63, 64, 62, 62],
-      tone: 'success',
-      accent: true,
     },
   ];
 
@@ -285,13 +260,9 @@ export function BakeryDashboardPage() {
           <span className="inline-flex items-center gap-2">
             <span className="font-mono text-xs text-foreground-muted">{row.original.id}</span>
             {row.index === 0 ? (
-              <span
-                data-print="hide"
-                className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 text-[10px] font-semibold text-warning"
-              >
+              <Badge variant="warning" size="sm">
                 {t('croissant.bakery.orders.justNow')}
-                <TypingDots color="muted" />
-              </span>
+              </Badge>
             ) : null}
           </span>
         ),
@@ -335,74 +306,86 @@ export function BakeryDashboardPage() {
     [t, currency],
   );
 
-  const meta = (
-    <>
-      <Chip tone="warning" dot>
-        {t('croissant.bakery.meta.live')}
-      </Chip>
-      <Chip tone="primary">{t('croissant.bakery.meta.ordersHr', { n: 42 })}</Chip>
-      <Chip tone="info">{t('croissant.bakery.meta.ovens', { n: 4 })}</Chip>
-    </>
-  );
-
   const handleMarkFulfilled = () => {
     toast.success(t('croissant.bakery.orders.markedFulfilled', { count: selectedRows.length }));
     setSelectedRows([]);
   };
 
   return (
-    <div className="mx-auto max-w-7xl space-y-12">
-      <SceneHeader
-        tone="warning"
-        pattern="dots"
-        eyebrow={t('croissant.bakery.scene.eyebrow')}
+    <div className="mx-auto max-w-[1400px] space-y-6">
+      <SimsPageHeader
         title={
           <span className="inline-flex items-center gap-3">
-            <CroissantIcon
-              aria-hidden="true"
-              className="h-7 w-7"
-              style={{ color: '#a3621f', fill: '#a3621f' }}
-            />
+            <CroissantIcon aria-hidden="true" className="h-7 w-7 text-warning" />
             {t('croissant.bakery.scene.title')}
           </span>
         }
         description={t('croissant.bakery.scene.description')}
-        meta={meta}
+        actions={
+          <>
+            <Badge variant="warning" size="sm" dot>
+              {t('croissant.bakery.meta.live')}
+            </Badge>
+            <Badge variant="primary" size="sm">
+              {t('croissant.bakery.meta.ordersHr', { n: 42 })}
+            </Badge>
+            <Badge variant="info" size="sm">
+              {t('croissant.bakery.meta.ovens', { n: 4 })}
+            </Badge>
+          </>
+        }
       />
 
-      <StagedSection
-        tone="warning"
-        eyebrow={t('croissant.bakery.section.pulseEyebrow')}
-        title={t('croissant.bakery.section.pulse')}
-        description={t('croissant.bakery.section.pulseDesc')}
-        headingId="bakery-pulse"
-      >
-        <StatRail items={stats} />
-      </StagedSection>
+      <section aria-labelledby="bakery-pulse" className="space-y-4">
+        <div>
+          <h2 id="bakery-pulse" className="text-lg font-semibold text-foreground">
+            {t('croissant.bakery.section.pulse')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.bakery.section.pulseDesc')}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          {stats.map((s) => (
+            <SimsStatCard
+              key={s.id}
+              Icon={s.Icon}
+              label={s.label}
+              value={s.value}
+              trend={trendFor(s.delta)}
+              trendValue={trendLabel(s.delta)}
+            />
+          ))}
+        </div>
+      </section>
 
-      <StagedSection
-        tone="warning"
-        eyebrow={t('croissant.bakery.section.ovensEyebrow')}
-        title={t('croissant.bakery.section.ovens')}
-        description={t('croissant.bakery.section.ovensDesc')}
-        headingId="bakery-ovens"
-      >
+      <section aria-labelledby="bakery-ovens" className="space-y-4">
+        <div>
+          <h2 id="bakery-ovens" className="text-lg font-semibold text-foreground">
+            {t('croissant.bakery.section.ovens')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.bakery.section.ovensDesc')}
+          </p>
+        </div>
         <OvenBoard />
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="warning"
-        eyebrow={t('croissant.bakery.section.revenueEyebrow')}
-        title={t('croissant.bakery.section.revenue')}
-        description={t('croissant.bakery.section.revenueDesc')}
-        headingId="bakery-revenue"
-      >
-        <ChartFrame
-          tone="warning"
-          eyebrow={t('croissant.bakery.chart.eyebrow')}
-          title={t('croissant.bakery.chart.title')}
-          description={t('croissant.bakery.chart.description')}
-          action={
+      <section aria-labelledby="bakery-revenue" className="space-y-4">
+        <div>
+          <h2 id="bakery-revenue" className="text-lg font-semibold text-foreground">
+            {t('croissant.bakery.section.revenue')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.bakery.section.revenueDesc')}
+          </p>
+        </div>
+        <Card variant="outlined">
+          <CardHeader className="flex flex-row items-start justify-between gap-2">
+            <div>
+              <CardTitle>{t('croissant.bakery.chart.title')}</CardTitle>
+              <CardDescription>{t('croissant.bakery.chart.description')}</CardDescription>
+            </div>
             <div
               className="inline-flex overflow-hidden rounded-md border border-border"
               role="group"
@@ -421,57 +404,61 @@ export function BakeryDashboardPage() {
                 </Button>
               ))}
             </div>
-          }
-          insight={
-            insight !== null
-              ? t('croissant.bakery.chart.insight', {
+          </CardHeader>
+          <CardContent>
+            <AreaChart
+              xKey="label"
+              data={[...revenueSeries]}
+              series={[
+                {
+                  key: 'revenue',
+                  label: t('croissant.bakery.chart.revenueLabel'),
+                  color: 'warning',
+                },
+                { key: 'target', label: t('croissant.bakery.chart.targetLabel'), color: 'info' },
+              ]}
+              yFormatter={(n) => currency.format(n)}
+              height={260}
+            />
+            {insight !== null ? (
+              <p className="mt-3 text-xs text-foreground-muted">
+                {t('croissant.bakery.chart.insight', {
                   best: insight.best,
                   bestVal: insight.bestVal,
                   worst: insight.worst,
                   worstVal: insight.worstVal,
-                })
-              : null
-          }
-        >
-          <AreaChart
-            xKey="label"
-            data={[...revenueSeries]}
-            series={[
-              { key: 'revenue', label: t('croissant.bakery.chart.revenueLabel'), color: 'warning' },
-              { key: 'target', label: t('croissant.bakery.chart.targetLabel'), color: 'info' },
-            ]}
-            yFormatter={(n) => currency.format(n)}
-            height={260}
-          />
-        </ChartFrame>
-      </StagedSection>
+                })}
+              </p>
+            ) : null}
+          </CardContent>
+        </Card>
+      </section>
 
-      <StagedSection
-        tone="warning"
-        eyebrow={t('croissant.bakery.section.sellersEyebrow')}
-        title={t('croissant.bakery.section.sellers')}
-        description={t('croissant.bakery.section.sellersDesc')}
-        headingId="bakery-sellers"
-      >
+      <section aria-labelledby="bakery-sellers" className="space-y-4">
+        <div>
+          <h2 id="bakery-sellers" className="text-lg font-semibold text-foreground">
+            {t('croissant.bakery.section.sellers')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.bakery.section.sellersDesc')}
+          </p>
+        </div>
         <TopSellers />
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="warning"
-        eyebrow={t('croissant.bakery.section.ordersEyebrow')}
-        title={t('croissant.bakery.section.orders')}
-        description={t('croissant.bakery.section.ordersDesc')}
-        headingId="bakery-orders"
-      >
+      <section aria-labelledby="bakery-orders" className="space-y-4">
+        <div>
+          <h2 id="bakery-orders" className="text-lg font-semibold text-foreground">
+            {t('croissant.bakery.section.orders')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.bakery.section.ordersDesc')}
+          </p>
+        </div>
         <div className="space-y-3">
           {selectedRows.length > 0 ? (
             <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-surface-muted/40 px-3 py-2 text-sm">
-              <span className="inline-flex items-center gap-2">
-                <span data-print="hide">
-                  <PulseRing size="sm" color="warning" />
-                </span>
-                {t('croissant.bakery.orders.selected', { count: selectedRows.length })}
-              </span>
+              <span>{t('croissant.bakery.orders.selected', { count: selectedRows.length })}</span>
               <Button
                 size="sm"
                 leftIcon={<Activity className="h-4 w-4" />}
@@ -492,9 +479,7 @@ export function BakeryDashboardPage() {
             pageSize={8}
           />
         </div>
-      </StagedSection>
-
-      <ComponentsUsedFooter components={COMPONENTS} />
+      </section>
     </div>
   );
 }

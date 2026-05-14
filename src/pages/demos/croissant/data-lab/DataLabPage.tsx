@@ -10,25 +10,24 @@ import {
   Inbox,
   X,
 } from 'lucide-react';
+import type { ComponentType } from 'react';
 import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
-import { Card, CardContent } from '@/components/data-display/Card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/data-display/Card';
 import { DataTable, type ColumnDef, type Row } from '@/components/data-display/DataTable';
 import { EmptyState } from '@/components/data-display/EmptyState';
 import { BarChart } from '@/components/data-display/charts/BarChart';
 import { LineChart } from '@/components/data-display/charts/LineChart';
-import { Stagger, SlideInRight } from '@/components/motion';
 import { cn } from '@/lib/cn';
-import {
-  ChartFrame,
-  Chip,
-  ComponentsUsedFooter,
-  SceneHeader,
-  StagedSection,
-  StatRail,
-  type StatRailItem,
-} from '../_shared';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
+import { SimsStatCard } from '@/pages/sims/components/SimsStatCard';
 
 type Product = 'classic' | 'almond' | 'chocolate' | 'sourdough' | 'baguette' | 'brioche';
 type Status = 'pass' | 'fail' | 'review';
@@ -89,24 +88,6 @@ function gen(): Batch[] {
 
 const ROWS = gen();
 
-const COMPONENTS = [
-  'SceneHeader',
-  'StagedSection',
-  'StatRail',
-  'StatCard',
-  'ChartFrame',
-  'DataTable',
-  'BarChart',
-  'LineChart',
-  'Card',
-  'Badge',
-  'Button',
-  'IconButton',
-  'EmptyState',
-  'SlideInRight',
-  'Stagger',
-];
-
 const PRODUCT_LABEL_KEY: Record<Product, string> = {
   classic: 'croissant.dataLab.product.classic',
   almond: 'croissant.dataLab.product.almond',
@@ -122,9 +103,31 @@ const STATUS_VARIANT: Record<Status, 'success' | 'warning' | 'danger'> = {
   fail: 'danger',
 };
 
+type KpiKey = null | 'low' | 'review' | 'fail';
+
+interface StatDef {
+  id: string;
+  kpi: KpiKey;
+  label: string;
+  Icon: ComponentType<{ className?: string }>;
+  value: string | number;
+  delta: number;
+}
+
+function trendFor(delta: number): 'up' | 'down' | 'flat' {
+  if (delta > 0) return 'up';
+  if (delta < 0) return 'down';
+  return 'flat';
+}
+
+function trendLabel(delta: number): string {
+  const sign = delta > 0 ? '+' : '';
+  return `${sign}${delta}%`;
+}
+
 export function DataLabPage() {
   const { t } = useTranslation();
-  const [activeKpi, setActiveKpi] = useState<null | 'low' | 'review' | 'fail'>(null);
+  const [activeKpi, setActiveKpi] = useState<KpiKey>(null);
   const [selected, setSelected] = useState<Batch | null>(null);
 
   const filtered = useMemo(() => {
@@ -134,54 +137,38 @@ export function DataLabPage() {
     return ROWS.filter((r) => r.status === 'fail');
   }, [activeKpi]);
 
-  const stats: ReadonlyArray<StatRailItem> = [
+  const stats: ReadonlyArray<StatDef> = [
     {
       id: 'batches',
+      kpi: null,
       label: t('croissant.dataLab.kpi.batches'),
+      Icon: FileBarChart,
       value: ROWS.length,
       delta: 4.4,
-      deltaLabel: t('croissant.dataLab.kpi.deltaLabel'),
-      icon: <FileBarChart className="h-4 w-4" />,
-      spark: [40, 45, 50, 48, 55, 60, 58, 64, 62, 64],
-      tone: 'secondary',
-      onClick: () => setActiveKpi(null),
-      active: activeKpi === null,
     },
     {
       id: 'avgScore',
+      kpi: 'low',
       label: t('croissant.dataLab.kpi.avgScore'),
+      Icon: ClipboardList,
       value: Math.round(ROWS.reduce((s, r) => s + r.score, 0) / ROWS.length),
       delta: 1.2,
-      deltaLabel: t('croissant.dataLab.kpi.deltaLabel'),
-      icon: <ClipboardList className="h-4 w-4" />,
-      spark: [78, 80, 81, 82, 79, 84, 83, 85],
-      tone: 'success',
-      onClick: () => setActiveKpi('low'),
-      active: activeKpi === 'low',
     },
     {
       id: 'review',
+      kpi: 'review',
       label: t('croissant.dataLab.kpi.review'),
+      Icon: AlertTriangle,
       value: ROWS.filter((r) => r.status === 'review').length,
       delta: -1.1,
-      deltaLabel: t('croissant.dataLab.kpi.deltaLabel'),
-      icon: <AlertTriangle className="h-4 w-4" />,
-      spark: [12, 10, 11, 9, 8, 7, 8, 7],
-      tone: 'warning',
-      onClick: () => setActiveKpi('review'),
-      active: activeKpi === 'review',
     },
     {
       id: 'fail',
+      kpi: 'fail',
       label: t('croissant.dataLab.kpi.fail'),
+      Icon: X,
       value: ROWS.filter((r) => r.status === 'fail').length,
       delta: 0.8,
-      deltaLabel: t('croissant.dataLab.kpi.deltaLabel'),
-      icon: <X className="h-4 w-4" />,
-      spark: [3, 4, 2, 3, 5, 4, 6, 3],
-      tone: 'danger',
-      onClick: () => setActiveKpi('fail'),
-      active: activeKpi === 'fail',
     },
   ];
 
@@ -290,7 +277,6 @@ export function DataLabPage() {
     for (let d = 0; d < days; d++) {
       const row: number[] = [];
       for (let h = 0; h < hours; h++) {
-        // Bake mostly happens 5-10am and 12-6pm
         const morning = Math.max(0, 8 - Math.abs(h - 7));
         const afternoon = Math.max(0, 6 - Math.abs(h - 14));
         const noise = (d * 13 + h * 7) % 4;
@@ -303,43 +289,90 @@ export function DataLabPage() {
 
   const heatmapMax = Math.max(...heatmap.flat());
 
-  const meta = (
-    <>
-      <Chip tone="secondary" dot>
-        {t('croissant.dataLab.meta.batches', { n: ROWS.length })}
-      </Chip>
-      <Chip tone="danger">{t('croissant.dataLab.meta.anomalies', { n: outliers.length })}</Chip>
-    </>
-  );
+  const exportCards: ReadonlyArray<{
+    icon: ComponentType<{ className?: string }>;
+    title: string;
+    desc: string;
+  }> = [
+    {
+      icon: Download,
+      title: 'croissant.dataLab.export.csv',
+      desc: 'croissant.dataLab.export.csvDesc',
+    },
+    {
+      icon: Calendar,
+      title: 'croissant.dataLab.export.schedule',
+      desc: 'croissant.dataLab.export.scheduleDesc',
+    },
+    {
+      icon: Bell,
+      title: 'croissant.dataLab.export.alerts',
+      desc: 'croissant.dataLab.export.alertsDesc',
+    },
+  ];
 
   return (
-    <div className="mx-auto max-w-7xl space-y-12">
-      <SceneHeader
-        tone="secondary"
-        pattern="grid"
-        eyebrow={t('croissant.dataLab.scene.eyebrow')}
+    <div className="mx-auto max-w-[1400px] space-y-6">
+      <SimsPageHeader
         title={t('croissant.dataLab.scene.title')}
         description={t('croissant.dataLab.scene.description')}
-        meta={meta}
+        actions={
+          <>
+            <Badge variant="neutral" size="sm" dot>
+              {t('croissant.dataLab.meta.batches', { n: ROWS.length })}
+            </Badge>
+            <Badge variant="danger" size="sm">
+              {t('croissant.dataLab.meta.anomalies', { n: outliers.length })}
+            </Badge>
+          </>
+        }
       />
 
-      <StagedSection
-        tone="secondary"
-        eyebrow={t('croissant.dataLab.section.kpiEyebrow')}
-        title={t('croissant.dataLab.section.kpi')}
-        description={t('croissant.dataLab.section.kpiDesc')}
-        headingId="data-kpi"
-      >
-        <StatRail items={stats} />
-      </StagedSection>
+      <section aria-labelledby="data-kpi" className="space-y-4">
+        <div>
+          <h2 id="data-kpi" className="text-lg font-semibold text-foreground">
+            {t('croissant.dataLab.section.kpi')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.dataLab.section.kpiDesc')}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((s) => {
+            const active = activeKpi === s.kpi;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setActiveKpi(s.kpi)}
+                aria-pressed={active}
+                className="rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                <SimsStatCard
+                  Icon={s.Icon}
+                  label={s.label}
+                  value={s.value}
+                  trend={trendFor(s.delta)}
+                  trendValue={trendLabel(s.delta)}
+                  className={cn(
+                    active && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
+                  )}
+                />
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
-      <StagedSection
-        tone="secondary"
-        eyebrow={t('croissant.dataLab.section.inspectEyebrow')}
-        title={t('croissant.dataLab.section.inspect')}
-        description={t('croissant.dataLab.section.inspectDesc')}
-        headingId="data-inspect"
-      >
+      <section aria-labelledby="data-inspect" className="space-y-4">
+        <div>
+          <h2 id="data-inspect" className="text-lg font-semibold text-foreground">
+            {t('croissant.dataLab.section.inspect')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.dataLab.section.inspectDesc')}
+          </p>
+        </div>
         <div className="space-y-3">
           {activeKpi !== null ? (
             <div className="flex items-center justify-between gap-2 rounded-md border border-border bg-surface-muted/40 px-3 py-2 text-sm">
@@ -381,38 +414,32 @@ export function DataLabPage() {
             }
           />
         </div>
-      </StagedSection>
+      </section>
 
-      {/* Anomaly side panel */}
       {selected !== null ? (
-        <SlideInRight>
-          <Card variant="outlined" className="border-secondary/30">
-            <CardContent className="space-y-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-secondary">
-                    {t('croissant.dataLab.detail.eyebrow')}
-                  </p>
-                  <h3 className="text-lg font-semibold text-foreground">
-                    {selected.id} · {t(PRODUCT_LABEL_KEY[selected.product])}
-                  </h3>
-                  <p className="text-sm text-foreground-muted">{selected.notes}</p>
-                </div>
-                <IconButton
-                  aria-label={t('croissant.dataLab.detail.close')}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelected(null)}
-                >
-                  <X className="h-4 w-4" />
-                </IconButton>
-              </div>
-
-              <ChartFrame
-                tone="secondary"
-                eyebrow={t('croissant.dataLab.detail.tempEyebrow')}
-                title={t('croissant.dataLab.detail.tempTitle')}
-              >
+        <Card variant="outlined">
+          <CardHeader className="flex flex-row items-start justify-between gap-3">
+            <div>
+              <CardTitle>
+                {selected.id} · {t(PRODUCT_LABEL_KEY[selected.product])}
+              </CardTitle>
+              <CardDescription>{selected.notes}</CardDescription>
+            </div>
+            <IconButton
+              aria-label={t('croissant.dataLab.detail.close')}
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelected(null)}
+            >
+              <X className="h-4 w-4" />
+            </IconButton>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Card variant="outlined">
+              <CardHeader>
+                <CardTitle>{t('croissant.dataLab.detail.tempTitle')}</CardTitle>
+              </CardHeader>
+              <CardContent>
                 <LineChart
                   xKey="t"
                   data={tempCurve}
@@ -426,57 +453,60 @@ export function DataLabPage() {
                   height={200}
                   yFormatter={(v) => `${Math.round(v)}°C`}
                 />
-              </ChartFrame>
+              </CardContent>
+            </Card>
 
-              <div className="grid grid-cols-3 gap-2">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      'flex h-20 items-center justify-center rounded-md',
-                      i === 1 ? 'bg-warning/15' : i === 2 ? 'bg-info/15' : 'bg-success/15',
-                    )}
-                    aria-label={t('croissant.dataLab.detail.photo', { n: i })}
-                  >
-                    <span className="text-xs text-foreground-muted">
-                      {t('croissant.dataLab.detail.photoLabel', { n: i })}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </SlideInRight>
+            <div className="grid grid-cols-3 gap-2">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    'flex h-20 items-center justify-center rounded-md',
+                    i === 1 ? 'bg-warning/10' : i === 2 ? 'bg-info/10' : 'bg-success/10',
+                  )}
+                  aria-label={t('croissant.dataLab.detail.photo', { n: i })}
+                >
+                  <span className="text-xs text-foreground-muted">
+                    {t('croissant.dataLab.detail.photoLabel', { n: i })}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       ) : null}
 
-      <StagedSection
-        tone="secondary"
-        eyebrow={t('croissant.dataLab.section.histEyebrow')}
-        title={t('croissant.dataLab.section.hist')}
-        description={t('croissant.dataLab.section.histDesc')}
-        headingId="data-hist"
-      >
+      <section aria-labelledby="data-hist" className="space-y-4">
+        <div>
+          <h2 id="data-hist" className="text-lg font-semibold text-foreground">
+            {t('croissant.dataLab.section.hist')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.dataLab.section.histDesc')}
+          </p>
+        </div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr]">
-          <ChartFrame
-            tone="secondary"
-            eyebrow={t('croissant.dataLab.hist.eyebrow')}
-            title={t('croissant.dataLab.hist.title')}
-          >
-            <BarChart
-              xKey="range"
-              data={[...histogram]}
-              series={[
-                { key: 'count', label: t('croissant.dataLab.hist.count'), color: 'secondary' },
-              ]}
-              height={220}
-            />
-          </ChartFrame>
           <Card variant="outlined">
-            <CardContent className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                {t('croissant.dataLab.outliers.title')}
-              </p>
-              <Stagger animation="slide-in-up" stagger={40}>
+            <CardHeader>
+              <CardTitle>{t('croissant.dataLab.hist.title')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <BarChart
+                xKey="range"
+                data={[...histogram]}
+                series={[
+                  { key: 'count', label: t('croissant.dataLab.hist.count'), color: 'secondary' },
+                ]}
+                height={220}
+              />
+            </CardContent>
+          </Card>
+          <Card variant="outlined">
+            <CardHeader>
+              <CardTitle>{t('croissant.dataLab.outliers.title')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
                 {outliers.map((o) => (
                   <div
                     key={o.id}
@@ -493,19 +523,21 @@ export function DataLabPage() {
                     </Badge>
                   </div>
                 ))}
-              </Stagger>
+              </div>
             </CardContent>
           </Card>
         </div>
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="secondary"
-        eyebrow={t('croissant.dataLab.section.heatmapEyebrow')}
-        title={t('croissant.dataLab.section.heatmap')}
-        description={t('croissant.dataLab.section.heatmapDesc')}
-        headingId="data-heatmap"
-      >
+      <section aria-labelledby="data-heatmap" className="space-y-4">
+        <div>
+          <h2 id="data-heatmap" className="text-lg font-semibold text-foreground">
+            {t('croissant.dataLab.section.heatmap')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.dataLab.section.heatmapDesc')}
+          </p>
+        </div>
         <Card variant="outlined">
           <CardContent>
             <div className="overflow-x-auto">
@@ -517,7 +549,7 @@ export function DataLabPage() {
                   </span>
                 ))}
                 {heatmap.map((row, d) => (
-                  <Stagger key={d} animation="fade-in" stagger={20} className="contents">
+                  <div key={d} className="contents">
                     <span className="self-center pr-1 text-right text-foreground-subtle">
                       {t(`croissant.dataLab.heatmap.day.${d}`)}
                     </span>
@@ -529,55 +561,40 @@ export function DataLabPage() {
                         style={{ opacity: Math.max(0.05, val / heatmapMax) }}
                       />
                     ))}
-                  </Stagger>
+                  </div>
                 ))}
               </div>
             </div>
           </CardContent>
         </Card>
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="secondary"
-        eyebrow={t('croissant.dataLab.section.exportEyebrow')}
-        title={t('croissant.dataLab.section.export')}
-        description={t('croissant.dataLab.section.exportDesc')}
-        headingId="data-export"
-        bodyClassName="grid grid-cols-1 gap-4 sm:grid-cols-3"
-      >
-        {[
-          {
-            icon: Download,
-            title: 'croissant.dataLab.export.csv',
-            desc: 'croissant.dataLab.export.csvDesc',
-          },
-          {
-            icon: Calendar,
-            title: 'croissant.dataLab.export.schedule',
-            desc: 'croissant.dataLab.export.scheduleDesc',
-          },
-          {
-            icon: Bell,
-            title: 'croissant.dataLab.export.alerts',
-            desc: 'croissant.dataLab.export.alertsDesc',
-          },
-        ].map(({ icon: Icon, title, desc }) => (
-          <Card key={title} variant="outlined" className="group transition-shadow hover:shadow-md">
-            <CardContent className="space-y-3">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary/10 text-secondary">
-                <Icon className="h-5 w-5" />
-              </span>
-              <p className="text-sm font-semibold text-foreground">{t(title)}</p>
-              <p className="text-xs text-foreground-muted">{t(desc)}</p>
-              <Button size="sm" variant="outline">
-                {t('croissant.dataLab.export.cta')}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </StagedSection>
-
-      <ComponentsUsedFooter components={COMPONENTS} />
+      <section aria-labelledby="data-export" className="space-y-4">
+        <div>
+          <h2 id="data-export" className="text-lg font-semibold text-foreground">
+            {t('croissant.dataLab.section.export')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.dataLab.section.exportDesc')}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {exportCards.map(({ icon: Icon, title, desc }) => (
+            <Card key={title} variant="outlined">
+              <CardContent className="space-y-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-md bg-secondary/10 text-secondary">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <p className="text-sm font-semibold text-foreground">{t(title)}</p>
+                <p className="text-xs text-foreground-muted">{t(desc)}</p>
+                <Button size="sm" variant="outline">
+                  {t('croissant.dataLab.export.cta')}
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

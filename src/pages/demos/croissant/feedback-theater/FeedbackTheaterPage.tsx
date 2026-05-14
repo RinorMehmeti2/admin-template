@@ -14,8 +14,9 @@ import {
   ShieldAlert,
   Zap,
 } from 'lucide-react';
-import type { Sparkles } from 'lucide-react';
+import type { ComponentType } from 'react';
 import { Alert } from '@/components/feedback/Alert';
+import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
 import { Card, CardContent } from '@/components/data-display/Card';
 import { Progress } from '@/components/feedback/Progress';
@@ -36,11 +37,11 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/feedback/Drawer';
+import { EmptyState } from '@/components/data-display/EmptyState';
 import { FormField, Input } from '@/components/forms';
 import { useToast } from '@/context/ToastProvider';
 import type { Placement } from '@/hooks/usePosition';
-import { AnimatePresence } from '@/components/motion';
-import { Chip, ComponentsUsedFooter, EmptyHero, SceneHeader, StagedSection } from '../_shared';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 
 type DialogKind = 'confirm' | 'danger' | 'form' | 'image';
 type DrawerSide = 'left' | 'right' | 'top' | 'bottom';
@@ -51,26 +52,6 @@ interface AlertEntry {
   title: string;
   body: string;
 }
-
-const COMPONENTS = [
-  'Dialog',
-  'ConfirmDialog',
-  'Drawer',
-  'BottomSheet',
-  'Toast',
-  'Alert',
-  'Tooltip',
-  'Progress',
-  'Spinner',
-  'Card',
-  'Button',
-  'IconButton',
-  'SceneHeader',
-  'StagedSection',
-  'EmptyHero',
-  'AnimatePresence',
-  'PulseRing',
-];
 
 const TOAST_BUTTONS: Array<{
   kind: 'success' | 'error' | 'warning' | 'info';
@@ -106,7 +87,7 @@ const DIALOG_CARDS: Array<{
   kind: DialogKind;
   titleKey: string;
   bodyKey: string;
-  icon: typeof Sparkles;
+  icon: ComponentType<{ className?: string }>;
 }> = [
   {
     kind: 'confirm',
@@ -134,7 +115,11 @@ const DIALOG_CARDS: Array<{
   },
 ];
 
-const DRAWER_SIDES: Array<{ side: DrawerSide; icon: typeof ChevronLeft; labelKey: string }> = [
+const DRAWER_SIDES: Array<{
+  side: DrawerSide;
+  icon: ComponentType<{ className?: string }>;
+  labelKey: string;
+}> = [
   { side: 'left', icon: ChevronLeft, labelKey: 'croissant.feedback.drawer.left' },
   { side: 'right', icon: ChevronRight, labelKey: 'croissant.feedback.drawer.right' },
   { side: 'top', icon: ChevronUp, labelKey: 'croissant.feedback.drawer.top' },
@@ -209,32 +194,32 @@ export function FeedbackTheaterPage() {
   const dismissAlert = (id: string) => setAlerts((list) => list.filter((a) => a.id !== id));
   const resetAlerts = () => setAlerts(INITIAL_ALERTS);
 
-  const meta = (
-    <>
-      <Chip tone="danger" dot>
-        {t('croissant.feedback.meta.overlays', { n: 7 })}
-      </Chip>
-      <Chip tone="warning">{t('croissant.feedback.meta.collisions', { n: 0 })}</Chip>
-    </>
-  );
-
   return (
-    <div className="mx-auto max-w-7xl space-y-12">
-      <SceneHeader
-        tone="danger"
-        eyebrow={t('croissant.feedback.scene.eyebrow')}
+    <div className="mx-auto max-w-[1400px] space-y-6">
+      <SimsPageHeader
         title={t('croissant.feedback.scene.title')}
         description={t('croissant.feedback.scene.description')}
-        meta={meta}
+        actions={
+          <>
+            <Badge variant="danger" size="sm" dot>
+              {t('croissant.feedback.meta.overlays', { n: 7 })}
+            </Badge>
+            <Badge variant="warning" size="sm">
+              {t('croissant.feedback.meta.collisions', { n: 0 })}
+            </Badge>
+          </>
+        }
       />
 
-      <StagedSection
-        tone="danger"
-        eyebrow={t('croissant.feedback.section.toastsEyebrow')}
-        title={t('croissant.feedback.section.toasts')}
-        description={t('croissant.feedback.section.toastsDesc')}
-        headingId="toast-theater"
-      >
+      <section aria-labelledby="toast-theater" className="space-y-4">
+        <div>
+          <h2 id="toast-theater" className="text-lg font-semibold text-foreground">
+            {t('croissant.feedback.section.toasts')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.feedback.section.toastsDesc')}
+          </p>
+        </div>
         <Card variant="outlined">
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -260,52 +245,53 @@ export function FeedbackTheaterPage() {
             </div>
           </CardContent>
         </Card>
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="danger"
-        eyebrow={t('croissant.feedback.section.dialogsEyebrow')}
-        title={t('croissant.feedback.section.dialogs')}
-        description={t('croissant.feedback.section.dialogsDesc')}
-        headingId="dialog-gallery"
-        bodyClassName="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
-      >
-        {DIALOG_CARDS.map((card) => {
-          const Icon = card.icon;
-          return (
-            <Card
-              key={card.kind}
-              variant="outlined"
-              className="group transition-shadow hover:shadow-md"
-            >
-              <CardContent className="space-y-3">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-danger/10 text-danger">
-                  <Icon className="h-5 w-5" />
-                </span>
-                <p className="text-sm font-semibold text-foreground">{t(card.titleKey)}</p>
-                <p className="text-xs text-foreground-muted">{t(card.bodyKey)}</p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    card.kind === 'danger' ? setConfirmOpen(true) : setDialogKind(card.kind)
-                  }
-                >
-                  {t('croissant.feedback.dialogs.open')}
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </StagedSection>
+      <section aria-labelledby="dialog-gallery" className="space-y-4">
+        <div>
+          <h2 id="dialog-gallery" className="text-lg font-semibold text-foreground">
+            {t('croissant.feedback.section.dialogs')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.feedback.section.dialogsDesc')}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {DIALOG_CARDS.map((card) => {
+            const Icon = card.icon;
+            return (
+              <Card key={card.kind} variant="outlined">
+                <CardContent className="space-y-3">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-md bg-danger/10 text-danger">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <p className="text-sm font-semibold text-foreground">{t(card.titleKey)}</p>
+                  <p className="text-xs text-foreground-muted">{t(card.bodyKey)}</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      card.kind === 'danger' ? setConfirmOpen(true) : setDialogKind(card.kind)
+                    }
+                  >
+                    {t('croissant.feedback.dialogs.open')}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </section>
 
-      <StagedSection
-        tone="danger"
-        eyebrow={t('croissant.feedback.section.drawerEyebrow')}
-        title={t('croissant.feedback.section.drawer')}
-        description={t('croissant.feedback.section.drawerDesc')}
-        headingId="drawer-sides"
-      >
+      <section aria-labelledby="drawer-sides" className="space-y-4">
+        <div>
+          <h2 id="drawer-sides" className="text-lg font-semibold text-foreground">
+            {t('croissant.feedback.section.drawer')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.feedback.section.drawerDesc')}
+          </p>
+        </div>
         <Card variant="outlined">
           <CardContent>
             <div className="flex flex-wrap items-center gap-2">
@@ -325,15 +311,17 @@ export function FeedbackTheaterPage() {
             </div>
           </CardContent>
         </Card>
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="danger"
-        eyebrow={t('croissant.feedback.section.alertsEyebrow')}
-        title={t('croissant.feedback.section.alerts')}
-        description={t('croissant.feedback.section.alertsDesc')}
-        headingId="alert-weather"
-      >
+      <section aria-labelledby="alert-weather" className="space-y-4">
+        <div>
+          <h2 id="alert-weather" className="text-lg font-semibold text-foreground">
+            {t('croissant.feedback.section.alerts')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.feedback.section.alertsDesc')}
+          </p>
+        </div>
         <Card variant="outlined">
           <CardContent>
             {alerts.length > 0 ? (
@@ -350,125 +338,126 @@ export function FeedbackTheaterPage() {
                 ))}
               </ul>
             ) : (
-              <AnimatePresence enter="scale-in" exit="fade-out">
-                <EmptyHero
-                  key="empty"
-                  tone="success"
-                  icon={<CheckCircle className="h-7 w-7" />}
-                  title={t('croissant.feedback.alerts.allClear')}
-                  description={t('croissant.feedback.alerts.allClearDesc')}
-                  primaryAction={
-                    <Button onClick={resetAlerts}>{t('croissant.feedback.alerts.reset')}</Button>
-                  }
-                />
-              </AnimatePresence>
+              <EmptyState
+                icon={<CheckCircle className="h-7 w-7" />}
+                title={t('croissant.feedback.alerts.allClear')}
+                description={t('croissant.feedback.alerts.allClearDesc')}
+                action={
+                  <Button onClick={resetAlerts}>{t('croissant.feedback.alerts.reset')}</Button>
+                }
+              />
             )}
           </CardContent>
         </Card>
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="danger"
-        eyebrow={t('croissant.feedback.section.progressEyebrow')}
-        title={t('croissant.feedback.section.progress')}
-        description={t('croissant.feedback.section.progressDesc')}
-        headingId="progress-lab"
-        bodyClassName="grid grid-cols-1 gap-4 sm:grid-cols-2"
-      >
-        <Card variant="outlined">
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                {t('croissant.feedback.progress.basic')}
-              </p>
-              <Progress value={progress} label={t('croissant.feedback.progress.basic')} />
-            </div>
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                {t('croissant.feedback.progress.indeterminate')}
-              </p>
-              <Progress
-                indeterminate
-                variant="success"
-                label={t('croissant.feedback.progress.indeterminate')}
-              />
-            </div>
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                {t('croissant.feedback.progress.tone')}
-              </p>
-              <div className="space-y-1.5">
+      <section aria-labelledby="progress-lab" className="space-y-4">
+        <div>
+          <h2 id="progress-lab" className="text-lg font-semibold text-foreground">
+            {t('croissant.feedback.section.progress')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.feedback.section.progressDesc')}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Card variant="outlined">
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+                  {t('croissant.feedback.progress.basic')}
+                </p>
+                <Progress value={progress} label={t('croissant.feedback.progress.basic')} />
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+                  {t('croissant.feedback.progress.indeterminate')}
+                </p>
                 <Progress
-                  value={20}
-                  variant="default"
-                  label={t('croissant.feedback.progress.tone')}
-                />
-                <Progress
-                  value={50}
+                  indeterminate
                   variant="success"
-                  label={t('croissant.feedback.progress.tone')}
-                />
-                <Progress
-                  value={75}
-                  variant="warning"
-                  label={t('croissant.feedback.progress.tone')}
-                />
-                <Progress
-                  value={95}
-                  variant="danger"
-                  label={t('croissant.feedback.progress.tone')}
+                  label={t('croissant.feedback.progress.indeterminate')}
                 />
               </div>
-            </div>
-            <div className="flex gap-2">
-              <Button size="sm" onClick={() => setProgress((p) => Math.min(100, p + 10))}>
-                {t('croissant.feedback.progress.tick')}
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => setProgress(0)}>
-                {t('croissant.feedback.progress.reset')}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+                  {t('croissant.feedback.progress.tone')}
+                </p>
+                <div className="space-y-1.5">
+                  <Progress
+                    value={20}
+                    variant="default"
+                    label={t('croissant.feedback.progress.tone')}
+                  />
+                  <Progress
+                    value={50}
+                    variant="success"
+                    label={t('croissant.feedback.progress.tone')}
+                  />
+                  <Progress
+                    value={75}
+                    variant="warning"
+                    label={t('croissant.feedback.progress.tone')}
+                  />
+                  <Progress
+                    value={95}
+                    variant="danger"
+                    label={t('croissant.feedback.progress.tone')}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" onClick={() => setProgress((p) => Math.min(100, p + 10))}>
+                  {t('croissant.feedback.progress.tick')}
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => setProgress(0)}>
+                  {t('croissant.feedback.progress.reset')}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card variant="outlined">
-          <CardContent className="flex flex-col items-center gap-4 text-center">
-            <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-              {t('croissant.feedback.progress.timer')}
-            </p>
-            <CircularProgress value={timerProgress} />
-            <div className="flex gap-2">
-              <Button
-                onClick={() => {
-                  if (timerProgress >= 100) setTimerProgress(0);
-                  setTimerActive(true);
-                }}
-                disabled={timerActive}
-                leftIcon={<Clock className="h-4 w-4" />}
-              >
-                {t('croissant.feedback.progress.start')}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setTimerActive(false);
-                  setTimerProgress(0);
-                }}
-              >
-                {t('croissant.feedback.progress.reset')}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </StagedSection>
+          <Card variant="outlined">
+            <CardContent className="flex flex-col items-center gap-4 text-center">
+              <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+                {t('croissant.feedback.progress.timer')}
+              </p>
+              <CircularProgress value={timerProgress} />
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => {
+                    if (timerProgress >= 100) setTimerProgress(0);
+                    setTimerActive(true);
+                  }}
+                  disabled={timerActive}
+                  leftIcon={<Clock className="h-4 w-4" />}
+                >
+                  {t('croissant.feedback.progress.start')}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setTimerActive(false);
+                    setTimerProgress(0);
+                  }}
+                >
+                  {t('croissant.feedback.progress.reset')}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
-      <StagedSection
-        tone="danger"
-        eyebrow={t('croissant.feedback.section.tooltipsEyebrow')}
-        title={t('croissant.feedback.section.tooltips')}
-        description={t('croissant.feedback.section.tooltipsDesc')}
-        headingId="tooltip-orchard"
-      >
+      <section aria-labelledby="tooltip-orchard" className="space-y-4">
+        <div>
+          <h2 id="tooltip-orchard" className="text-lg font-semibold text-foreground">
+            {t('croissant.feedback.section.tooltips')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.feedback.section.tooltipsDesc')}
+          </p>
+        </div>
         <Card variant="outlined">
           <CardContent>
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
@@ -487,9 +476,8 @@ export function FeedbackTheaterPage() {
             </div>
           </CardContent>
         </Card>
-      </StagedSection>
+      </section>
 
-      {/* Confirm dialog (danger) */}
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
@@ -540,12 +528,12 @@ export function FeedbackTheaterPage() {
             {dialogKind === 'image' ? (
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  'bg-warning/15 text-warning',
-                  'bg-info/15 text-info',
-                  'bg-success/15 text-success',
-                  'bg-danger/15 text-danger',
-                  'bg-info/15 text-info',
-                  'bg-warning/15 text-warning',
+                  'bg-warning/10 text-warning',
+                  'bg-info/10 text-info',
+                  'bg-success/10 text-success',
+                  'bg-danger/10 text-danger',
+                  'bg-info/10 text-info',
+                  'bg-warning/10 text-warning',
                 ].map((cls, idx) => (
                   <div
                     key={idx}
@@ -597,8 +585,6 @@ export function FeedbackTheaterPage() {
           </DrawerContent>
         </Drawer>
       ))}
-
-      <ComponentsUsedFooter components={COMPONENTS} />
     </div>
   );
 }

@@ -69,31 +69,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/navigation/Tabs';
 import { Select } from '@/components/forms/Select';
 import { Input } from '@/components/forms/Input';
-import { AnimatePresence, Stagger } from '@/components/motion';
-import { Chip, ComponentsUsedFooter, SceneHeader, StagedSection } from '../_shared';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 
 const STEPS = ['account', 'address', 'payment', 'review', 'confirm'] as const;
 type StepKey = (typeof STEPS)[number];
-
-const COMPONENTS = [
-  'SceneHeader',
-  'StagedSection',
-  'Breadcrumbs',
-  'Tabs',
-  'Stepper',
-  'Pagination',
-  'DropdownMenu',
-  'ContextMenu',
-  'Accordion',
-  'Kbd',
-  'Button',
-  'IconButton',
-  'Card',
-  'Badge',
-  'Stat',
-  'Stagger',
-  'AnimatePresence',
-];
 
 export function NavigationTrailPage() {
   const { t } = useTranslation();
@@ -111,32 +90,32 @@ export function NavigationTrailPage() {
     return 'idle';
   };
 
-  const meta = (
-    <>
-      <Chip tone="success" dot>
-        {t('croissant.nav.meta.paths', { n: 4 })}
-      </Chip>
-      <Chip tone="info">{t('croissant.nav.meta.layers', { n: 3 })}</Chip>
-    </>
-  );
-
   return (
-    <div className="mx-auto max-w-7xl space-y-12">
-      <SceneHeader
-        tone="success"
-        eyebrow={t('croissant.nav.scene.eyebrow')}
+    <div className="mx-auto max-w-[1400px] space-y-6">
+      <SimsPageHeader
         title={t('croissant.nav.scene.title')}
         description={t('croissant.nav.scene.description')}
-        meta={meta}
+        actions={
+          <>
+            <Badge variant="success" size="sm" dot>
+              {t('croissant.nav.meta.paths', { n: 4 })}
+            </Badge>
+            <Badge variant="info" size="sm">
+              {t('croissant.nav.meta.layers', { n: 3 })}
+            </Badge>
+          </>
+        }
       />
 
-      <StagedSection
-        tone="success"
-        eyebrow={t('croissant.nav.section.breadcrumbsEyebrow')}
-        title={t('croissant.nav.section.breadcrumbs')}
-        description={t('croissant.nav.section.breadcrumbsDesc')}
-        headingId="nav-breadcrumbs"
-      >
+      <section aria-labelledby="nav-breadcrumbs" className="space-y-4">
+        <div>
+          <h2 id="nav-breadcrumbs" className="text-lg font-semibold text-foreground">
+            {t('croissant.nav.section.breadcrumbs')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.nav.section.breadcrumbsDesc')}
+          </p>
+        </div>
         <Card variant="outlined">
           <CardContent className="space-y-4">
             <Breadcrumbs>
@@ -217,76 +196,76 @@ export function NavigationTrailPage() {
             </Breadcrumbs>
           </CardContent>
         </Card>
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="success"
-        eyebrow={t('croissant.nav.section.tabsEyebrow')}
-        title={t('croissant.nav.section.tabs')}
-        description={t('croissant.nav.section.tabsDesc')}
-        headingId="nav-tabs"
-        bodyClassName="grid grid-cols-1 gap-4 lg:grid-cols-2"
-      >
-        {(['underline', 'pills', 'segmented'] as const).map((variant) => (
-          <Card key={variant} variant="outlined">
+      <section aria-labelledby="nav-tabs" className="space-y-4">
+        <div>
+          <h2 id="nav-tabs" className="text-lg font-semibold text-foreground">
+            {t('croissant.nav.section.tabs')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.nav.section.tabsDesc')}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {(['underline', 'pills', 'segmented'] as const).map((variant) => (
+            <Card key={variant} variant="outlined">
+              <CardContent className="space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+                  {variant}
+                </p>
+                <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} variant={variant}>
+                  <TabsList>
+                    <TabsTrigger value="recipe">{t('croissant.nav.tabs.recipe')}</TabsTrigger>
+                    <TabsTrigger value="equipment">{t('croissant.nav.tabs.equipment')}</TabsTrigger>
+                    <TabsTrigger value="notes">{t('croissant.nav.tabs.notes')}</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value={tab}>
+                    <div className="rounded-md bg-surface-muted/30 p-3 text-sm text-foreground-muted">
+                      {t(`croissant.nav.tabs.body.${tab}`)}
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          ))}
+
+          <Card variant="outlined">
             <CardContent className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                {variant}
+                vertical
               </p>
-              <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} variant={variant}>
+              <Tabs
+                value={tab}
+                onValueChange={(v) => setTab(v as typeof tab)}
+                variant="pills"
+                orientation="vertical"
+              >
                 <TabsList>
                   <TabsTrigger value="recipe">{t('croissant.nav.tabs.recipe')}</TabsTrigger>
                   <TabsTrigger value="equipment">{t('croissant.nav.tabs.equipment')}</TabsTrigger>
                   <TabsTrigger value="notes">{t('croissant.nav.tabs.notes')}</TabsTrigger>
                 </TabsList>
                 <TabsContent value={tab}>
-                  <AnimatePresence enter="fade-in" exit="fade-out">
-                    <div
-                      key={tab}
-                      className="rounded-md bg-surface-muted/30 p-3 text-sm text-foreground-muted"
-                    >
-                      {t(`croissant.nav.tabs.body.${tab}`)}
-                    </div>
-                  </AnimatePresence>
+                  <div className="rounded-md bg-surface-muted/30 p-3 text-sm text-foreground-muted">
+                    {t(`croissant.nav.tabs.body.${tab}`)}
+                  </div>
                 </TabsContent>
               </Tabs>
             </CardContent>
           </Card>
-        ))}
+        </div>
+      </section>
 
-        <Card variant="outlined">
-          <CardContent className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-              vertical
-            </p>
-            <Tabs
-              value={tab}
-              onValueChange={(v) => setTab(v as typeof tab)}
-              variant="pills"
-              orientation="vertical"
-            >
-              <TabsList>
-                <TabsTrigger value="recipe">{t('croissant.nav.tabs.recipe')}</TabsTrigger>
-                <TabsTrigger value="equipment">{t('croissant.nav.tabs.equipment')}</TabsTrigger>
-                <TabsTrigger value="notes">{t('croissant.nav.tabs.notes')}</TabsTrigger>
-              </TabsList>
-              <TabsContent value={tab}>
-                <div className="rounded-md bg-surface-muted/30 p-3 text-sm text-foreground-muted">
-                  {t(`croissant.nav.tabs.body.${tab}`)}
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-      </StagedSection>
-
-      <StagedSection
-        tone="success"
-        eyebrow={t('croissant.nav.section.stepperEyebrow')}
-        title={t('croissant.nav.section.stepper')}
-        description={t('croissant.nav.section.stepperDesc')}
-        headingId="nav-stepper"
-      >
+      <section aria-labelledby="nav-stepper" className="space-y-4">
+        <div>
+          <h2 id="nav-stepper" className="text-lg font-semibold text-foreground">
+            {t('croissant.nav.section.stepper')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.nav.section.stepperDesc')}
+          </p>
+        </div>
         <Card variant="outlined">
           <CardContent className="space-y-6">
             <Stepper orientation="horizontal">
@@ -314,243 +293,251 @@ export function NavigationTrailPage() {
             </Stepper>
           </CardContent>
         </Card>
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="success"
-        eyebrow={t('croissant.nav.section.paginationEyebrow')}
-        title={t('croissant.nav.section.pagination')}
-        description={t('croissant.nav.section.paginationDesc')}
-        headingId="nav-pagination"
-      >
+      <section aria-labelledby="nav-pagination" className="space-y-4">
+        <div>
+          <h2 id="nav-pagination" className="text-lg font-semibold text-foreground">
+            {t('croissant.nav.section.pagination')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.nav.section.paginationDesc')}
+          </p>
+        </div>
         <Card variant="outlined">
           <CardContent className="space-y-5">
-            <Stagger animation="fade-in" stagger={60}>
-              <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                  {t('croissant.nav.pagination.standard')}
-                </p>
+            <div className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+                {t('croissant.nav.pagination.standard')}
+              </p>
+              <Pagination page={page} totalPages={12} onPageChange={setPage} />
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+                {t('croissant.nav.pagination.compact')}
+              </p>
+              <Pagination
+                page={page}
+                totalPages={12}
+                onPageChange={setPage}
+                siblingCount={0}
+                boundaryCount={1}
+              />
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+                {t('croissant.nav.pagination.withInput')}
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
                 <Pagination page={page} totalPages={12} onPageChange={setPage} />
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                  {t('croissant.nav.pagination.compact')}
-                </p>
-                <Pagination
-                  page={page}
-                  totalPages={12}
-                  onPageChange={setPage}
-                  siblingCount={0}
-                  boundaryCount={1}
-                />
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                  {t('croissant.nav.pagination.withInput')}
-                </p>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Pagination page={page} totalPages={12} onPageChange={setPage} />
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      const n = Number.parseInt(pageInput, 10);
-                      if (!Number.isNaN(n)) setPage(Math.min(12, Math.max(1, n)));
-                    }}
-                    className="inline-flex items-center gap-2"
-                  >
-                    <label className="text-xs text-foreground-muted" htmlFor="goto">
-                      {t('croissant.nav.pagination.goto')}
-                    </label>
-                    <Input
-                      id="goto"
-                      inputSize="sm"
-                      className="w-16"
-                      value={pageInput}
-                      onChange={(e) => setPageInput(e.target.value)}
-                    />
-                    <Button size="sm" type="submit" variant="outline">
-                      {t('croissant.nav.pagination.gotoBtn')}
-                    </Button>
-                  </form>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                  {t('croissant.nav.pagination.withSize')}
-                </p>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Pagination page={page} totalPages={12} onPageChange={setPage} />
-                  <label className="inline-flex items-center gap-2 text-xs text-foreground-muted">
-                    {t('croissant.nav.pagination.pageSize')}
-                    <Select
-                      selectSize="sm"
-                      value={pageSize}
-                      onChange={(e) => setPageSize(Number(e.target.value))}
-                      className="w-20"
-                    >
-                      {[10, 25, 50, 100].map((n) => (
-                        <option key={n} value={n}>
-                          {n}
-                        </option>
-                      ))}
-                    </Select>
-                  </label>
-                </div>
-              </div>
-            </Stagger>
-          </CardContent>
-        </Card>
-      </StagedSection>
-
-      <StagedSection
-        tone="success"
-        eyebrow={t('croissant.nav.section.menuEyebrow')}
-        title={t('croissant.nav.section.menu')}
-        description={t('croissant.nav.section.menuDesc')}
-        headingId="nav-menu"
-        bodyClassName="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
-      >
-        <Card variant="outlined">
-          <CardContent className="space-y-3">
-            <p className="text-sm font-semibold text-foreground">
-              {t('croissant.nav.menu.singleTitle')}
-            </p>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button variant="outline" leftIcon={<MoreHorizontal className="h-4 w-4" />}>
-                  {t('croissant.nav.menu.open')}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>{t('croissant.nav.menu.actions')}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Edit2 className="mr-2 h-4 w-4" />
-                  {t('croissant.nav.menu.edit')}
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Copy className="mr-2 h-4 w-4" />
-                  {t('croissant.nav.menu.duplicate')}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Archive className="mr-2 h-4 w-4" />
-                  {t('croissant.nav.menu.archive')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </CardContent>
-        </Card>
-
-        <Card variant="outlined">
-          <CardContent className="space-y-3">
-            <p className="text-sm font-semibold text-foreground">
-              {t('croissant.nav.menu.subTitle')}
-            </p>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button variant="outline" leftIcon={<Plus className="h-4 w-4" />}>
-                  {t('croissant.nav.menu.new')}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <Croissant className="mr-2 h-4 w-4" />
-                  {t('croissant.nav.menu.croissant')}
-                </DropdownMenuItem>
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
-                    <ChevronsUpDown className="mr-2 h-4 w-4" />
-                    {t('croissant.nav.menu.fromTemplate')}
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent>
-                    <DropdownMenuItem>{t('croissant.nav.menu.tplClassic')}</DropdownMenuItem>
-                    <DropdownMenuItem>{t('croissant.nav.menu.tplAlmond')}</DropdownMenuItem>
-                    <DropdownMenuItem>{t('croissant.nav.menu.tplChocolate')}</DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-                <DropdownMenuItem>
-                  <ShoppingBag className="mr-2 h-4 w-4" />
-                  {t('croissant.nav.menu.bulk')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </CardContent>
-        </Card>
-
-        <Card variant="outlined">
-          <CardContent className="space-y-3">
-            <p className="text-sm font-semibold text-foreground">
-              {t('croissant.nav.menu.checkTitle')}
-            </p>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button variant="outline" leftIcon={<ChevronDown className="h-4 w-4" />}>
-                  {t('croissant.nav.menu.view')}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>{t('croissant.nav.menu.show')}</DropdownMenuLabel>
-                <DropdownMenuCheckboxItem checked={showNotes} onCheckedChange={setShowNotes}>
-                  {t('croissant.nav.menu.notes')}
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem checked={showArchived} onCheckedChange={setShowArchived}>
-                  {t('croissant.nav.menu.archived')}
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel>{t('croissant.nav.menu.bookmark')}</DropdownMenuLabel>
-                <DropdownMenuRadioGroup
-                  value={bookmark}
-                  onValueChange={(v) => setBookmark(v as typeof bookmark)}
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const n = Number.parseInt(pageInput, 10);
+                    if (!Number.isNaN(n)) setPage(Math.min(12, Math.max(1, n)));
+                  }}
+                  className="inline-flex items-center gap-2"
                 >
-                  <DropdownMenuRadioItem value="pinned">
-                    {t('croissant.nav.menu.pinned')}
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="starred">
-                    {t('croissant.nav.menu.starred')}
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="archived">
+                  <label className="text-xs text-foreground-muted" htmlFor="goto">
+                    {t('croissant.nav.pagination.goto')}
+                  </label>
+                  <Input
+                    id="goto"
+                    inputSize="sm"
+                    className="w-16"
+                    value={pageInput}
+                    onChange={(e) => setPageInput(e.target.value)}
+                  />
+                  <Button size="sm" type="submit" variant="outline">
+                    {t('croissant.nav.pagination.gotoBtn')}
+                  </Button>
+                </form>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+                {t('croissant.nav.pagination.withSize')}
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <Pagination page={page} totalPages={12} onPageChange={setPage} />
+                <label className="inline-flex items-center gap-2 text-xs text-foreground-muted">
+                  {t('croissant.nav.pagination.pageSize')}
+                  <Select
+                    selectSize="sm"
+                    value={pageSize}
+                    onChange={(e) => setPageSize(Number(e.target.value))}
+                    className="w-20"
+                  >
+                    {[10, 25, 50, 100].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </Select>
+                </label>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section aria-labelledby="nav-menu" className="space-y-4">
+        <div>
+          <h2 id="nav-menu" className="text-lg font-semibold text-foreground">
+            {t('croissant.nav.section.menu')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.nav.section.menuDesc')}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Card variant="outlined">
+            <CardContent className="space-y-3">
+              <p className="text-sm font-semibold text-foreground">
+                {t('croissant.nav.menu.singleTitle')}
+              </p>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Button variant="outline" leftIcon={<MoreHorizontal className="h-4 w-4" />}>
+                    {t('croissant.nav.menu.open')}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>{t('croissant.nav.menu.actions')}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Edit2 className="mr-2 h-4 w-4" />
+                    {t('croissant.nav.menu.edit')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Copy className="mr-2 h-4 w-4" />
+                    {t('croissant.nav.menu.duplicate')}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Archive className="mr-2 h-4 w-4" />
+                    {t('croissant.nav.menu.archive')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </CardContent>
+          </Card>
+
+          <Card variant="outlined">
+            <CardContent className="space-y-3">
+              <p className="text-sm font-semibold text-foreground">
+                {t('croissant.nav.menu.subTitle')}
+              </p>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Button variant="outline" leftIcon={<Plus className="h-4 w-4" />}>
+                    {t('croissant.nav.menu.new')}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <Croissant className="mr-2 h-4 w-4" />
+                    {t('croissant.nav.menu.croissant')}
+                  </DropdownMenuItem>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <ChevronsUpDown className="mr-2 h-4 w-4" />
+                      {t('croissant.nav.menu.fromTemplate')}
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem>{t('croissant.nav.menu.tplClassic')}</DropdownMenuItem>
+                      <DropdownMenuItem>{t('croissant.nav.menu.tplAlmond')}</DropdownMenuItem>
+                      <DropdownMenuItem>{t('croissant.nav.menu.tplChocolate')}</DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                  <DropdownMenuItem>
+                    <ShoppingBag className="mr-2 h-4 w-4" />
+                    {t('croissant.nav.menu.bulk')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </CardContent>
+          </Card>
+
+          <Card variant="outlined">
+            <CardContent className="space-y-3">
+              <p className="text-sm font-semibold text-foreground">
+                {t('croissant.nav.menu.checkTitle')}
+              </p>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Button variant="outline" leftIcon={<ChevronDown className="h-4 w-4" />}>
+                    {t('croissant.nav.menu.view')}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>{t('croissant.nav.menu.show')}</DropdownMenuLabel>
+                  <DropdownMenuCheckboxItem checked={showNotes} onCheckedChange={setShowNotes}>
+                    {t('croissant.nav.menu.notes')}
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={showArchived}
+                    onCheckedChange={setShowArchived}
+                  >
                     {t('croissant.nav.menu.archived')}
-                  </DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </CardContent>
-        </Card>
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>{t('croissant.nav.menu.bookmark')}</DropdownMenuLabel>
+                  <DropdownMenuRadioGroup
+                    value={bookmark}
+                    onValueChange={(v) => setBookmark(v as typeof bookmark)}
+                  >
+                    <DropdownMenuRadioItem value="pinned">
+                      {t('croissant.nav.menu.pinned')}
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="starred">
+                      {t('croissant.nav.menu.starred')}
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="archived">
+                      {t('croissant.nav.menu.archived')}
+                    </DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </CardContent>
+          </Card>
 
-        <Card variant="outlined">
-          <CardContent className="space-y-3">
-            <p className="text-sm font-semibold text-foreground">
-              {t('croissant.nav.menu.dangerTitle')}
-            </p>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button variant="outline">{t('croissant.nav.menu.danger')}</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <Users className="mr-2 h-4 w-4" />
-                  {t('croissant.nav.menu.share')}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-danger hover:bg-danger/10">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  {t('croissant.nav.menu.delete')}
-                  <DropdownMenuShortcut>⌫</DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </CardContent>
-        </Card>
-      </StagedSection>
+          <Card variant="outlined">
+            <CardContent className="space-y-3">
+              <p className="text-sm font-semibold text-foreground">
+                {t('croissant.nav.menu.dangerTitle')}
+              </p>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Button variant="outline">{t('croissant.nav.menu.danger')}</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <Users className="mr-2 h-4 w-4" />
+                    {t('croissant.nav.menu.share')}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-danger hover:bg-danger/10">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {t('croissant.nav.menu.delete')}
+                    <DropdownMenuShortcut>⌫</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
-      <StagedSection
-        tone="success"
-        eyebrow={t('croissant.nav.section.contextEyebrow')}
-        title={t('croissant.nav.section.context')}
-        description={t('croissant.nav.section.contextDesc')}
-        headingId="nav-context"
-      >
+      <section aria-labelledby="nav-context" className="space-y-4">
+        <div>
+          <h2 id="nav-context" className="text-lg font-semibold text-foreground">
+            {t('croissant.nav.section.context')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.nav.section.contextDesc')}
+          </p>
+        </div>
         <ContextMenu>
           <ContextMenuTrigger>
             <div className="cursor-context-menu rounded-md border-2 border-dashed border-success/40 bg-success/5 px-8 py-12 text-center">
@@ -588,15 +575,15 @@ export function NavigationTrailPage() {
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="success"
-        eyebrow={t('croissant.nav.section.faqEyebrow')}
-        title={t('croissant.nav.section.faq')}
-        description={t('croissant.nav.section.faqDesc')}
-        headingId="nav-faq"
-      >
+      <section aria-labelledby="nav-faq" className="space-y-4">
+        <div>
+          <h2 id="nav-faq" className="text-lg font-semibold text-foreground">
+            {t('croissant.nav.section.faq')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">{t('croissant.nav.section.faqDesc')}</p>
+        </div>
         <Card variant="outlined" className="overflow-hidden">
           <Accordion type="single" defaultValue="hours" collapsible variant="default">
             <AccordionItem value="hours">
@@ -669,9 +656,7 @@ export function NavigationTrailPage() {
             </AccordionItem>
           </Accordion>
         </Card>
-      </StagedSection>
-
-      <ComponentsUsedFooter components={COMPONENTS} />
+      </section>
     </div>
   );
 }

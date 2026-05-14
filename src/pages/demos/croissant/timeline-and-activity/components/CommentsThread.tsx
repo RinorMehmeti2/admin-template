@@ -6,7 +6,6 @@ import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
 import { Card, CardContent } from '@/components/data-display/Card';
 import { Textarea } from '@/components/forms/Textarea';
-import { SlideInUp } from '@/components/motion';
 
 interface Comment {
   id: number;
@@ -83,39 +82,36 @@ export function CommentsThread() {
     <Card variant="outlined">
       <CardContent>
         <ul className="space-y-4">
-          {comments.map((c) => {
-            const inner = (
-              <li key={c.id} className="flex items-start gap-3">
-                <Avatar size="sm" name={c.name} />
-                <div className="min-w-0 flex-1 rounded-md bg-surface-muted/40 px-3 py-2">
-                  <p className="flex items-baseline justify-between gap-2">
-                    <span className="text-sm font-semibold text-foreground">{c.name}</span>
-                    <time className="text-xs text-foreground-subtle">{c.at}</time>
-                  </p>
-                  <p className="mt-1 text-sm text-foreground">{c.text}</p>
-                  <div className="mt-1.5 inline-flex items-center gap-3 text-xs text-foreground-muted">
-                    <IconButton
-                      aria-label={t('croissant.timeline.comments.like')}
-                      variant="ghost"
-                      size="sm"
-                    >
-                      <ThumbsUp className="h-3 w-3" />
-                    </IconButton>
-                    <span className="tabular-nums">{c.likes}</span>
-                    <IconButton
-                      aria-label={t('croissant.timeline.comments.love')}
-                      variant="ghost"
-                      size="sm"
-                    >
-                      <Heart className="h-3 w-3" />
-                    </IconButton>
-                    <span className="tabular-nums">{c.loves}</span>
-                  </div>
+          {comments.map((c) => (
+            <li key={c.id} className="flex items-start gap-3">
+              <Avatar size="sm" name={c.name} />
+              <div className="min-w-0 flex-1 rounded-md bg-surface-muted/40 px-3 py-2">
+                <p className="flex items-baseline justify-between gap-2">
+                  <span className="text-sm font-semibold text-foreground">{c.name}</span>
+                  <time className="text-xs text-foreground-subtle">{c.at}</time>
+                </p>
+                <p className="mt-1 text-sm text-foreground">{c.text}</p>
+                <div className="mt-1.5 inline-flex items-center gap-3 text-xs text-foreground-muted">
+                  <IconButton
+                    aria-label={t('croissant.timeline.comments.like')}
+                    variant="ghost"
+                    size="sm"
+                  >
+                    <ThumbsUp className="h-3 w-3" />
+                  </IconButton>
+                  <span className="tabular-nums">{c.likes}</span>
+                  <IconButton
+                    aria-label={t('croissant.timeline.comments.love')}
+                    variant="ghost"
+                    size="sm"
+                  >
+                    <Heart className="h-3 w-3" />
+                  </IconButton>
+                  <span className="tabular-nums">{c.loves}</span>
                 </div>
-              </li>
-            );
-            return c.id >= 100 ? <SlideInUp key={c.id}>{inner}</SlideInUp> : inner;
-          })}
+              </div>
+            </li>
+          ))}
         </ul>
 
         <form

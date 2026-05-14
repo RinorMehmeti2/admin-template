@@ -1,13 +1,10 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MessageCircle, MoreHorizontal } from 'lucide-react';
-import { cn } from '@/lib/cn';
 import { Avatar } from '@/components/primitives/Avatar';
 import { Badge } from '@/components/primitives/Badge';
 import { Card, CardContent } from '@/components/data-display/Card';
 import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
-import { Chip } from '../../_shared';
 
 export interface CrewMember {
   name: string;
@@ -35,21 +32,9 @@ interface CrewCardProps {
 
 export function CrewCard({ member }: CrewCardProps) {
   const { t } = useTranslation();
-  const [hovered, setHovered] = useState(false);
 
   return (
-    <Card
-      variant="outlined"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
-      onBlur={() => setHovered(false)}
-      data-hovered={hovered}
-      className={cn(
-        'group relative overflow-hidden transition-all duration-200',
-        'hover:-translate-y-0.5 hover:shadow-md focus-within:-translate-y-0.5 focus-within:shadow-md',
-      )}
-    >
+    <Card variant="outlined" className="group">
       <CardContent className="space-y-3">
         <div className="flex items-start gap-3">
           <Avatar
@@ -76,19 +61,14 @@ export function CrewCard({ member }: CrewCardProps) {
         <ul className="flex flex-wrap gap-1.5">
           {member.specialties.map((s) => (
             <li key={s}>
-              <Chip tone="primary" size="sm">
+              <Badge variant="primary" size="sm">
                 {s}
-              </Chip>
+              </Badge>
             </li>
           ))}
         </ul>
 
-        <div
-          className={cn(
-            'flex items-center justify-between gap-2 border-t border-border/60 pt-3 transition-opacity',
-            'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100',
-          )}
-        >
+        <div className="flex items-center justify-between gap-2 border-t border-border pt-3">
           <div className="flex gap-2">
             <Button size="sm" variant="ghost" leftIcon={<MessageCircle className="h-4 w-4" />}>
               {t('croissant.cards.crew.message')}

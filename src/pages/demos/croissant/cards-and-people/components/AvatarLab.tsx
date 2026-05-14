@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cn } from '@/lib/cn';
 import { Avatar } from '@/components/primitives/Avatar';
 import { AvatarGroup } from '@/components/primitives/AvatarGroup';
 import { Button } from '@/components/primitives/Button';
 import { Card, CardContent } from '@/components/data-display/Card';
-import { Pop } from '@/components/motion';
 
 const SIZES = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
 type Size = (typeof SIZES)[number];
@@ -24,12 +22,10 @@ const NAMES = [
 export function AvatarLab() {
   const { t } = useTranslation();
   const [size, setSize] = useState<Size>('md');
-  const [pulse, setPulse] = useState(0);
 
   const cycle = () => {
     const idx = (SIZES.indexOf(size) + 1) % SIZES.length;
     setSize(SIZES[idx] as Size);
-    setPulse((p) => p + 1);
   };
 
   return (
@@ -59,13 +55,11 @@ export function AvatarLab() {
             </Button>
           </div>
           <div className="mt-3 flex flex-wrap items-end gap-4">
-            {NAMES.slice(0, 4).map((n, i) => (
-              <Pop key={`${n}-${pulse}`} delay={i * 60}>
-                <Avatar size={size} name={n} />
-              </Pop>
+            {NAMES.slice(0, 4).map((n) => (
+              <Avatar key={n} size={size} name={n} />
             ))}
           </div>
-          <p className={cn('mt-2 text-xs text-foreground-subtle')}>
+          <p className="mt-2 text-xs text-foreground-subtle">
             {t('croissant.cards.avatarLab.hint')}
           </p>
         </div>

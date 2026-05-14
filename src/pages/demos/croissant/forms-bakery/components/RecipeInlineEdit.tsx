@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pencil, Save, X } from 'lucide-react';
 import { Button } from '@/components/primitives/Button';
+import { Badge } from '@/components/primitives/Badge';
 import { Card, CardContent } from '@/components/data-display/Card';
 import { FormField, Input, TagInput, useForm } from '@/components/forms';
-import { SlideInDown } from '@/components/motion';
 import { Controller } from 'react-hook-form';
 
 interface Recipe {
@@ -69,35 +69,33 @@ export function RecipeInlineEdit() {
         </div>
 
         {editing ? (
-          <SlideInDown>
-            <div className="space-y-3">
-              <FormField label={t('croissant.forms.recipe.recipeName')}>
-                <Input {...form.register('title')} />
-              </FormField>
-              <FormField label={t('croissant.forms.recipe.ingredients')}>
-                <Controller
-                  control={form.control}
-                  name="ingredients"
-                  render={({ field }) => (
-                    <TagInput<string>
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      placeholder={t('croissant.forms.recipe.ingredientsPh')}
-                    />
-                  )}
-                />
-              </FormField>
-            </div>
-          </SlideInDown>
+          <div className="space-y-3">
+            <FormField label={t('croissant.forms.recipe.recipeName')}>
+              <Input {...form.register('title')} />
+            </FormField>
+            <FormField label={t('croissant.forms.recipe.ingredients')}>
+              <Controller
+                control={form.control}
+                name="ingredients"
+                render={({ field }) => (
+                  <TagInput<string>
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    placeholder={t('croissant.forms.recipe.ingredientsPh')}
+                  />
+                )}
+              />
+            </FormField>
+          </div>
         ) : (
           <div className="space-y-2">
             <p className="text-base font-medium text-foreground">{recipe.title}</p>
             <ul className="flex flex-wrap gap-1.5">
               {recipe.ingredients.map((ing) => (
                 <li key={ing}>
-                  <span className="rounded-full bg-surface-muted px-2 py-0.5 text-xs text-foreground-muted">
+                  <Badge variant="neutral" size="sm">
                     {ing}
-                  </span>
+                  </Badge>
                 </li>
               ))}
             </ul>

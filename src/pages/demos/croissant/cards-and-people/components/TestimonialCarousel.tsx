@@ -5,7 +5,6 @@ import { Avatar } from '@/components/primitives/Avatar';
 import { Card, CardContent } from '@/components/data-display/Card';
 import { Carousel, type CarouselSlide } from '@/components/data-display/Carousel';
 import { Rating } from '@/components/forms/Rating';
-import { Marquee } from '@/components/motion';
 
 interface Testimonial {
   id: string;
@@ -39,15 +38,6 @@ const TESTIMONIALS: ReadonlyArray<Testimonial> = [
   },
 ];
 
-const LOGOS = [
-  'Sourdough Co.',
-  'Croissant Daily',
-  'Flour & Time',
-  'Le Bistro',
-  'The Bake Press',
-  'Knead Magazine',
-];
-
 export function TestimonialCarousel() {
   const { t } = useTranslation();
 
@@ -79,25 +69,10 @@ export function TestimonialCarousel() {
   );
 
   return (
-    <div className="space-y-4">
-      <Carousel
-        slides={slides}
-        autoplayMs={6000}
-        aria-label={t('croissant.cards.testimonials.carouselLabel')}
-      />
-      <div data-print="hide">
-        <Marquee
-          speed={0.6}
-          pauseOnHover
-          className="rounded-md border border-border bg-surface-muted/30 py-3"
-        >
-          {LOGOS.map((l) => (
-            <span key={l} className="font-serif text-sm tracking-wide text-foreground-subtle">
-              {l}
-            </span>
-          ))}
-        </Marquee>
-      </div>
-    </div>
+    <Carousel
+      slides={slides}
+      autoplayMs={6000}
+      aria-label={t('croissant.cards.testimonials.carouselLabel')}
+    />
   );
 }

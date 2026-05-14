@@ -3,7 +3,6 @@ import { Crown } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { Card, CardContent } from '@/components/data-display/Card';
 import { Progress } from '@/components/feedback/Progress';
-import { Float, RotateIn, Stagger } from '@/components/motion';
 
 interface Seller {
   rank: number;
@@ -30,30 +29,19 @@ export function TopSellers({ className }: TopSellersProps) {
   return (
     <Card variant="outlined" className={className}>
       <CardContent>
-        <Stagger animation="slide-in-up" stagger={50}>
+        <ul className="space-y-2">
           {SELLERS.map((s) => (
-            <div
-              key={s.rank}
-              className="group flex items-center gap-3 rounded-md px-2 py-2 transition-transform hover:translate-x-1"
-            >
-              <RotateIn>
-                <span
-                  className={cn(
-                    'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-base font-semibold tabular-nums',
-                    s.rank === 1
-                      ? 'bg-warning/20 text-warning'
-                      : 'bg-surface-muted text-foreground-muted',
-                  )}
-                >
-                  {s.rank === 1 ? (
-                    <Float data-print="hide">
-                      <Crown className="h-4 w-4" />
-                    </Float>
-                  ) : (
-                    s.rank
-                  )}
-                </span>
-              </RotateIn>
+            <li key={s.rank} className="flex items-center gap-3 rounded-md px-2 py-2">
+              <span
+                className={cn(
+                  'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-base font-semibold tabular-nums',
+                  s.rank === 1
+                    ? 'bg-warning/10 text-warning'
+                    : 'bg-surface-muted text-foreground-muted',
+                )}
+              >
+                {s.rank === 1 ? <Crown className="h-4 w-4" /> : s.rank}
+              </span>
               <div className="min-w-0 flex-1 space-y-1.5">
                 <p className="truncate text-sm font-medium text-foreground">{s.name}</p>
                 <Progress
@@ -66,9 +54,9 @@ export function TopSellers({ className }: TopSellersProps) {
               <span className="shrink-0 text-sm font-semibold tabular-nums text-foreground">
                 {s.sales}
               </span>
-            </div>
+            </li>
           ))}
-        </Stagger>
+        </ul>
       </CardContent>
     </Card>
   );

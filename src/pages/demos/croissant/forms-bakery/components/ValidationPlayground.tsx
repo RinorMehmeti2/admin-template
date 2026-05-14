@@ -5,7 +5,6 @@ import { Card, CardContent } from '@/components/data-display/Card';
 import { Button } from '@/components/primitives/Button';
 import { Badge } from '@/components/primitives/Badge';
 import { Form, FormField, Input, useForm, zodResolver } from '@/components/forms';
-import { Wiggle } from '@/components/motion';
 
 interface Values {
   username: string;
@@ -21,7 +20,6 @@ export function ValidationPlayground() {
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>(
     'idle',
   );
-  const [wiggleKey, setWiggleKey] = useState(0);
 
   const schema = useMemo(
     () =>
@@ -74,50 +72,45 @@ export function ValidationPlayground() {
 
   const onSubmit = () => {
     setError('email', { type: 'server', message: t('croissant.forms.validate.email422') });
-    setWiggleKey((k) => k + 1);
   };
 
   return (
     <Card variant="outlined">
       <CardContent>
         <Form form={form} onSubmit={onSubmit} className="space-y-4">
-          <Wiggle key={`u-${wiggleKey}`} force={false}>
-            <FormField
-              label={t('croissant.forms.validate.usernameLabel')}
-              error={formState.errors.username?.message}
-              description={
-                usernameStatus === 'checking'
-                  ? t('croissant.forms.validate.checking')
-                  : usernameStatus === 'available'
-                    ? t('croissant.forms.validate.available')
-                    : undefined
+          <FormField
+            label={t('croissant.forms.validate.usernameLabel')}
+            error={formState.errors.username?.message}
+            description={
+              usernameStatus === 'checking'
+                ? t('croissant.forms.validate.checking')
+                : usernameStatus === 'available'
+                  ? t('croissant.forms.validate.available')
+                  : undefined
+            }
+          >
+            <Input
+              {...register('username')}
+              rightIcon={
+                usernameStatus === 'taken' ? (
+                  <Badge variant="danger" size="sm">
+                    taken
+                  </Badge>
+                ) : usernameStatus === 'available' ? (
+                  <Badge variant="success" size="sm">
+                    ok
+                  </Badge>
+                ) : null
               }
-            >
-              <Input
-                {...register('username')}
-                rightIcon={
-                  usernameStatus === 'taken' ? (
-                    <Badge variant="danger" size="sm">
-                      taken
-                    </Badge>
-                  ) : usernameStatus === 'available' ? (
-                    <Badge variant="success" size="sm">
-                      ok
-                    </Badge>
-                  ) : null
-                }
-              />
-            </FormField>
-          </Wiggle>
+            />
+          </FormField>
 
-          <Wiggle key={`e-${wiggleKey}`} force={false}>
-            <FormField
-              label={t('croissant.forms.validate.emailLabel')}
-              error={formState.errors.email?.message}
-            >
-              <Input type="email" {...register('email')} />
-            </FormField>
-          </Wiggle>
+          <FormField
+            label={t('croissant.forms.validate.emailLabel')}
+            error={formState.errors.email?.message}
+          >
+            <Input type="email" {...register('email')} />
+          </FormField>
 
           <FormField
             label={t('croissant.forms.validate.passwordLabel')}

@@ -11,7 +11,6 @@ import { Select } from '@/components/forms/Select';
 import { Radio } from '@/components/forms/Radio';
 import { RadioGroup } from '@/components/forms/RadioGroup';
 import { FormWizard, FormWizardStep } from '@/components/forms/FormWizard';
-import { BounceIn } from '@/components/motion';
 import { useToast } from '@/context/ToastProvider';
 
 const bakerySchema = z.object({
@@ -61,33 +60,33 @@ export function WholesaleWizard() {
 
   if (done !== null) {
     return (
-      <BounceIn>
-        <Card variant="outlined" className="border-success/40 bg-success/10">
-          <CardContent className="space-y-3 text-center">
-            <CheckCircle2 className="mx-auto h-10 w-10 text-success" />
-            <p className="text-lg font-semibold text-foreground">
-              {t('croissant.forms.wholesale.successTitle')}
-            </p>
-            <p className="text-sm text-foreground-muted">
-              {t('croissant.forms.wholesale.successDesc', { name: done.name })}
-            </p>
-            <div className="flex flex-wrap justify-center gap-2 pt-2">
-              <Badge variant="primary" size="md">
-                {done.units} {t('croissant.forms.wholesale.unitsShort')}
-              </Badge>
-              <Badge variant="info" size="md">
-                {t(`croissant.forms.wholesale.scheduleOption.${done.schedule}`)}
-              </Badge>
-              <Badge variant="success" size="md">
-                {t(`croissant.forms.wholesale.window.${done.window}`)}
-              </Badge>
-            </div>
-            <Button variant="outline" onClick={() => setDone(null)}>
-              {t('croissant.forms.wholesale.startOver')}
-            </Button>
-          </CardContent>
-        </Card>
-      </BounceIn>
+      <Card variant="outlined" className="border-success/40 bg-success/10">
+        <CardContent className="space-y-3 text-center">
+          <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-md bg-success/10 text-success">
+            <CheckCircle2 className="h-5 w-5" />
+          </span>
+          <p className="text-lg font-semibold text-foreground">
+            {t('croissant.forms.wholesale.successTitle')}
+          </p>
+          <p className="text-sm text-foreground-muted">
+            {t('croissant.forms.wholesale.successDesc', { name: done.name })}
+          </p>
+          <div className="flex flex-wrap justify-center gap-2 pt-2">
+            <Badge variant="primary" size="md">
+              {done.units} {t('croissant.forms.wholesale.unitsShort')}
+            </Badge>
+            <Badge variant="info" size="md">
+              {t(`croissant.forms.wholesale.scheduleOption.${done.schedule}`)}
+            </Badge>
+            <Badge variant="success" size="md">
+              {t(`croissant.forms.wholesale.window.${done.window}`)}
+            </Badge>
+          </div>
+          <Button variant="outline" onClick={() => setDone(null)}>
+            {t('croissant.forms.wholesale.startOver')}
+          </Button>
+        </CardContent>
+      </Card>
     );
   }
 

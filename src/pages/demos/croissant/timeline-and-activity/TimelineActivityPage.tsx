@@ -13,24 +13,22 @@ import {
   Star,
   Sun,
 } from 'lucide-react';
+import type { ComponentType } from 'react';
 import { Avatar } from '@/components/primitives/Avatar';
 import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
-import { Card, CardContent } from '@/components/data-display/Card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/data-display/Card';
 import { Timeline, TimelineItem, type TimelineVariant } from '@/components/data-display/Timeline';
 import { DataTable, type ColumnDef, type Row } from '@/components/data-display/DataTable';
-import { SlideInLeft, Stagger } from '@/components/motion';
-import {
-  ChartFrame,
-  Chip,
-  ComponentsUsedFooter,
-  HeroCard,
-  SceneHeader,
-  StagedSection,
-  StatRail,
-  type StatRailItem,
-} from '../_shared';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
+import { SimsStatCard } from '@/pages/sims/components/SimsStatCard';
 import { LiveActivityFeed } from './components/LiveActivityFeed';
 import { CommentsThread } from './components/CommentsThread';
 
@@ -39,7 +37,7 @@ interface TimelineEntry {
   time: string;
   title: string;
   desc: string;
-  icon: typeof Sparkles;
+  icon: ComponentType<{ className?: string }>;
   variant: TimelineVariant;
   actor?: string;
 }
@@ -231,30 +229,32 @@ const AUDIT: ReadonlyArray<AuditRow> = [
   },
 ];
 
-const COMPONENTS = [
-  'SceneHeader',
-  'HeroCard',
-  'StagedSection',
-  'StatRail',
-  'StatCard',
-  'Timeline',
-  'TimelineItem',
-  'DataTable',
-  'Card',
-  'Badge',
-  'Avatar',
-  'Button',
-  'IconButton',
-  'ChartFrame',
-  'SlideInLeft',
-  'Stagger',
-];
-
 const SEVERITY_VARIANT: Record<AuditRow['severity'], 'info' | 'warning' | 'danger'> = {
   info: 'info',
   warning: 'warning',
   danger: 'danger',
 };
+
+interface StatDef {
+  id: string;
+  label: string;
+  Icon: ComponentType<{ className?: string }>;
+  value: string | number;
+  delta: number;
+}
+
+function trendFor(delta: number): 'up' | 'down' | 'flat' {
+  if (delta > 0) return 'up';
+  if (delta < 0) return 'down';
+  return 'flat';
+}
+
+function trendLabel(delta: number): string {
+  const sign = delta > 0 ? '+' : '';
+  return `${sign}${delta}%`;
+}
+
+const CHART_SPARK = [22, 36, 48, 42, 28, 22, 18, 14, 10, 8, 6, 4];
 
 export function TimelineActivityPage() {
   const { t, i18n } = useTranslation();
@@ -265,58 +265,41 @@ export function TimelineActivityPage() {
     [i18n.language],
   );
 
-  const stats: ReadonlyArray<StatRailItem> = [
+  const stats: ReadonlyArray<StatDef> = [
     {
       id: 'orders',
       label: t('croissant.timeline.day.orders'),
+      Icon: ShoppingBag,
       value: 312,
       delta: 4.2,
-      deltaLabel: t('croissant.timeline.day.vsAvg'),
-      icon: <ShoppingBag className="h-4 w-4" />,
-      spark: [22, 36, 48, 42, 28, 22, 18, 14, 10, 8, 6, 4],
-      tone: 'info',
     },
     {
       id: 'peak',
       label: t('croissant.timeline.day.peak'),
-      value: 8,
-      unit: 'AM',
+      Icon: Sun,
+      value: '8 AM',
       delta: 0,
-      deltaLabel: t('croissant.timeline.day.vsAvg'),
-      icon: <Sun className="h-4 w-4" />,
-      spark: [2, 3, 5, 7, 8, 7, 5, 4, 3, 2],
-      tone: 'warning',
     },
     {
       id: 'top',
       label: t('croissant.timeline.day.top'),
+      Icon: Crown,
       value: 412,
       delta: 6.4,
-      deltaLabel: t('croissant.timeline.day.vsAvg'),
-      icon: <Crown className="h-4 w-4" />,
-      spark: [60, 80, 110, 140, 120, 100, 90, 85, 80, 70, 60, 50],
-      tone: 'success',
-      accent: true,
     },
     {
       id: 'refunds',
       label: t('croissant.timeline.day.refunds'),
+      Icon: RotateCw,
       value: 3,
       delta: -1.2,
-      deltaLabel: t('croissant.timeline.day.vsAvg'),
-      icon: <RotateCw className="h-4 w-4" />,
-      spark: [1, 0, 2, 1, 0, 0, 1, 0],
-      tone: 'danger',
     },
     {
       id: 'customers',
       label: t('croissant.timeline.day.customers'),
+      Icon: Coffee,
       value: 247,
       delta: 5.1,
-      deltaLabel: t('croissant.timeline.day.vsAvg'),
-      icon: <Coffee className="h-4 w-4" />,
-      spark: [10, 20, 30, 40, 30, 20, 18, 14, 10, 8, 6, 5],
-      tone: 'primary',
     },
   ];
 
@@ -348,90 +331,105 @@ export function TimelineActivityPage() {
     [t],
   );
 
-  const meta = (
-    <>
-      <Chip tone="info" dot>
-        {t('croissant.timeline.meta.live')}
-      </Chip>
-      <Chip tone="warning">{t('croissant.timeline.meta.events', { n: 47 })}</Chip>
-    </>
-  );
-
   return (
-    <div className="mx-auto max-w-7xl space-y-12">
-      <SceneHeader
-        tone="info"
-        eyebrow={t('croissant.timeline.scene.eyebrow')}
+    <div className="mx-auto max-w-[1400px] space-y-6">
+      <SimsPageHeader
         title={t('croissant.timeline.scene.title')}
         description={t('croissant.timeline.scene.description')}
-        meta={meta}
+        actions={
+          <>
+            <Badge variant="info" size="sm" dot>
+              {t('croissant.timeline.meta.live')}
+            </Badge>
+            <Badge variant="warning" size="sm">
+              {t('croissant.timeline.meta.events', { n: 47 })}
+            </Badge>
+          </>
+        }
       />
 
-      <StagedSection
-        tone="info"
-        eyebrow={t('croissant.timeline.section.dayEyebrow')}
-        title={t('croissant.timeline.section.day')}
-        description={t('croissant.timeline.section.dayDesc')}
-        headingId="timeline-day"
-      >
-        <StatRail items={stats} />
-      </StagedSection>
+      <section aria-labelledby="timeline-day" className="space-y-4">
+        <div>
+          <h2 id="timeline-day" className="text-lg font-semibold text-foreground">
+            {t('croissant.timeline.section.day')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.timeline.section.dayDesc')}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {stats.map((s) => (
+            <SimsStatCard
+              key={s.id}
+              Icon={s.Icon}
+              label={s.label}
+              value={s.value}
+              trend={trendFor(s.delta)}
+              trendValue={trendLabel(s.delta)}
+            />
+          ))}
+        </div>
+      </section>
 
-      <StagedSection
-        tone="info"
-        eyebrow={t('croissant.timeline.section.heroEyebrow')}
-        title={t('croissant.timeline.section.hero')}
-        description={t('croissant.timeline.section.heroDesc')}
-        headingId="timeline-hero"
-      >
+      <section aria-labelledby="timeline-hero" className="space-y-4">
+        <div>
+          <h2 id="timeline-hero" className="text-lg font-semibold text-foreground">
+            {t('croissant.timeline.section.hero')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.timeline.section.heroDesc')}
+          </p>
+        </div>
         <Card variant="outlined">
           <CardContent>
-            <SlideInLeft whenInView>
-              <Timeline>
-                {ENTRIES.map((e) => {
-                  const Icon = e.icon;
-                  return (
-                    <TimelineItem
-                      key={e.id}
-                      timestamp={new Date(e.time)}
-                      variant={e.variant}
-                      icon={<Icon className="h-4 w-4" />}
-                      actor={
-                        e.actor !== undefined ? (
-                          <span className="inline-flex items-center gap-2">
-                            <Avatar size="xs" name={e.actor} />
-                            {e.actor}
-                          </span>
-                        ) : undefined
-                      }
-                      action={e.title}
-                      description={e.desc}
-                    />
-                  );
-                })}
-              </Timeline>
-            </SlideInLeft>
+            <Timeline>
+              {ENTRIES.map((e) => {
+                const Icon = e.icon;
+                return (
+                  <TimelineItem
+                    key={e.id}
+                    timestamp={new Date(e.time)}
+                    variant={e.variant}
+                    icon={<Icon className="h-4 w-4" />}
+                    actor={
+                      e.actor !== undefined ? (
+                        <span className="inline-flex items-center gap-2">
+                          <Avatar size="xs" name={e.actor} />
+                          {e.actor}
+                        </span>
+                      ) : undefined
+                    }
+                    action={e.title}
+                    description={e.desc}
+                  />
+                );
+              })}
+            </Timeline>
           </CardContent>
         </Card>
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="info"
-        eyebrow={t('croissant.timeline.section.feedEyebrow')}
-        title={t('croissant.timeline.section.feed')}
-        description={t('croissant.timeline.section.feedDesc')}
-        headingId="timeline-feed"
-      >
+      <section aria-labelledby="timeline-feed" className="space-y-4">
+        <div>
+          <h2 id="timeline-feed" className="text-lg font-semibold text-foreground">
+            {t('croissant.timeline.section.feed')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.timeline.section.feedDesc')}
+          </p>
+        </div>
         <LiveActivityFeed />
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="info"
-        eyebrow={t('croissant.timeline.section.auditEyebrow')}
-        title={t('croissant.timeline.section.audit')}
-        description={t('croissant.timeline.section.auditDesc')}
-        headingId="timeline-audit"
-      >
+      <section aria-labelledby="timeline-audit" className="space-y-4">
+        <div>
+          <h2 id="timeline-audit" className="text-lg font-semibold text-foreground">
+            {t('croissant.timeline.section.audit')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.timeline.section.auditDesc')}
+          </p>
+        </div>
         <div className="space-y-3">
           <DataTable<AuditRow>
             columns={auditColumns}
@@ -443,92 +441,91 @@ export function TimelineActivityPage() {
             pageSize={7}
           />
           {auditDetail !== null ? (
-            <SlideInLeft>
-              <Card variant="outlined" className="border-info/30">
-                <CardContent className="space-y-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-info">
-                        {t('croissant.timeline.audit.detail')}
-                      </p>
-                      <h3 className="text-base font-semibold text-foreground">
-                        {auditDetail.id} · {auditDetail.actor} {auditDetail.action}{' '}
-                        {auditDetail.target}
-                      </h3>
-                    </div>
-                    <Button size="sm" variant="ghost" onClick={() => setAuditDetail(null)}>
-                      {t('croissant.timeline.audit.close')}
-                    </Button>
-                  </div>
-                  <pre className="overflow-x-auto rounded-md bg-surface-muted/40 p-3 text-xs">
-                    {JSON.stringify(JSON.parse(auditDetail.json), null, 2)}
-                  </pre>
-                </CardContent>
-              </Card>
-            </SlideInLeft>
+            <Card variant="outlined">
+              <CardHeader className="flex flex-row items-start justify-between gap-3">
+                <div>
+                  <CardTitle>
+                    {auditDetail.id} · {auditDetail.actor} {auditDetail.action} {auditDetail.target}
+                  </CardTitle>
+                  <CardDescription>{t('croissant.timeline.audit.detail')}</CardDescription>
+                </div>
+                <Button size="sm" variant="ghost" onClick={() => setAuditDetail(null)}>
+                  {t('croissant.timeline.audit.close')}
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <pre className="overflow-x-auto rounded-md bg-surface-muted/40 p-3 text-xs">
+                  {JSON.stringify(JSON.parse(auditDetail.json), null, 2)}
+                </pre>
+              </CardContent>
+            </Card>
           ) : null}
         </div>
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="info"
-        eyebrow={t('croissant.timeline.section.commentsEyebrow')}
-        title={t('croissant.timeline.section.comments')}
-        description={t('croissant.timeline.section.commentsDesc')}
-        headingId="timeline-comments"
-      >
+      <section aria-labelledby="timeline-comments" className="space-y-4">
+        <div>
+          <h2 id="timeline-comments" className="text-lg font-semibold text-foreground">
+            {t('croissant.timeline.section.comments')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.timeline.section.commentsDesc')}
+          </p>
+        </div>
         <CommentsThread />
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="info"
-        eyebrow={t('croissant.timeline.section.chartEyebrow')}
-        title={t('croissant.timeline.section.chart')}
-        description={t('croissant.timeline.section.chartDesc')}
-        headingId="timeline-chart"
-      >
-        <ChartFrame
-          tone="info"
-          eyebrow={t('croissant.timeline.chart.eyebrow')}
-          title={t('croissant.timeline.chart.title')}
-          description={t('croissant.timeline.chart.desc')}
-        >
-          <div
-            className="grid grid-cols-12 items-end gap-1 h-40"
-            role="img"
-            aria-label={t('croissant.timeline.chart.title')}
-          >
-            {stats[0]?.spark?.map((v, i) => {
-              const max = Math.max(...(stats[0]?.spark ?? [1]));
-              const h = Math.max(4, Math.round((v / max) * 100));
-              const label = timeFmt.format(new Date(2026, 4, 14, i + 6));
-              return (
-                <Stagger key={i} animation="slide-in-up" stagger={30} className="contents">
+      <section aria-labelledby="timeline-chart" className="space-y-4">
+        <div>
+          <h2 id="timeline-chart" className="text-lg font-semibold text-foreground">
+            {t('croissant.timeline.section.chart')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.timeline.section.chartDesc')}
+          </p>
+        </div>
+        <Card variant="outlined">
+          <CardHeader>
+            <CardTitle>{t('croissant.timeline.chart.title')}</CardTitle>
+            <CardDescription>{t('croissant.timeline.chart.desc')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div
+              className="grid h-40 grid-cols-12 items-end gap-1"
+              role="img"
+              aria-label={t('croissant.timeline.chart.title')}
+            >
+              {CHART_SPARK.map((v, i) => {
+                const max = Math.max(...CHART_SPARK);
+                const h = Math.max(4, Math.round((v / max) * 100));
+                const label = timeFmt.format(new Date(2026, 4, 14, i + 6));
+                return (
                   <span
+                    key={i}
                     aria-hidden="true"
                     title={label}
                     className="block rounded-t bg-info/70"
                     style={{ height: `${h}%` }}
                   />
-                </Stagger>
-              );
-            })}
-          </div>
-        </ChartFrame>
-      </StagedSection>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </section>
 
-      <HeroCard
-        tone="info"
-        eyebrow={t('croissant.timeline.summary.eyebrow')}
-        title={t('croissant.timeline.summary.title')}
-        description={t('croissant.timeline.summary.desc')}
-        action={
+      <Card variant="outlined">
+        <CardHeader className="flex flex-row items-start justify-between gap-3">
+          <div>
+            <CardTitle>{t('croissant.timeline.summary.title')}</CardTitle>
+            <CardDescription>{t('croissant.timeline.summary.desc')}</CardDescription>
+          </div>
           <Button leftIcon={<FileText className="h-4 w-4" />}>
             {t('croissant.timeline.summary.generate')}
           </Button>
-        }
-        illustration={
-          <div className="flex items-center gap-4">
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap items-center gap-4">
             <Avatar size="xl" name="Grace Hopper" />
             <div className="space-y-1 text-sm">
               <p className="font-semibold text-foreground">Grace Hopper</p>
@@ -541,10 +538,8 @@ export function TimelineActivityPage() {
               <FileText className="h-4 w-4" />
             </IconButton>
           </div>
-        }
-      />
-
-      <ComponentsUsedFooter components={COMPONENTS} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

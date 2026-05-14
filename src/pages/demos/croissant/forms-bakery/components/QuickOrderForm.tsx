@@ -17,7 +17,6 @@ import {
 import { Select } from '@/components/forms/Select';
 import { Card, CardContent } from '@/components/data-display/Card';
 import { useToast } from '@/context/ToastProvider';
-import { BounceIn } from '@/components/motion';
 import { OrderReceipt, type ReceiptLine } from './OrderReceipt';
 
 const ITEMS = [
@@ -95,7 +94,7 @@ export function QuickOrderForm({ onPlaced }: QuickOrderFormProps) {
   };
 
   return (
-    <Card variant="outlined" className="relative overflow-hidden">
+    <Card variant="outlined">
       <CardContent>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <Form form={form} onSubmit={onSubmit} className="space-y-4">
@@ -183,28 +182,16 @@ export function QuickOrderForm({ onPlaced }: QuickOrderFormProps) {
 
           <div className="space-y-3">
             {placed ? (
-              <BounceIn>
-                <Card variant="outlined" className="border-success/40 bg-success/10">
-                  <CardContent className="text-center">
-                    <p className="text-lg font-semibold text-success">
-                      {t('croissant.forms.toast.placed')}
-                    </p>
-                    <p className="mt-1 text-sm text-foreground-muted">
-                      {t('croissant.forms.quick.successDesc')}
-                    </p>
-                    <div className="mt-3 flex justify-center gap-1.5" aria-hidden="true">
-                      {[0, 1, 2, 3, 4].map((i) => (
-                        <span
-                          key={i}
-                          data-print="hide"
-                          className="inline-block h-1.5 w-1.5 rounded-full bg-success animate-bounce"
-                          style={{ animationDelay: `${i * 100}ms` }}
-                        />
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </BounceIn>
+              <Card variant="outlined" className="border-success/40 bg-success/10">
+                <CardContent className="text-center">
+                  <p className="text-lg font-semibold text-success">
+                    {t('croissant.forms.toast.placed')}
+                  </p>
+                  <p className="mt-1 text-sm text-foreground-muted">
+                    {t('croissant.forms.quick.successDesc')}
+                  </p>
+                </CardContent>
+              </Card>
             ) : (
               <OrderReceipt
                 customer={watched.customer ?? ''}

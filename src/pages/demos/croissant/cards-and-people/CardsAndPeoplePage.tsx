@@ -1,12 +1,17 @@
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, Calendar, ClipboardList, Heart, Star, UserPlus, Users } from 'lucide-react';
-import type { Sparkles } from 'lucide-react';
+import type { ComponentType } from 'react';
 import { Avatar } from '@/components/primitives/Avatar';
 import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
-import { Card, CardContent } from '@/components/data-display/Card';
-import { Stagger } from '@/components/motion';
-import { Chip, ComponentsUsedFooter, HeroCard, SceneHeader, StagedSection } from '../_shared';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/data-display/Card';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import { CrewCard, type CrewMember } from './components/CrewCard';
 import { AvatarLab } from './components/AvatarLab';
 import { TestimonialCarousel } from './components/TestimonialCarousel';
@@ -52,25 +57,6 @@ const CREW: ReadonlyArray<CrewMember> = [
 
 const BADGE_TONES = ['neutral', 'primary', 'success', 'warning', 'danger', 'info'] as const;
 
-const COMPONENTS = [
-  'SceneHeader',
-  'HeroCard',
-  'StagedSection',
-  'Chip',
-  'Card',
-  'CardContent',
-  'Avatar',
-  'AvatarGroup',
-  'Badge',
-  'Button',
-  'IconButton',
-  'Carousel',
-  'Rating',
-  'Marquee',
-  'Pop',
-  'Stagger',
-];
-
 type ActionTone = 'primary' | 'success' | 'warning' | 'info';
 
 const ACTION_TINT: Record<ActionTone, string> = {
@@ -81,7 +67,7 @@ const ACTION_TINT: Record<ActionTone, string> = {
 };
 
 interface Action {
-  icon: typeof Sparkles;
+  icon: ComponentType<{ className?: string }>;
   tone: ActionTone;
   title: string;
   description: string;
@@ -111,43 +97,38 @@ const ACTIONS: ReadonlyArray<Action> = [
 export function CardsAndPeoplePage() {
   const { t } = useTranslation();
 
-  const meta = (
-    <>
-      <Chip tone="primary" dot>
-        {t('croissant.cards.meta.bakers', { n: 7 })}
-      </Chip>
-      <Chip tone="success">{t('croissant.cards.meta.onShift', { n: 2 })}</Chip>
-    </>
-  );
-
   return (
-    <div className="mx-auto max-w-7xl space-y-12">
-      <SceneHeader
-        tone="primary"
-        pattern="grid"
-        eyebrow={t('croissant.cards.scene.eyebrow')}
+    <div className="mx-auto max-w-[1400px] space-y-6">
+      <SimsPageHeader
         title={t('croissant.cards.scene.title')}
         description={t('croissant.cards.scene.description')}
-        meta={meta}
+        actions={
+          <>
+            <Badge variant="primary" size="sm" dot>
+              {t('croissant.cards.meta.bakers', { n: 7 })}
+            </Badge>
+            <Badge variant="success" size="sm">
+              {t('croissant.cards.meta.onShift', { n: 2 })}
+            </Badge>
+          </>
+        }
       />
 
-      <section aria-labelledby="featured-baker" className="space-y-6">
-        <HeroCard
-          tone="primary"
-          eyebrow={t('croissant.cards.featured.eyebrow')}
-          title={
-            <span id="featured-baker" className="inline-flex items-center gap-2">
-              {t('croissant.cards.featured.title', { name: 'Ada Lovelace' })}
-            </span>
-          }
-          description={t('croissant.cards.featured.description')}
-          action={
+      <section aria-labelledby="featured-baker" className="space-y-4">
+        <Card variant="outlined">
+          <CardHeader className="flex flex-row items-start justify-between gap-3">
+            <div>
+              <CardTitle id="featured-baker">
+                {t('croissant.cards.featured.title', { name: 'Ada Lovelace' })}
+              </CardTitle>
+              <CardDescription>{t('croissant.cards.featured.description')}</CardDescription>
+            </div>
             <Button rightIcon={<ArrowRight className="h-4 w-4" />}>
               {t('croissant.cards.featured.viewProfile')}
             </Button>
-          }
-          illustration={
-            <div className="flex items-center gap-5">
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap items-center gap-5">
               <Avatar size="xl" name="Ada Lovelace" status="online" className="overflow-visible" />
               <div className="grid grid-cols-3 gap-4 text-center text-xs">
                 {[
@@ -164,54 +145,62 @@ export function CardsAndPeoplePage() {
                 ))}
               </div>
             </div>
-          }
-        />
+          </CardContent>
+        </Card>
       </section>
 
-      <StagedSection
-        tone="primary"
-        eyebrow={t('croissant.cards.section.crewEyebrow')}
-        title={t('croissant.cards.section.crew')}
-        description={t('croissant.cards.section.crewDesc')}
-        headingId="crew-roster"
-        staggerDelay={60}
-        bodyClassName="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        {CREW.map((m) => (
-          <CrewCard key={m.name} member={m} />
-        ))}
-      </StagedSection>
+      <section aria-labelledby="crew-roster" className="space-y-4">
+        <div>
+          <h2 id="crew-roster" className="text-lg font-semibold text-foreground">
+            {t('croissant.cards.section.crew')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.cards.section.crewDesc')}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {CREW.map((m) => (
+            <CrewCard key={m.name} member={m} />
+          ))}
+        </div>
+      </section>
 
-      <StagedSection
-        tone="primary"
-        eyebrow={t('croissant.cards.section.avatarsEyebrow')}
-        title={t('croissant.cards.section.avatars')}
-        description={t('croissant.cards.section.avatarsDesc')}
-        headingId="avatars-lab"
-      >
+      <section aria-labelledby="avatars-lab" className="space-y-4">
+        <div>
+          <h2 id="avatars-lab" className="text-lg font-semibold text-foreground">
+            {t('croissant.cards.section.avatars')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.cards.section.avatarsDesc')}
+          </p>
+        </div>
         <AvatarLab />
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="primary"
-        eyebrow={t('croissant.cards.section.testimonialsEyebrow')}
-        title={t('croissant.cards.section.testimonials')}
-        description={t('croissant.cards.section.testimonialsDesc')}
-        headingId="testimonials"
-      >
+      <section aria-labelledby="testimonials" className="space-y-4">
+        <div>
+          <h2 id="testimonials" className="text-lg font-semibold text-foreground">
+            {t('croissant.cards.section.testimonials')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.cards.section.testimonialsDesc')}
+          </p>
+        </div>
         <TestimonialCarousel />
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="primary"
-        eyebrow={t('croissant.cards.section.badgesEyebrow')}
-        title={t('croissant.cards.section.badges')}
-        description={t('croissant.cards.section.badgesDesc')}
-        headingId="badge-spectrum"
-      >
+      <section aria-labelledby="badge-spectrum" className="space-y-4">
+        <div>
+          <h2 id="badge-spectrum" className="text-lg font-semibold text-foreground">
+            {t('croissant.cards.section.badges')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.cards.section.badgesDesc')}
+          </p>
+        </div>
         <Card variant="outlined">
           <CardContent>
-            <Stagger animation="fade-in" stagger={40} className="space-y-3">
+            <div className="space-y-3">
               {BADGE_TONES.map((tone) => (
                 <div key={tone} className="flex flex-wrap items-center gap-3">
                   <span className="w-20 text-xs font-semibold uppercase tracking-wide text-foreground-muted">
@@ -234,57 +223,48 @@ export function CardsAndPeoplePage() {
                   </Badge>
                 </div>
               ))}
-            </Stagger>
+            </div>
           </CardContent>
         </Card>
-      </StagedSection>
+      </section>
 
-      <StagedSection
-        tone="primary"
-        eyebrow={t('croissant.cards.section.actionsEyebrow')}
-        title={t('croissant.cards.section.actions')}
-        description={t('croissant.cards.section.actionsDesc')}
-        headingId="action-stack"
-        bodyClassName="grid grid-cols-1 gap-4 sm:grid-cols-3"
-      >
-        {ACTIONS.map((a) => {
-          const Icon = a.icon;
-          return (
-            <Card
-              key={a.title}
-              variant="outlined"
-              className="group transition-shadow hover:shadow-md"
-            >
-              <CardContent className="flex items-start gap-4">
-                <span
-                  className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${ACTION_TINT[a.tone]}`}
-                >
-                  <Icon className="h-5 w-5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-foreground">{t(a.title)}</p>
-                  <p className="mt-1 text-xs text-foreground-muted">{t(a.description)}</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  rightIcon={
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  }
-                >
-                  {t('croissant.cards.actions.go')}
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </StagedSection>
+      <section aria-labelledby="action-stack" className="space-y-4">
+        <div>
+          <h2 id="action-stack" className="text-lg font-semibold text-foreground">
+            {t('croissant.cards.section.actions')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            {t('croissant.cards.section.actionsDesc')}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {ACTIONS.map((a) => {
+            const Icon = a.icon;
+            return (
+              <Card key={a.title} variant="outlined" className="group">
+                <CardContent className="flex items-start gap-4">
+                  <span
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md ${ACTION_TINT[a.tone]}`}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-foreground">{t(a.title)}</p>
+                    <p className="mt-1 text-xs text-foreground-muted">{t(a.description)}</p>
+                  </div>
+                  <Button variant="ghost" size="sm" rightIcon={<ArrowRight className="h-4 w-4" />}>
+                    {t('croissant.cards.actions.go')}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </section>
 
       <Card variant="outlined" className="hidden" aria-hidden="true">
         <Users className="h-0 w-0" />
       </Card>
-
-      <ComponentsUsedFooter components={COMPONENTS} />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/cn';
-import { SlideInRight } from '@/components/motion';
 
 export interface ReceiptLine {
   id: string;
@@ -39,13 +38,13 @@ export function OrderReceipt({ customer, lines, notes, className }: OrderReceipt
   return (
     <div
       className={cn(
-        'rounded-md border-2 border-dashed border-foreground/30 bg-surface px-4 py-4 font-mono text-xs text-foreground',
+        'rounded-md border-2 border-dashed border-border-strong bg-surface px-4 py-4 font-mono text-xs text-foreground',
         className,
       )}
       role="region"
       aria-label={t('croissant.forms.receipt.title')}
     >
-      <div className="border-b border-dashed border-foreground/30 pb-2 text-center">
+      <div className="border-b border-dashed border-border pb-2 text-center">
         <p className="text-sm font-bold uppercase tracking-wider">
           {t('croissant.forms.receipt.title')}
         </p>
@@ -58,21 +57,16 @@ export function OrderReceipt({ customer, lines, notes, className }: OrderReceipt
         <span className="font-semibold">{customer.trim() === '' ? '—' : customer}</span>
       </p>
 
-      <ul
-        className="mt-3 space-y-1 border-b border-dashed border-foreground/30 pb-3"
-        aria-live="polite"
-      >
+      <ul className="mt-3 space-y-1 border-b border-dashed border-border pb-3" aria-live="polite">
         {lines.length === 0 ? (
           <li className="text-foreground-subtle">{t('croissant.forms.receipt.empty')}</li>
         ) : (
           lines.map((l) => (
-            <SlideInRight key={l.id}>
-              <li className="flex items-baseline gap-2">
-                <span className="w-6 text-right tabular-nums">{l.qty}×</span>
-                <span className="flex-1 truncate">{l.name}</span>
-                <span className="tabular-nums">{currency.format(l.qty * l.unitPrice)}</span>
-              </li>
-            </SlideInRight>
+            <li key={l.id} className="flex items-baseline gap-2">
+              <span className="w-6 text-right tabular-nums">{l.qty}×</span>
+              <span className="flex-1 truncate">{l.name}</span>
+              <span className="tabular-nums">{currency.format(l.qty * l.unitPrice)}</span>
+            </li>
           ))
         )}
       </ul>
@@ -86,14 +80,14 @@ export function OrderReceipt({ customer, lines, notes, className }: OrderReceipt
           <dt className="text-foreground-muted">{t('croissant.forms.receipt.tax')}</dt>
           <dd className="tabular-nums">{currency.format(tax)}</dd>
         </div>
-        <div className="flex justify-between border-t border-dashed border-foreground/30 pt-1 text-sm font-bold">
+        <div className="flex justify-between border-t border-dashed border-border pt-1 text-sm font-bold">
           <dt>{t('croissant.forms.receipt.total')}</dt>
           <dd className="tabular-nums">{currency.format(total)}</dd>
         </div>
       </dl>
 
       {notes.trim() !== '' ? (
-        <p className="mt-3 border-t border-dashed border-foreground/30 pt-2 text-foreground-muted">
+        <p className="mt-3 border-t border-dashed border-border pt-2 text-foreground-muted">
           <span className="font-semibold">{t('croissant.forms.receipt.notes')}:</span> {notes}
         </p>
       ) : null}

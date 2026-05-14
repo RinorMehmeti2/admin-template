@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ComponentType } from 'react';
 import { Bell, CheckCircle, Coffee, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { Avatar } from '@/components/primitives/Avatar';
 import { Badge } from '@/components/primitives/Badge';
 import { Card, CardContent } from '@/components/data-display/Card';
-import { SlideInDown } from '@/components/motion';
 
 interface FeedEvent {
   id: number;
@@ -51,11 +51,14 @@ const SEED: FeedEvent[] = [
   },
 ];
 
-const KIND_META: Record<FeedEvent['kind'], { icon: typeof Bell; tint: string }> = {
-  order: { icon: ShoppingBag, tint: 'bg-primary/15 text-primary' },
-  fulfilled: { icon: CheckCircle, tint: 'bg-success/15 text-success' },
-  comment: { icon: Bell, tint: 'bg-info/15 text-info' },
-  bake: { icon: Coffee, tint: 'bg-warning/15 text-warning' },
+const KIND_META: Record<
+  FeedEvent['kind'],
+  { icon: ComponentType<{ className?: string }>; tint: string }
+> = {
+  order: { icon: ShoppingBag, tint: 'bg-primary/10 text-primary' },
+  fulfilled: { icon: CheckCircle, tint: 'bg-success/10 text-success' },
+  comment: { icon: Bell, tint: 'bg-info/10 text-info' },
+  bake: { icon: Coffee, tint: 'bg-warning/10 text-warning' },
 };
 
 const RANDOM_BAKERS = ['Hedy Lamarr', 'Donald Knuth', 'Edsger Dijkstra', 'Alan Turing'];
@@ -107,17 +110,17 @@ export function LiveActivityFeed() {
           {events.map((ev) => {
             const meta = KIND_META[ev.kind];
             const Icon = meta.icon;
-            const content = (
+            return (
               <li
                 key={ev.id}
                 className={cn(
-                  'flex items-start gap-3 rounded-md border border-transparent px-2 py-2 transition-colors',
+                  'flex items-start gap-3 rounded-md border border-transparent px-2 py-2',
                   ev.isNew && 'border-warning/30 bg-warning/10',
                 )}
               >
                 <span
                   className={cn(
-                    'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-md',
                     meta.tint,
                   )}
                 >
@@ -146,7 +149,6 @@ export function LiveActivityFeed() {
                 ) : null}
               </li>
             );
-            return ev.isNew ? <SlideInDown key={ev.id}>{content}</SlideInDown> : content;
           })}
         </ul>
       </CardContent>
