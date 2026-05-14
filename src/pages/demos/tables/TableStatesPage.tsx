@@ -6,6 +6,7 @@ import { Alert } from '@/components/feedback/Alert';
 import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
 import { EmptyState } from '@/components/data-display/EmptyState';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import { Section } from './_shared/Section';
 import { EMPLOYEES } from './_shared/data';
 import type { Employee } from './_shared/model';
@@ -270,11 +271,8 @@ function DensityDemo() {
 export function TableStatesPage() {
   const { t } = useTranslation();
   return (
-    <div className="space-y-8">
-      <header className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight">{t('tables.states.title')}</h2>
-        <p className="max-w-3xl text-foreground-muted">{t('tables.states.subtitle')}</p>
-      </header>
+    <div className="space-y-6">
+      <SimsPageHeader title={t('tables.states.title')} description={t('tables.states.subtitle')} />
 
       <LoadingDemo />
       <EmptyDemo />

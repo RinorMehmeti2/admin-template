@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataTable, type ColumnDef } from '@/components/data-display/DataTable';
 import { Badge } from '@/components/primitives/Badge';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import { Section } from './_shared/Section';
 import { DEPLOYMENTS, EMPLOYEE_DEPARTMENTS, EMPLOYEES, INVOICES } from './_shared/data';
 import type { Deployment, Employee, Invoice } from './_shared/model';
@@ -179,11 +180,11 @@ export function TableFilteringPage() {
   }, [facetedColumns]);
 
   return (
-    <div className="space-y-8">
-      <header className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight">{t('tables.filtering.title')}</h2>
-        <p className="max-w-3xl text-foreground-muted">{t('tables.filtering.subtitle')}</p>
-      </header>
+    <div className="space-y-6">
+      <SimsPageHeader
+        title={t('tables.filtering.title')}
+        description={t('tables.filtering.subtitle')}
+      />
 
       <Section
         eyebrow="Global"

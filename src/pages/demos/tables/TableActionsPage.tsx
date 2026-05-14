@@ -25,6 +25,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/navigation/ContextMenu';
 import { useToast } from '@/context/ToastProvider';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import { Section } from './_shared/Section';
 import { EMPLOYEES, ORDERS } from './_shared/data';
 import type { Employee, Order } from './_shared/model';
@@ -306,11 +307,11 @@ export function TableActionsPage() {
   );
 
   return (
-    <div className="space-y-8">
-      <header className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight">{t('tables.actions.title')}</h2>
-        <p className="max-w-3xl text-foreground-muted">{t('tables.actions.subtitle')}</p>
-      </header>
+    <div className="space-y-6">
+      <SimsPageHeader
+        title={t('tables.actions.title')}
+        description={t('tables.actions.subtitle')}
+      />
 
       <Section
         eyebrow="Dropdown"

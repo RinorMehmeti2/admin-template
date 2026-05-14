@@ -7,6 +7,7 @@ import {
 } from '@/components/data-display/DataTable';
 import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import { Section } from './_shared/Section';
 import { EMPLOYEES, INVOICES } from './_shared/data';
 import type { Employee, Invoice } from './_shared/model';
@@ -110,11 +111,11 @@ export function TableColumnsPage() {
   });
 
   return (
-    <div className="space-y-8">
-      <header className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight">{t('tables.columns.title')}</h2>
-        <p className="max-w-3xl text-foreground-muted">{t('tables.columns.subtitle')}</p>
-      </header>
+    <div className="space-y-6">
+      <SimsPageHeader
+        title={t('tables.columns.title')}
+        description={t('tables.columns.subtitle')}
+      />
 
       <Section
         eyebrow="Visibility"

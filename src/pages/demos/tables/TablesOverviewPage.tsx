@@ -29,6 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from '@/components/navigation/DropdownMenu';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import { Section } from './_shared/Section';
 import { EMPLOYEE_DEPARTMENTS, getEmployeesWithReports } from './_shared/data';
 import type { Employee } from './_shared/model';
@@ -46,55 +47,55 @@ const CAPABILITIES: ReadonlyArray<CapabilityCard> = [
     to: '/tables/styles',
     titleKey: 'nav.tables.styles',
     body: 'Variants, density, status-tinted rows, sticky scroll. Tokens drive every color.',
-    icon: <Palette className="h-4 w-4" />,
+    icon: <Palette className="h-5 w-5" />,
   },
   {
     to: '/tables/sorting',
     titleKey: 'nav.tables.sorting',
     body: 'Single + multi sort, custom sortFn, non-sortable columns, default sort.',
-    icon: <ArrowUpDown className="h-4 w-4" />,
+    icon: <ArrowUpDown className="h-5 w-5" />,
   },
   {
     to: '/tables/filtering',
     titleKey: 'nav.tables.filtering',
     body: 'Global search, text, multi-select, range, date range — with chip strip.',
-    icon: <Filter className="h-4 w-4" />,
+    icon: <Filter className="h-5 w-5" />,
   },
   {
     to: '/tables/selection',
     titleKey: 'nav.tables.selection',
     body: 'Single + multi-select, disabled rows, cross-page selection, bulk action bar.',
-    icon: <SquareCheck className="h-4 w-4" />,
+    icon: <SquareCheck className="h-5 w-5" />,
   },
   {
     to: '/tables/columns',
     titleKey: 'nav.tables.columns',
     body: 'Visibility menu, left / right pinning with sticky seams, sized columns.',
-    icon: <Columns3 className="h-4 w-4" />,
+    icon: <Columns3 className="h-5 w-5" />,
   },
   {
     to: '/tables/sub-rows',
     titleKey: 'nav.tables.subRows',
     body: 'Nested trees, line-item panels, detail panels, expand-all toolbar.',
-    icon: <ListTree className="h-4 w-4" />,
+    icon: <ListTree className="h-5 w-5" />,
   },
   {
     to: '/tables/actions',
     titleKey: 'nav.tables.actions',
     body: 'Dropdown menus, inline icons, right-click context menu, destructive confirm.',
-    icon: <MoreHorizontal className="h-4 w-4" />,
+    icon: <MoreHorizontal className="h-5 w-5" />,
   },
   {
     to: '/tables/states',
     titleKey: 'nav.tables.states',
     body: 'Skeleton, empty, error + retry, density A/B selector.',
-    icon: <Loader className="h-4 w-4" />,
+    icon: <Loader className="h-5 w-5" />,
   },
   {
     to: '/tables',
     titleKey: 'nav.tables.overview',
     body: 'You are here — overview + the everything-on table below.',
-    icon: <LayoutDashboard className="h-4 w-4" />,
+    icon: <LayoutDashboard className="h-5 w-5" />,
   },
 ];
 
@@ -218,11 +219,11 @@ export function TablesOverviewPage() {
   );
 
   return (
-    <div className="space-y-8">
-      <header className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight">{t('tables.overview.title')}</h2>
-        <p className="max-w-3xl text-foreground-muted">{t('tables.overview.subtitle')}</p>
-      </header>
+    <div className="space-y-6">
+      <SimsPageHeader
+        title={t('tables.overview.title')}
+        description={t('tables.overview.subtitle')}
+      />
 
       <ul
         aria-label="Capabilities"
@@ -232,21 +233,23 @@ export function TablesOverviewPage() {
           <li key={cap.to}>
             <Link
               to={cap.to}
-              className="group block h-full rounded-lg border border-border bg-surface p-4 transition-colors hover:border-primary/40 hover:bg-surface-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="group flex h-full items-start gap-3 rounded-lg border border-border bg-surface p-4 transition-colors hover:border-primary/40 hover:bg-surface-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <div className="flex items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
-                    {cap.icon}
-                  </span>
-                  {t(cap.titleKey)}
-                </span>
-                <ArrowRight
-                  className="h-3.5 w-3.5 text-foreground-subtle transition-transform group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                {cap.icon}
               </div>
-              <p className="mt-2 text-sm text-foreground-muted">{cap.body}</p>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="truncate text-sm font-semibold text-foreground">
+                    {t(cap.titleKey)}
+                  </span>
+                  <ArrowRight
+                    className="h-3.5 w-3.5 shrink-0 text-foreground-subtle transition-transform group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </div>
+                <p className="mt-1 text-sm text-foreground-muted">{cap.body}</p>
+              </div>
             </Link>
           </li>
         ))}

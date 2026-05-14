@@ -1,4 +1,11 @@
 import type { ReactNode } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/data-display/Card';
 import { cn } from '@/lib/cn';
 
 export interface SectionProps {
@@ -12,7 +19,7 @@ export interface SectionProps {
   children: ReactNode;
 }
 
-/** Consistent card chrome for all /tables/* demo sections. */
+/** SIMS-styled card chrome for all /tables/* demo sections. */
 export function Section({
   id,
   title,
@@ -24,26 +31,24 @@ export function Section({
   children,
 }: SectionProps) {
   return (
-    <section id={id} className={cn('space-y-4 scroll-mt-24', className)}>
-      <header className="flex flex-wrap items-end justify-between gap-3">
+    <Card id={id} variant="outlined" className={cn('scroll-mt-24', className)}>
+      <CardHeader className="flex flex-row items-start justify-between gap-3">
         <div className="space-y-1">
           {eyebrow !== undefined ? (
             <p className="text-xs font-medium uppercase tracking-wider text-foreground-subtle">
               {eyebrow}
             </p>
           ) : null}
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">{title}</h2>
+          <CardTitle className="text-lg">{title}</CardTitle>
           {description !== undefined ? (
-            <p className="max-w-3xl text-sm text-foreground-muted">{description}</p>
+            <CardDescription className="max-w-3xl">{description}</CardDescription>
           ) : null}
         </div>
-        {actions !== undefined ? <div className="flex shrink-0 gap-2">{actions}</div> : null}
-      </header>
-      <div
-        className={cn('rounded-lg border border-border bg-surface p-4 sm:p-6', contentClassName)}
-      >
-        {children}
-      </div>
-    </section>
+        {actions !== undefined ? (
+          <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
+        ) : null}
+      </CardHeader>
+      <CardContent className={cn(contentClassName)}>{children}</CardContent>
+    </Card>
   );
 }

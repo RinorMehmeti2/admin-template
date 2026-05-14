@@ -2,6 +2,7 @@ import { useMemo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataTable, type ColumnDef } from '@/components/data-display/DataTable';
 import { Badge } from '@/components/primitives/Badge';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import { Section } from './_shared/Section';
 import { DEPLOYMENTS, EMPLOYEES, ORDERS } from './_shared/data';
 import {
@@ -158,11 +159,8 @@ export function TableStylesPage() {
   const employees = useMemo(() => EMPLOYEES.slice(0, 50), []);
 
   return (
-    <div className="space-y-8">
-      <header className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight">{t('tables.styles.title')}</h2>
-        <p className="max-w-3xl text-foreground-muted">{t('tables.styles.subtitle')}</p>
-      </header>
+    <div className="space-y-6">
+      <SimsPageHeader title={t('tables.styles.title')} description={t('tables.styles.subtitle')} />
 
       <Section
         eyebrow="Visual"

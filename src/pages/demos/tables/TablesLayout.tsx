@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import { cn } from '@/lib/cn';
 
 const TABS: ReadonlyArray<{ to: string; labelKey: string; end?: boolean }> = [
@@ -17,14 +18,8 @@ const TABS: ReadonlyArray<{ to: string; labelKey: string; end?: boolean }> = [
 export function TablesLayout() {
   const { t } = useTranslation();
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
-      <header className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wider text-foreground-subtle">
-          {t('tables.layout.title')}
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight">{t('tables.layout.title')}</h1>
-        <p className="max-w-3xl text-foreground-muted">{t('tables.layout.subtitle')}</p>
-      </header>
+    <div className="mx-auto max-w-[1400px] space-y-6">
+      <SimsPageHeader title={t('tables.layout.title')} description={t('tables.layout.subtitle')} />
 
       <nav
         aria-label={t('tables.layout.title')}
@@ -39,10 +34,10 @@ export function TablesLayout() {
                 end={tab.end === true}
                 className={({ isActive }) =>
                   cn(
-                    'inline-flex items-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                    'inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                     isActive
                       ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground-muted hover:bg-surface-muted hover:text-foreground',
+                      : 'border border-border bg-surface text-foreground-muted hover:bg-surface-muted',
                   )
                 }
               >
