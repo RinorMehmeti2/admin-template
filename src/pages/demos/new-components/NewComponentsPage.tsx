@@ -17,6 +17,8 @@ import { useTranslation } from 'react-i18next';
 import { Carousel } from '@/components/data-display/Carousel';
 import { StatCard } from '@/components/data-display/StatCard';
 import { Card, CardContent, CardTitle } from '@/components/data-display/Card';
+import { ExampleBlock } from '@/components/data-display/ExampleBlock';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import {
   Accordion,
   AccordionContent,
@@ -33,23 +35,105 @@ function Section({
   id,
   title,
   description,
+  code,
   children,
 }: {
   id: string;
   title: string;
   description: string;
+  code?: string;
   children: ReactNode;
 }) {
   return (
-    <section id={id} className="space-y-4 scroll-mt-20">
-      <header>
-        <h2 className="text-xl font-semibold tracking-tight text-foreground">{title}</h2>
-        <p className="mt-1 text-sm text-foreground-muted">{description}</p>
-      </header>
-      <div className="rounded-lg border border-border bg-surface p-4 sm:p-6">{children}</div>
-    </section>
+    <ExampleBlock
+      id={id}
+      title={title}
+      description={description}
+      code={code}
+      className="scroll-mt-20"
+    >
+      {children}
+    </ExampleBlock>
   );
 }
+
+const CAROUSEL_CODE = `<Carousel
+  aria-label="Numbered slides"
+  slides={[1, 2, 3, 4].map((i) => ({ id: \`s\${i}\`, content: tile(String(i)) }))}
+/>
+
+<Carousel
+  aria-label="Feature tiles"
+  slidesPerView={{ base: 1, sm: 2, lg: 3 }}
+  slides={features.map((f, i) => ({
+    id: \`f\${i}\`,
+    content: (
+      <Card variant="outlined" className="flex h-32 flex-col justify-between p-4">
+        {f.icon}
+        <p className="text-sm font-medium">{f.label}</p>
+      </Card>
+    ),
+  }))}
+/>
+
+<Carousel aria-label="Autoplaying slides" autoplayMs={2500} slides={...} />
+<Carousel aria-label="Outside arrows" arrowPosition="outside" loop={false} slides={...} />`;
+
+const ACCORDION_CODE = `<Accordion defaultValue="q-0">
+  {faq.map((f, i) => (
+    <AccordionItem key={f.q} value={\`q-\${i}\`}>
+      <AccordionTrigger>{f.q}</AccordionTrigger>
+      <AccordionContent>{f.a}</AccordionContent>
+    </AccordionItem>
+  ))}
+</Accordion>
+
+<Accordion type="multiple" variant="separated" defaultValue={['q-0', 'q-2']}>...</Accordion>
+
+<Accordion variant="bordered">
+  <AccordionItem value="a">
+    <AccordionTrigger>Open me</AccordionTrigger>
+    <AccordionContent>Use ArrowUp / ArrowDown / Home / End.</AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="b" disabled>
+    <AccordionTrigger>Locked (disabled)</AccordionTrigger>
+    <AccordionContent>Not reachable.</AccordionContent>
+  </AccordionItem>
+</Accordion>`;
+
+const STAT_CARD_CODE = `<StatCard
+  label="Total revenue"
+  value={48210 + pulse * 137}
+  unit="USD"
+  delta={12.4}
+  deltaLabel="vs previous 30 days"
+  icon={<DollarSign className="h-4 w-4" />}
+  sparklineData={spark}
+/>
+<StatCard variant="default" label="Default" value={1234} delta={2.1} />
+<StatCard variant="outlined" label="Outlined" value={1234} delta={2.1} />
+<StatCard variant="elevated" label="Elevated" value={1234} delta={2.1} />
+<StatCard variant="accent" label="Accent" value={1234} delta={2.1} icon={<Sparkles />} />
+<StatCard label="Revenue" value={0} loading icon={<DollarSign />} />`;
+
+const STICKY_CODE = `// Sticky against the page scroll - no inner scrollbar.
+<StickyCard offset={56} compactWhenStuck>
+  <h3 className="text-base font-semibold">Sticky header</h3>
+  <p className="text-xs text-foreground-muted">Pins below the topbar + compacts padding when stuck.</p>
+</StickyCard>
+
+<StickyCard side="bottom" offset={0} variant="elevated">
+  <div className="flex items-center justify-between gap-3">
+    <p className="text-sm font-medium">3 selected</p>
+    <Button size="sm">Apply</Button>
+  </div>
+</StickyCard>
+
+<StickyStack offset={56} gap={14} flowGap={28}>
+  <Card variant="outlined" className="p-4">Card 1</Card>
+  <Card variant="outlined" className="p-4">Card 2 (slides over card 1)</Card>
+  <Card variant="outlined" className="p-4">Card 3 (tops the stack)</Card>
+</StickyStack>`;
 
 function Demo({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -394,62 +478,67 @@ export function NewComponentsPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="mx-auto max-w-6xl space-y-10">
-      <header className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">{t('demos.newComponents.title')}</h1>
-        <p className="text-foreground-muted">{t('demos.newComponents.subtitle')}</p>
-      </header>
+    <div className="mx-auto max-w-[1400px]">
+      <SimsPageHeader
+        title={t('demos.newComponents.title')}
+        description={t('demos.newComponents.subtitle')}
+      />
+      <div className="space-y-6">
+        <nav
+          aria-label="On-page table of contents"
+          className="rounded-lg border border-border bg-surface p-3"
+        >
+          <ul className="flex flex-wrap gap-2">
+            {TOC.map((item) => (
+              <li key={item.id}>
+                <a
+                  href={`#${item.id}`}
+                  className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-muted/40 px-3 py-1 text-sm text-foreground-muted transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  {item.label}
+                  <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-      <nav
-        aria-label="On-page table of contents"
-        className="rounded-lg border border-border bg-surface p-3"
-      >
-        <ul className="flex flex-wrap gap-2">
-          {TOC.map((item) => (
-            <li key={item.id}>
-              <a
-                href={`#${item.id}`}
-                className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-muted/40 px-3 py-1 text-sm text-foreground-muted transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              >
-                {item.label}
-                <ArrowRight className="h-3 w-3" aria-hidden="true" />
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+        <Section
+          id="carousel"
+          title="Carousel"
+          description="Slides with keyboard / swipe / autoplay, responsive slidesPerView, dots + arrows, ARIA carousel pattern."
+          code={CAROUSEL_CODE}
+        >
+          <CarouselDemos />
+        </Section>
 
-      <Section
-        id="carousel"
-        title="Carousel"
-        description="Slides with keyboard / swipe / autoplay, responsive slidesPerView, dots + arrows, ARIA carousel pattern."
-      >
-        <CarouselDemos />
-      </Section>
+        <Section
+          id="accordion"
+          title="Accordion"
+          description="Single or multiple expand, three variants (default / bordered / separated), full keyboard nav, disabled items skipped on arrow."
+          code={ACCORDION_CODE}
+        >
+          <AccordionDemos />
+        </Section>
 
-      <Section
-        id="accordion"
-        title="Accordion"
-        description="Single or multiple expand, three variants (default / bordered / separated), full keyboard nav, disabled items skipped on arrow."
-      >
-        <AccordionDemos />
-      </Section>
+        <Section
+          id="stat-card"
+          title="StatCard"
+          description="Dynamic statistic card — rAF counter, trend pill, optional sparkline (built-in or custom), 4 variants, loading skeleton, optional click action."
+          code={STAT_CARD_CODE}
+        >
+          <StatCardDemos />
+        </Section>
 
-      <Section
-        id="stat-card"
-        title="StatCard"
-        description="Dynamic statistic card — rAF counter, trend pill, optional sparkline (built-in or custom), 4 variants, loading skeleton, optional click action."
-      >
-        <StatCardDemos />
-      </Section>
-
-      <Section
-        id="sticky-card"
-        title="StickyCard / StickyStack"
-        description="position: sticky with offset + side, IntersectionObserver detects stuck state, compact + shadow when pinned. Stack mode for chained pinning."
-      >
-        <StickyCardDemos />
-      </Section>
+        <Section
+          id="sticky-card"
+          title="StickyCard / StickyStack"
+          description="position: sticky with offset + side, IntersectionObserver detects stuck state, compact + shadow when pinned. Stack mode for chained pinning."
+          code={STICKY_CODE}
+        >
+          <StickyCardDemos />
+        </Section>
+      </div>
     </div>
   );
 }

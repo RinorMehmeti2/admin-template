@@ -5,6 +5,7 @@ export * from './Stat';
 export * from './StatCard';
 export * from './List';
 export * from './EmptyState';
+export * from './ExampleBlock';
 export * from './Table';
 export * from './DataTable';
 export * from './TreeView';

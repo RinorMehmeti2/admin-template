@@ -3,33 +3,90 @@ import { useTranslation } from 'react-i18next';
 import { Dropzone } from '@/components/forms/Dropzone';
 import type { DropzoneFile, DropzoneLabels } from '@/components/forms/Dropzone';
 import { Card } from '@/components/data-display/Card';
+import { ExampleBlock } from '@/components/data-display/ExampleBlock';
 import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
 import { Input } from '@/components/forms/Input';
 import { FormField } from '@/components/forms/FormField';
 import { Label } from '@/components/forms/Label';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 
 function Section({
   title,
   description,
+  code,
   children,
 }: {
   title: string;
   description: string;
+  code?: string;
   children: ReactNode;
 }) {
   return (
-    <section className="space-y-4">
-      <header className="space-y-1">
-        <h2 className="text-xl font-semibold tracking-tight text-foreground">{title}</h2>
-        <p className="text-sm text-foreground-muted">{description}</p>
-      </header>
-      <Card variant="outlined" className="p-6 sm:p-8">
-        {children}
-      </Card>
-    </section>
+    <ExampleBlock title={title} description={description} code={code}>
+      {children}
+    </ExampleBlock>
   );
 }
+
+const CARD_CODE = `<Dropzone
+  label={t('dropzone.config.any.label')}
+  description={t('dropzone.config.any.description')}
+  hint={t('dropzone.config.any.hint')}
+  maxSize={10 * 1024 * 1024}
+  maxFiles={8}
+  files={files}
+  onFilesChange={(next) => setFiles(next)}
+  labels={labels}
+/>`;
+
+const INLINE_CODE = `<Dropzone
+  variant="inline"
+  label={t('dropzone.config.csv.label')}
+  description={t('dropzone.config.csv.description')}
+  hint={t('dropzone.config.csv.hint')}
+  accept=".csv,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  maxSize={5 * 1024 * 1024}
+  files={files}
+  onFilesChange={(next) => setFiles(next)}
+  labels={labels}
+/>`;
+
+const COMPACT_CODE = `<Dropzone
+  variant="compact"
+  label={t('dropzone.config.image.label')}
+  hint={t('dropzone.config.image.hint')}
+  accept="image/*"
+  maxFiles={6}
+  files={files}
+  onFilesChange={(next) => setFiles(next)}
+  labels={labels}
+/>`;
+
+const AVATAR_CODE = `<div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+  <div className="flex flex-col items-center gap-2">
+    <Dropzone
+      variant="avatar"
+      label={t('dropzone.config.avatar.label')}
+      hint={t('dropzone.config.avatar.hint')}
+      maxSize={2 * 1024 * 1024}
+      files={files}
+      onFilesChange={(next) => setFiles(next)}
+      labels={labels}
+    />
+  </div>
+  <form className="flex w-full max-w-sm flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+    <FormField label={t('dropzone.profile.name')} id={nameId}>
+      <Input placeholder={t('dropzone.profile.namePlaceholder')} />
+    </FormField>
+    <FormField label={t('dropzone.profile.role')} id={roleId}>
+      <Input placeholder={t('dropzone.profile.rolePlaceholder')} />
+    </FormField>
+    <Button type="submit" className="self-start">
+      {t('dropzone.profile.save')}
+    </Button>
+  </form>
+</div>`;
 
 function useMockUploader(
   files: ReadonlyArray<DropzoneFile>,
@@ -234,66 +291,68 @@ export function DropzonePage() {
   // Suppress unused-Label-import lint by using it where useful.
   const noOp = useCallback(() => undefined, []);
   return (
-    <div className="mx-auto max-w-6xl space-y-12">
-      <header className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">{t('dropzone.page.title')}</h1>
-        <p className="text-foreground-muted">{t('dropzone.page.subtitle')}</p>
-      </header>
+    <div className="mx-auto max-w-[1400px]">
+      <SimsPageHeader title={t('dropzone.page.title')} description={t('dropzone.page.subtitle')} />
+      <div className="space-y-6">
+        <CasesCovered />
 
-      <CasesCovered />
+        <Section
+          title={t('dropzone.section.card.title')}
+          description={t('dropzone.section.card.description')}
+          code={CARD_CODE}
+        >
+          <CardDemo />
+        </Section>
 
-      <Section
-        title={t('dropzone.section.card.title')}
-        description={t('dropzone.section.card.description')}
-      >
-        <CardDemo />
-      </Section>
+        <Section
+          title={t('dropzone.section.inline.title')}
+          description={t('dropzone.section.inline.description')}
+          code={INLINE_CODE}
+        >
+          <InlineDemo />
+        </Section>
 
-      <Section
-        title={t('dropzone.section.inline.title')}
-        description={t('dropzone.section.inline.description')}
-      >
-        <InlineDemo />
-      </Section>
+        <Section
+          title={t('dropzone.section.compact.title')}
+          description={t('dropzone.section.compact.description')}
+          code={COMPACT_CODE}
+        >
+          <CompactDemo />
+        </Section>
 
-      <Section
-        title={t('dropzone.section.compact.title')}
-        description={t('dropzone.section.compact.description')}
-      >
-        <CompactDemo />
-      </Section>
+        <Section
+          title={t('dropzone.section.avatar.title')}
+          description={t('dropzone.section.avatar.description')}
+          code={AVATAR_CODE}
+        >
+          <AvatarDemo />
+        </Section>
 
-      <Section
-        title={t('dropzone.section.avatar.title')}
-        description={t('dropzone.section.avatar.description')}
-      >
-        <AvatarDemo />
-      </Section>
-
-      <section className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <Card variant="outlined" className="space-y-3 p-6">
-          <Label>{t('dropzone.cases.disabled')}</Label>
-          <Dropzone
-            variant="inline"
-            label={t('dropzone.config.any.label')}
-            hint={t('dropzone.config.any.hint')}
-            disabled
-            labels={labels}
-            onFilesChange={noOp}
-          />
-        </Card>
-        <Card variant="outlined" className="space-y-3 p-6">
-          <Label>{t('dropzone.cases.loading')}</Label>
-          <Dropzone
-            variant="inline"
-            label={t('dropzone.config.any.label')}
-            hint={t('dropzone.config.any.hint')}
-            isLoading
-            labels={labels}
-            onFilesChange={noOp}
-          />
-        </Card>
-      </section>
+        <section className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <Card variant="outlined" className="space-y-3 p-6">
+            <Label>{t('dropzone.cases.disabled')}</Label>
+            <Dropzone
+              variant="inline"
+              label={t('dropzone.config.any.label')}
+              hint={t('dropzone.config.any.hint')}
+              disabled
+              labels={labels}
+              onFilesChange={noOp}
+            />
+          </Card>
+          <Card variant="outlined" className="space-y-3 p-6">
+            <Label>{t('dropzone.cases.loading')}</Label>
+            <Dropzone
+              variant="inline"
+              label={t('dropzone.config.any.label')}
+              hint={t('dropzone.config.any.hint')}
+              isLoading
+              labels={labels}
+              onFilesChange={noOp}
+            />
+          </Card>
+        </section>
+      </div>
     </div>
   );
 }

@@ -44,6 +44,8 @@ import { Separator } from '@/components/primitives/Separator';
 import { Switch } from '@/components/forms/Switch';
 import { Select } from '@/components/forms/Select';
 import { Card, CardContent, CardTitle } from '@/components/data-display/Card';
+import { ExampleBlock } from '@/components/data-display/ExampleBlock';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 
 /* --------------- Context: force-motion toggle propagates to demos --------------- */
 
@@ -56,23 +58,123 @@ function Section({
   id,
   title,
   description,
+  code,
   children,
 }: {
   id: string;
   title: string;
   description: string;
+  code?: string;
   children: ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-20 space-y-4">
-      <header>
-        <h2 className="text-xl font-semibold tracking-tight text-foreground">{title}</h2>
-        <p className="mt-1 text-sm text-foreground-muted">{description}</p>
-      </header>
-      <div className="rounded-lg border border-border bg-surface p-4 sm:p-6">{children}</div>
-    </section>
+    <ExampleBlock
+      id={id}
+      title={title}
+      description={description}
+      code={code}
+      className="scroll-mt-20"
+    >
+      {children}
+    </ExampleBlock>
   );
 }
+
+const PRESETS_CODE = `<Stagger animation="fade-in" duration={400} stagger={80}>
+  <FadeIn>...</FadeIn>
+  <SlideInUp>...</SlideInUp>
+  <SlideInDown>...</SlideInDown>
+  <SlideInLeft>...</SlideInLeft>
+  <SlideInRight>...</SlideInRight>
+  <ScaleIn>...</ScaleIn>
+  <BounceIn>...</BounceIn>
+  <Pop>...</Pop>
+  <RotateIn>...</RotateIn>
+  <FlipIn>...</FlipIn>
+  <BlurIn>...</BlurIn>
+</Stagger>`;
+
+const STAGGER_CODE = `<Stagger
+  animation="slide-in-up"
+  stagger={80}
+  duration={400}
+  whenInView={false}
+  className="grid grid-cols-3 gap-3 sm:grid-cols-6 lg:grid-cols-9"
+>
+  {Array.from({ length: 9 }, (_, i) => (
+    <div key={i} className="flex h-16 items-center justify-center rounded-md border border-border bg-surface-muted text-sm font-medium">
+      {i + 1}
+    </div>
+  ))}
+</Stagger>`;
+
+const ANIMATE_PRESENCE_CODE = `<AnimatePresence enter="scale-in" exit="fade-out" duration={250}>
+  {show ? (
+    <Card key="card" variant="outlined" className="max-w-sm p-4">
+      <CardTitle>Animated card</CardTitle>
+      <CardContent className="p-0 text-sm text-foreground-muted">
+        Mounts with scale-in, exits with fade-out.
+      </CardContent>
+    </Card>
+  ) : null}
+</AnimatePresence>
+
+<AnimatePresence enter="slide-in-up" exit="slide-in-up" duration={280}>
+  <Card key={active} variant="outlined" className="max-w-sm p-4">
+    <CardTitle>Panel {active}</CardTitle>
+    <CardContent className="p-0 text-sm text-foreground-muted">
+      Changing the key swaps exit → enter.
+    </CardContent>
+  </Card>
+</AnimatePresence>`;
+
+const IN_VIEW_CODE = `<SlideInUp whenInView duration={500}>
+  <Card variant="outlined" className="p-4">…</Card>
+</SlideInUp>
+<Motion animation="bounce-in" whenInView duration={500}>
+  <Card variant="outlined" className="p-4">…</Card>
+</Motion>
+<Motion animation="blur-in" whenInView duration={800}>
+  <Card variant="outlined" className="p-4">…</Card>
+</Motion>`;
+
+const AMBIENT_CODE = `<PulseRing color="success" />
+<PulseRing color="danger" />
+<TypingDots />
+<Float><Badge variant="info">Float</Badge></Float>
+<Wiggle><Badge variant="warning">Wiggle</Badge></Wiggle>
+<Pop><Star className="h-5 w-5 text-warning" /></Pop>
+<Shimmer className="h-4 w-3/4" />
+<Marquee>
+  {words.map((w) => <Badge key={w} variant="info">{w}</Badge>)}
+</Marquee>`;
+
+const CUSTOM_CODE = `<Motion
+  animation={preset}      // any MotionPreset
+  duration={duration}     // ms
+  delay={delay}           // ms
+  easing={easing}         // any CSS easing
+>
+  <div className="flex h-32 items-center justify-center rounded-md bg-primary/10">
+    ✨ Preview
+  </div>
+</Motion>`;
+
+const CHAINED_CODE = `<Motion animation="fade-in" duration={400} delay={0}>
+  <Sparkles className="h-8 w-8 text-primary" />
+</Motion>
+<Motion animation="slide-in-up" duration={500} delay={150}>
+  <h3 className="text-xl font-semibold">Welcome to your workspace</h3>
+</Motion>
+<Motion animation="slide-in-up" duration={500} delay={350}>
+  <p className="text-sm text-foreground-muted">Everything you need, sequenced in motion.</p>
+</Motion>
+<Motion animation="scale-in" duration={400} delay={650}>
+  <Button>Get started</Button>
+</Motion>
+<Motion animation="fade-in" duration={500} delay={900}>
+  <p className="text-xs text-foreground-subtle">No card required. Cancel anytime.</p>
+</Motion>`;
 
 function Demo({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -687,13 +789,11 @@ export function MotionPage() {
 
   return (
     <ForceMotionContext.Provider value={force}>
-      <div className="mx-auto max-w-6xl space-y-10">
-        <header className="space-y-3">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight">{t('demos.motion.title')}</h1>
-              <p className="mt-1 text-foreground-muted">{t('demos.motion.subtitle')}</p>
-            </div>
+      <div className="mx-auto max-w-[1400px]">
+        <SimsPageHeader
+          title={t('demos.motion.title')}
+          description={t('demos.motion.subtitle')}
+          actions={
             <label className="inline-flex cursor-pointer select-none items-center gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
               <Switch
                 checked={force}
@@ -705,95 +805,106 @@ export function MotionPage() {
                 bypass <code className="rounded bg-surface-muted px-1">prefers-reduced-motion</code>
               </span>
             </label>
-          </div>
+          }
+        />
+        <div className="space-y-6">
           <ReducedMotionBanner />
-        </header>
 
-        <nav
-          aria-label="On-page table of contents"
-          className="rounded-lg border border-border bg-surface p-3"
-        >
-          <ul className="flex flex-wrap gap-2">
-            {TOC.map((item) => (
-              <li key={item.id}>
-                <a
-                  href={`#${item.id}`}
-                  className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-muted/40 px-3 py-1 text-sm text-foreground-muted transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                >
-                  {item.label}
-                  <ArrowRight className="h-3 w-3" aria-hidden="true" />
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+          <nav
+            aria-label="On-page table of contents"
+            className="rounded-lg border border-border bg-surface p-3"
+          >
+            <ul className="flex flex-wrap gap-2">
+              {TOC.map((item) => (
+                <li key={item.id}>
+                  <a
+                    href={`#${item.id}`}
+                    className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-muted/40 px-3 py-1 text-sm text-foreground-muted transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  >
+                    {item.label}
+                    <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        <Section
-          id="presets"
-          title="Entrance presets"
-          description="11 named animations covering fade, slide (4 directions), scale, bounce, pop, rotate, flip, and blur."
-        >
-          <PresetsGrid />
-        </Section>
+          <Section
+            id="presets"
+            title="Entrance presets"
+            description="11 named animations covering fade, slide (4 directions), scale, bounce, pop, rotate, flip, and blur."
+            code={PRESETS_CODE}
+          >
+            <PresetsGrid />
+          </Section>
 
-        <Section
-          id="stagger"
-          title="Stagger"
-          description="Apply an incremental delay across children. Drives the timing while each child runs its own preset."
-        >
-          <StaggerDemo />
-        </Section>
+          <Section
+            id="stagger"
+            title="Stagger"
+            description="Apply an incremental delay across children. Drives the timing while each child runs its own preset."
+            code={STAGGER_CODE}
+          >
+            <StaggerDemo />
+          </Section>
 
-        <Section
-          id="animate-presence"
-          title="AnimatePresence"
-          description="Runs an exit animation before unmount and an enter animation on mount. Swapping by key sequences exit → enter."
-        >
-          <AnimatePresenceDemo />
-        </Section>
+          <Section
+            id="animate-presence"
+            title="AnimatePresence"
+            description="Runs an exit animation before unmount and an enter animation on mount. Swapping by key sequences exit → enter."
+            code={ANIMATE_PRESENCE_CODE}
+          >
+            <AnimatePresenceDemo />
+          </Section>
 
-        <Section
-          id="in-view"
-          title="In-view scroll trigger"
-          description="Defer animation until the element enters the viewport. Uses IntersectionObserver — animates once by default."
-        >
-          <InViewDemo />
-        </Section>
+          <Section
+            id="in-view"
+            title="In-view scroll trigger"
+            description="Defer animation until the element enters the viewport. Uses IntersectionObserver — animates once by default."
+            code={IN_VIEW_CODE}
+          >
+            <InViewDemo />
+          </Section>
 
-        <Section
-          id="ambient"
-          title="Ambient loops"
-          description="Continuous decorative effects — PulseRing (live status), TypingDots, Float, Wiggle, Shimmer (richer skeleton), Marquee, Pop."
-        >
-          <AmbientDemo />
-        </Section>
+          <Section
+            id="ambient"
+            title="Ambient loops"
+            description="Continuous decorative effects — PulseRing (live status), TypingDots, Float, Wiggle, Shimmer (richer skeleton), Marquee, Pop."
+            code={AMBIENT_CODE}
+          >
+            <AmbientDemo />
+          </Section>
 
-        <Section
-          id="custom"
-          title="Custom timing"
-          description="Generic Motion wrapper accepts any preset, duration, delay, and easing. Use this when a named wrapper doesn't fit."
-        >
-          <CustomTimingDemo />
-        </Section>
+          <Section
+            id="custom"
+            title="Custom timing"
+            description="Generic Motion wrapper accepts any preset, duration, delay, and easing. Use this when a named wrapper doesn't fit."
+            code={CUSTOM_CODE}
+          >
+            <CustomTimingDemo />
+          </Section>
 
-        <Section
-          id="chained"
-          title="Chained sequence"
-          description="Compose individual Motion elements with staggered delays to build a choreographed reveal."
-        >
-          <ChainedDemo />
-        </Section>
+          <Section
+            id="chained"
+            title="Chained sequence"
+            description="Compose individual Motion elements with staggered delays to build a choreographed reveal."
+            code={CHAINED_CODE}
+          >
+            <ChainedDemo />
+          </Section>
 
-        <Separator />
+          <Separator />
 
-        <footer className="rounded-lg border border-border bg-surface p-4 text-sm text-foreground-muted">
-          <p>
-            All motion respects{' '}
-            <code className="rounded bg-surface-muted px-1">prefers-reduced-motion</code> by
-            default. Use <code className="rounded bg-surface-muted px-1">force</code> only for
-            showcase / demo surfaces where the animation is the content.
-          </p>
-        </footer>
+          <Card variant="outlined">
+            <CardContent className="p-4 text-sm text-foreground-muted">
+              <p>
+                All motion respects{' '}
+                <code className="rounded bg-surface-muted px-1">prefers-reduced-motion</code> by
+                default. Use <code className="rounded bg-surface-muted px-1">force</code> only for
+                showcase / demo surfaces where the animation is the content.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </ForceMotionContext.Provider>
   );
