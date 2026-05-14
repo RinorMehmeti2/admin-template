@@ -18,7 +18,9 @@ const TAKEN = new Set(['admin', 'baker', 'root']);
 
 export function ValidationPlayground() {
   const { t } = useTranslation();
-  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
+  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>(
+    'idle',
+  );
   const [wiggleKey, setWiggleKey] = useState(0);
 
   const schema = useMemo(
@@ -58,7 +60,10 @@ export function ValidationPlayground() {
     const id = window.setTimeout(() => {
       if (TAKEN.has(username.toLowerCase())) {
         setUsernameStatus('taken');
-        setError('username', { type: 'manual', message: t('croissant.forms.validate.usernameTaken') });
+        setError('username', {
+          type: 'manual',
+          message: t('croissant.forms.validate.usernameTaken'),
+        });
       } else {
         setUsernameStatus('available');
       }

@@ -1,37 +1,53 @@
 import { useTranslation } from 'react-i18next';
-import {
-  ArrowRight,
-  Calendar,
-  ClipboardList,
-  Heart,
-  Star,
-  UserPlus,
-  Users,
-} from 'lucide-react';
+import { ArrowRight, Calendar, ClipboardList, Heart, Star, UserPlus, Users } from 'lucide-react';
 import type { Sparkles } from 'lucide-react';
 import { Avatar } from '@/components/primitives/Avatar';
 import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
 import { Card, CardContent } from '@/components/data-display/Card';
 import { Stagger } from '@/components/motion';
-import {
-  Chip,
-  ComponentsUsedFooter,
-  HeroCard,
-  SceneHeader,
-  StagedSection,
-} from '../_shared';
+import { Chip, ComponentsUsedFooter, HeroCard, SceneHeader, StagedSection } from '../_shared';
 import { CrewCard, type CrewMember } from './components/CrewCard';
 import { AvatarLab } from './components/AvatarLab';
 import { TestimonialCarousel } from './components/TestimonialCarousel';
 
 const CREW: ReadonlyArray<CrewMember> = [
-  { name: 'Ada Lovelace', role: 'Head baker', status: 'on-shift', specialties: ['Croissants', 'Brioche'] },
-  { name: 'Grace Hopper', role: 'Pastry chef', status: 'on-shift', specialties: ['Tarts', 'Cakes', 'Custards'] },
-  { name: 'Margaret Hamilton', role: 'Front of house', status: 'on-break', specialties: ['Coffee', 'Service'] },
-  { name: 'Linus Torvalds', role: 'Bread lead', status: 'off', specialties: ['Sourdough', 'Baguette'] },
-  { name: 'Alan Turing', role: 'Delivery', status: 'on-shift', specialties: ['Routes', 'Cargo bike'] },
-  { name: 'Edsger Dijkstra', role: 'Intern', status: 'on-break', specialties: ['Doughs', 'Cleaning'] },
+  {
+    name: 'Ada Lovelace',
+    role: 'Head baker',
+    status: 'on-shift',
+    specialties: ['Croissants', 'Brioche'],
+  },
+  {
+    name: 'Grace Hopper',
+    role: 'Pastry chef',
+    status: 'on-shift',
+    specialties: ['Tarts', 'Cakes', 'Custards'],
+  },
+  {
+    name: 'Margaret Hamilton',
+    role: 'Front of house',
+    status: 'on-break',
+    specialties: ['Coffee', 'Service'],
+  },
+  {
+    name: 'Linus Torvalds',
+    role: 'Bread lead',
+    status: 'off',
+    specialties: ['Sourdough', 'Baguette'],
+  },
+  {
+    name: 'Alan Turing',
+    role: 'Delivery',
+    status: 'on-shift',
+    specialties: ['Routes', 'Cargo bike'],
+  },
+  {
+    name: 'Edsger Dijkstra',
+    role: 'Intern',
+    status: 'on-break',
+    specialties: ['Doughs', 'Cleaning'],
+  },
 ];
 
 const BADGE_TONES = ['neutral', 'primary', 'success', 'warning', 'danger', 'info'] as const;
@@ -140,7 +156,9 @@ export function CardsAndPeoplePage() {
                   { label: t('croissant.cards.featured.stat.years'), value: '6' },
                 ].map((s) => (
                   <div key={s.label} className="space-y-0.5">
-                    <p className="text-base font-semibold text-foreground tabular-nums">{s.value}</p>
+                    <p className="text-base font-semibold text-foreground tabular-nums">
+                      {s.value}
+                    </p>
                     <p className="text-foreground-subtle">{s.label}</p>
                   </div>
                 ))}
@@ -232,7 +250,11 @@ export function CardsAndPeoplePage() {
         {ACTIONS.map((a) => {
           const Icon = a.icon;
           return (
-            <Card key={a.title} variant="outlined" className="group transition-shadow hover:shadow-md">
+            <Card
+              key={a.title}
+              variant="outlined"
+              className="group transition-shadow hover:shadow-md"
+            >
               <CardContent className="flex items-start gap-4">
                 <span
                   className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${ACTION_TINT[a.tone]}`}

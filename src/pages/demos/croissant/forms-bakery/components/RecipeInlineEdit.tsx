@@ -53,7 +53,12 @@ export function RecipeInlineEdit() {
             </Button>
           ) : (
             <div className="flex gap-2">
-              <Button size="sm" variant="ghost" leftIcon={<X className="h-4 w-4" />} onClick={cancel}>
+              <Button
+                size="sm"
+                variant="ghost"
+                leftIcon={<X className="h-4 w-4" />}
+                onClick={cancel}
+              >
                 {t('croissant.forms.recipe.cancel')}
               </Button>
               <Button size="sm" leftIcon={<Save className="h-4 w-4" />} onClick={() => void save()}>

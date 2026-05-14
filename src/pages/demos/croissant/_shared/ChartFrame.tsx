@@ -49,10 +49,7 @@ export function ChartFrame({
         <div className="min-w-0">
           {eyebrow !== undefined ? (
             <p
-              className={cn(
-                'text-[10px] font-semibold uppercase tracking-[0.12em]',
-                EYEBROW[tone],
-              )}
+              className={cn('text-[10px] font-semibold uppercase tracking-[0.12em]', EYEBROW[tone])}
             >
               {eyebrow}
             </p>

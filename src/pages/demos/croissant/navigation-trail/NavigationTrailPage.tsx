@@ -69,16 +69,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/navigation/Tabs';
 import { Select } from '@/components/forms/Select';
 import { Input } from '@/components/forms/Input';
-import {
-  AnimatePresence,
-  Stagger,
-} from '@/components/motion';
-import {
-  Chip,
-  ComponentsUsedFooter,
-  SceneHeader,
-  StagedSection,
-} from '../_shared';
+import { AnimatePresence, Stagger } from '@/components/motion';
+import { Chip, ComponentsUsedFooter, SceneHeader, StagedSection } from '../_shared';
 
 const STEPS = ['account', 'address', 'payment', 'review', 'confirm'] as const;
 type StepKey = (typeof STEPS)[number];
@@ -149,10 +141,14 @@ export function NavigationTrailPage() {
           <CardContent className="space-y-4">
             <Breadcrumbs>
               <BreadcrumbItem>
-                <BreadcrumbLink to="/croissant/bakery-dashboard">{t('croissant.nav.crumbs.bakery')}</BreadcrumbLink>
+                <BreadcrumbLink to="/croissant/bakery-dashboard">
+                  {t('croissant.nav.crumbs.bakery')}
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink to="/croissant/data-lab">{t('croissant.nav.crumbs.menu')}</BreadcrumbLink>
+                <BreadcrumbLink to="/croissant/data-lab">
+                  {t('croissant.nav.crumbs.menu')}
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
                 <BreadcrumbCurrent>{t('croissant.nav.crumbs.croissants')}</BreadcrumbCurrent>
@@ -161,7 +157,9 @@ export function NavigationTrailPage() {
 
             <Breadcrumbs>
               <BreadcrumbItem>
-                <BreadcrumbLink to="/croissant/bakery-dashboard">{t('croissant.nav.crumbs.bakery')}</BreadcrumbLink>
+                <BreadcrumbLink to="/croissant/bakery-dashboard">
+                  {t('croissant.nav.crumbs.bakery')}
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
                 <DropdownMenu>
@@ -182,7 +180,9 @@ export function NavigationTrailPage() {
                 </DropdownMenu>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink to="/croissant/data-lab">{t('croissant.nav.crumbs.almond')}</BreadcrumbLink>
+                <BreadcrumbLink to="/croissant/data-lab">
+                  {t('croissant.nav.crumbs.almond')}
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
                 <BreadcrumbCurrent>{t('croissant.nav.crumbs.batch')}</BreadcrumbCurrent>
@@ -241,7 +241,10 @@ export function NavigationTrailPage() {
                 </TabsList>
                 <TabsContent value={tab}>
                   <AnimatePresence enter="fade-in" exit="fade-out">
-                    <div key={tab} className="rounded-md bg-surface-muted/30 p-3 text-sm text-foreground-muted">
+                    <div
+                      key={tab}
+                      className="rounded-md bg-surface-muted/30 p-3 text-sm text-foreground-muted"
+                    >
                       {t(`croissant.nav.tabs.body.${tab}`)}
                     </div>
                   </AnimatePresence>
@@ -441,7 +444,9 @@ export function NavigationTrailPage() {
 
         <Card variant="outlined">
           <CardContent className="space-y-3">
-            <p className="text-sm font-semibold text-foreground">{t('croissant.nav.menu.subTitle')}</p>
+            <p className="text-sm font-semibold text-foreground">
+              {t('croissant.nav.menu.subTitle')}
+            </p>
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Button variant="outline" leftIcon={<Plus className="h-4 w-4" />}>
@@ -475,7 +480,9 @@ export function NavigationTrailPage() {
 
         <Card variant="outlined">
           <CardContent className="space-y-3">
-            <p className="text-sm font-semibold text-foreground">{t('croissant.nav.menu.checkTitle')}</p>
+            <p className="text-sm font-semibold text-foreground">
+              {t('croissant.nav.menu.checkTitle')}
+            </p>
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Button variant="outline" leftIcon={<ChevronDown className="h-4 w-4" />}>
@@ -513,7 +520,9 @@ export function NavigationTrailPage() {
 
         <Card variant="outlined">
           <CardContent className="space-y-3">
-            <p className="text-sm font-semibold text-foreground">{t('croissant.nav.menu.dangerTitle')}</p>
+            <p className="text-sm font-semibold text-foreground">
+              {t('croissant.nav.menu.dangerTitle')}
+            </p>
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Button variant="outline">{t('croissant.nav.menu.danger')}</Button>
@@ -546,7 +555,9 @@ export function NavigationTrailPage() {
           <ContextMenuTrigger>
             <div className="cursor-context-menu rounded-md border-2 border-dashed border-success/40 bg-success/5 px-8 py-12 text-center">
               <Croissant aria-hidden="true" className="mx-auto h-10 w-10 text-success" />
-              <p className="mt-2 text-sm font-medium text-foreground">{t('croissant.nav.context.batch')}</p>
+              <p className="mt-2 text-sm font-medium text-foreground">
+                {t('croissant.nav.context.batch')}
+              </p>
               <p className="text-xs text-foreground-muted">{t('croissant.nav.context.hint')}</p>
               <div className="mt-3 inline-flex items-center gap-2">
                 <Stat
@@ -635,10 +646,14 @@ export function NavigationTrailPage() {
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   <Kbd>⌘</Kbd>
                   <Kbd>K</Kbd>
-                  <span className="text-xs text-foreground-muted">{t('croissant.nav.faq.shortcuts.palette')}</span>
+                  <span className="text-xs text-foreground-muted">
+                    {t('croissant.nav.faq.shortcuts.palette')}
+                  </span>
                   <span className="mx-2 text-foreground-subtle">·</span>
                   <Kbd>Tab</Kbd>
-                  <span className="text-xs text-foreground-muted">{t('croissant.nav.faq.shortcuts.tab')}</span>
+                  <span className="text-xs text-foreground-muted">
+                    {t('croissant.nav.faq.shortcuts.tab')}
+                  </span>
                 </div>
               </AccordionContent>
             </AccordionItem>

@@ -66,9 +66,7 @@ export function HeroCard({
           className,
         )}
       >
-        {loading ? (
-          <Shimmer data-print="hide" className="absolute inset-0" />
-        ) : null}
+        {loading ? <Shimmer data-print="hide" className="absolute inset-0" /> : null}
         <CardContent className="relative grid grid-cols-1 gap-6 sm:grid-cols-[1fr_auto] sm:items-center">
           <div className="min-w-0 space-y-2">
             {eyebrow !== undefined ? (

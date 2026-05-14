@@ -5,7 +5,15 @@ import { z } from 'zod';
 import { Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
-import { Form, FormField, Input, NumberInput, Textarea, useForm, zodResolver } from '@/components/forms';
+import {
+  Form,
+  FormField,
+  Input,
+  NumberInput,
+  Textarea,
+  useForm,
+  zodResolver,
+} from '@/components/forms';
 import { Select } from '@/components/forms/Select';
 import { Card, CardContent } from '@/components/data-display/Card';
 import { useToast } from '@/context/ToastProvider';
@@ -159,7 +167,11 @@ export function QuickOrderForm({ onPlaced }: QuickOrderFormProps) {
             </div>
 
             <FormField label={t('croissant.forms.field.notes')}>
-              <Textarea rows={3} placeholder={t('croissant.forms.field.notesPh')} {...register('notes')} />
+              <Textarea
+                rows={3}
+                placeholder={t('croissant.forms.field.notesPh')}
+                {...register('notes')}
+              />
             </FormField>
 
             <div className="pt-2">

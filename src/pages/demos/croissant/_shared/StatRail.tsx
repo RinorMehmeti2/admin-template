@@ -51,7 +51,8 @@ export function StatRail({ items, animate = true, className }: StatRailProps) {
         className={cn(
           'relative shrink-0 snap-start basis-[18rem] transform-gpu transition-all duration-150',
           'hover:-translate-y-0.5 hover:shadow-md',
-          it.active === true && `ring-2 ring-offset-2 ring-offset-background ${RING[it.tone ?? 'primary']}`,
+          it.active === true &&
+            `ring-2 ring-offset-2 ring-offset-background ${RING[it.tone ?? 'primary']}`,
         )}
       >
         <StatCard
@@ -73,7 +74,19 @@ export function StatRail({ items, animate = true, className }: StatRailProps) {
             data-print="hide"
             className="pointer-events-none absolute right-3 top-3"
           >
-            <PulseRing size="sm" color={(it.tone ?? 'primary') === 'secondary' ? 'primary' : (it.tone ?? 'primary') as 'primary' | 'success' | 'warning' | 'danger' | 'info'} />
+            <PulseRing
+              size="sm"
+              color={
+                (it.tone ?? 'primary') === 'secondary'
+                  ? 'primary'
+                  : ((it.tone ?? 'primary') as
+                      | 'primary'
+                      | 'success'
+                      | 'warning'
+                      | 'danger'
+                      | 'info')
+              }
+            />
           </span>
         ) : null}
       </div>

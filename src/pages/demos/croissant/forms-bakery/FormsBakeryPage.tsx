@@ -12,12 +12,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/feedback/Drawer';
-import {
-  Chip,
-  ComponentsUsedFooter,
-  SceneHeader,
-  StagedSection,
-} from '../_shared';
+import { Chip, ComponentsUsedFooter, SceneHeader, StagedSection } from '../_shared';
 import { QuickOrderForm } from './components/QuickOrderForm';
 import { WholesaleWizard } from './components/WholesaleWizard';
 import { RecipeInlineEdit } from './components/RecipeInlineEdit';
@@ -104,7 +99,11 @@ export function FormsBakeryPage() {
       />
 
       <div className="flex flex-wrap items-center justify-end gap-2" data-print="hide">
-        <Button variant="outline" leftIcon={<Settings className="h-4 w-4" />} onClick={() => setPrefsOpen(true)}>
+        <Button
+          variant="outline"
+          leftIcon={<Settings className="h-4 w-4" />}
+          onClick={() => setPrefsOpen(true)}
+        >
           {t('croissant.forms.prefs.open')}
         </Button>
       </div>

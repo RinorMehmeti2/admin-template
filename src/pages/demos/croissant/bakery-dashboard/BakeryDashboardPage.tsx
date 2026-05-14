@@ -39,14 +39,70 @@ interface OrderRow {
 }
 
 const ORDERS: ReadonlyArray<OrderRow> = [
-  { id: '#1042', customer: 'Ada Lovelace', items: '3 × croissant, 1 × latte', status: 'paid', total: 18.5, age: 1 },
-  { id: '#1041', customer: 'Grace Hopper', items: '6 × pain au chocolat', status: 'pending', total: 24.0, age: 3 },
-  { id: '#1040', customer: 'Linus Torvalds', items: '2 × sourdough', status: 'paid', total: 14.0, age: 5 },
-  { id: '#1039', customer: 'Margaret Hamilton', items: '1 × kouign-amann', status: 'refunded', total: 6.5, age: 7 },
-  { id: '#1038', customer: 'Edsger Dijkstra', items: '4 × almond croissant', status: 'paid', total: 28.0, age: 9 },
-  { id: '#1037', customer: 'Alan Turing', items: '2 × cinnamon roll, 1 × cappuccino', status: 'pending', total: 16.75, age: 12 },
-  { id: '#1036', customer: 'Hedy Lamarr', items: '1 × baguette', status: 'paid', total: 4.5, age: 14 },
-  { id: '#1035', customer: 'Donald Knuth', items: '3 × espresso', status: 'paid', total: 10.75, age: 18 },
+  {
+    id: '#1042',
+    customer: 'Ada Lovelace',
+    items: '3 × croissant, 1 × latte',
+    status: 'paid',
+    total: 18.5,
+    age: 1,
+  },
+  {
+    id: '#1041',
+    customer: 'Grace Hopper',
+    items: '6 × pain au chocolat',
+    status: 'pending',
+    total: 24.0,
+    age: 3,
+  },
+  {
+    id: '#1040',
+    customer: 'Linus Torvalds',
+    items: '2 × sourdough',
+    status: 'paid',
+    total: 14.0,
+    age: 5,
+  },
+  {
+    id: '#1039',
+    customer: 'Margaret Hamilton',
+    items: '1 × kouign-amann',
+    status: 'refunded',
+    total: 6.5,
+    age: 7,
+  },
+  {
+    id: '#1038',
+    customer: 'Edsger Dijkstra',
+    items: '4 × almond croissant',
+    status: 'paid',
+    total: 28.0,
+    age: 9,
+  },
+  {
+    id: '#1037',
+    customer: 'Alan Turing',
+    items: '2 × cinnamon roll, 1 × cappuccino',
+    status: 'pending',
+    total: 16.75,
+    age: 12,
+  },
+  {
+    id: '#1036',
+    customer: 'Hedy Lamarr',
+    items: '1 × baguette',
+    status: 'paid',
+    total: 4.5,
+    age: 14,
+  },
+  {
+    id: '#1035',
+    customer: 'Donald Knuth',
+    items: '3 × espresso',
+    status: 'paid',
+    total: 10.75,
+    age: 18,
+  },
 ];
 
 type Range = 'day' | 'week' | 'month';
@@ -255,7 +311,9 @@ export function BakeryDashboardPage() {
         id: 'items',
         header: t('croissant.bakery.orders.col.items'),
         accessorKey: 'items',
-        cell: ({ row }) => <span className="text-sm text-foreground-muted">{row.original.items}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm text-foreground-muted">{row.original.items}</span>
+        ),
       },
       {
         id: 'status',
@@ -345,7 +403,11 @@ export function BakeryDashboardPage() {
           title={t('croissant.bakery.chart.title')}
           description={t('croissant.bakery.chart.description')}
           action={
-            <div className="inline-flex overflow-hidden rounded-md border border-border" role="group" aria-label={t('croissant.bakery.chart.toggleLabel')}>
+            <div
+              className="inline-flex overflow-hidden rounded-md border border-border"
+              role="group"
+              aria-label={t('croissant.bakery.chart.toggleLabel')}
+            >
               {(['day', 'week', 'month'] as const).map((r) => (
                 <Button
                   key={r}
@@ -410,7 +472,11 @@ export function BakeryDashboardPage() {
                 </span>
                 {t('croissant.bakery.orders.selected', { count: selectedRows.length })}
               </span>
-              <Button size="sm" leftIcon={<Activity className="h-4 w-4" />} onClick={handleMarkFulfilled}>
+              <Button
+                size="sm"
+                leftIcon={<Activity className="h-4 w-4" />}
+                onClick={handleMarkFulfilled}
+              >
                 {t('croissant.bakery.orders.markFulfilled')}
               </Button>
             </div>

@@ -85,10 +85,7 @@ export function SceneHeader({
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <p
-              className={cn(
-                'text-[11px] font-semibold uppercase tracking-[0.12em]',
-                EYEBROW[tone],
-              )}
+              className={cn('text-[11px] font-semibold uppercase tracking-[0.12em]', EYEBROW[tone])}
             >
               {eyebrow}
             </p>

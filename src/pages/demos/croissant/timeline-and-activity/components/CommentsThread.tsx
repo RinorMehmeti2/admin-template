@@ -18,11 +18,46 @@ interface Comment {
 }
 
 const SEED: Comment[] = [
-  { id: 1, name: 'Ada Lovelace', text: 'Best croissant batch this week. Crumb is perfect.', at: '08:14', likes: 4, loves: 2 },
-  { id: 2, name: 'Grace Hopper', text: 'We need more almond paste by Saturday — bumping the order.', at: '08:42', likes: 2, loves: 0 },
-  { id: 3, name: 'Linus Torvalds', text: 'Oven C had a hot spot. Worth checking the element.', at: '09:01', likes: 1, loves: 0 },
-  { id: 4, name: 'Margaret Hamilton', text: 'Latte art class went well, six newbies signed up.', at: '09:30', likes: 5, loves: 3 },
-  { id: 5, name: 'Alan Turing', text: 'Delivery route 2 was 18 min faster today. Logged.', at: '10:11', likes: 3, loves: 1 },
+  {
+    id: 1,
+    name: 'Ada Lovelace',
+    text: 'Best croissant batch this week. Crumb is perfect.',
+    at: '08:14',
+    likes: 4,
+    loves: 2,
+  },
+  {
+    id: 2,
+    name: 'Grace Hopper',
+    text: 'We need more almond paste by Saturday — bumping the order.',
+    at: '08:42',
+    likes: 2,
+    loves: 0,
+  },
+  {
+    id: 3,
+    name: 'Linus Torvalds',
+    text: 'Oven C had a hot spot. Worth checking the element.',
+    at: '09:01',
+    likes: 1,
+    loves: 0,
+  },
+  {
+    id: 4,
+    name: 'Margaret Hamilton',
+    text: 'Latte art class went well, six newbies signed up.',
+    at: '09:30',
+    likes: 5,
+    loves: 3,
+  },
+  {
+    id: 5,
+    name: 'Alan Turing',
+    text: 'Delivery route 2 was 18 min faster today. Logged.',
+    at: '10:11',
+    likes: 3,
+    loves: 1,
+  },
 ];
 
 export function CommentsThread() {
@@ -98,7 +133,11 @@ export function CommentsThread() {
             placeholder={t('croissant.timeline.comments.placeholder')}
             aria-label={t('croissant.timeline.comments.placeholder')}
           />
-          <Button type="submit" leftIcon={<Send className="h-4 w-4" />} disabled={draft.trim() === ''}>
+          <Button
+            type="submit"
+            leftIcon={<Send className="h-4 w-4" />}
+            disabled={draft.trim() === ''}
+          >
             {t('croissant.timeline.comments.send')}
           </Button>
         </form>

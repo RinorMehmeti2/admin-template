@@ -45,18 +45,114 @@ interface TimelineEntry {
 }
 
 const ENTRIES: ReadonlyArray<TimelineEntry> = [
-  { id: 1, time: '2026-05-14T05:00:00', title: 'First bake', desc: 'Ovens warmed; first sourdough loaves in.', icon: Sun, variant: 'warning', actor: 'Linus' },
-  { id: 2, time: '2026-05-14T06:30:00', title: 'Doors open', desc: 'Counter opens with fresh croissants and coffee.', icon: ShoppingBag, variant: 'default', actor: 'Margaret' },
-  { id: 3, time: '2026-05-14T08:14:00', title: 'Morning rush', desc: 'Peak hour — 42 orders in 60 minutes.', icon: Coffee, variant: 'success', actor: 'Crew' },
-  { id: 4, time: '2026-05-14T10:42:00', title: 'Second bake', desc: 'Almond + pain au chocolat trays in for 11 AM service.', icon: CookingPot, variant: 'warning', actor: 'Ada' },
-  { id: 5, time: '2026-05-14T12:00:00', title: 'Lunch line', desc: 'Salad-and-baguette specials sell out by 1:15 PM.', icon: ShoppingBag, variant: 'info', actor: 'Margaret' },
-  { id: 6, time: '2026-05-14T14:00:00', title: 'Wholesale pickup', desc: 'Le Bistro picks up the weekly wholesale order.', icon: PackageCheck, variant: 'info', actor: 'Alan' },
-  { id: 7, time: '2026-05-14T15:18:00', title: 'New hire onboarded', desc: 'Edsger signs the apprenticeship paperwork.', icon: Sparkles, variant: 'success', actor: 'Manager' },
-  { id: 8, time: '2026-05-14T17:00:00', title: 'Third bake', desc: 'Evening croissants for the takeaway crowd.', icon: CookingPot, variant: 'warning', actor: 'Ada' },
-  { id: 9, time: '2026-05-14T18:30:00', title: 'MVP of the day', desc: 'Grace closes the prep list 20 min early.', icon: Crown, variant: 'success', actor: 'Grace' },
-  { id: 10, time: '2026-05-14T19:00:00', title: 'Inventory check', desc: 'Pastry case reset; tomorrow\'s prep list drafted.', icon: FileText, variant: 'muted', actor: 'Linus' },
-  { id: 11, time: '2026-05-14T19:45:00', title: 'Tip share', desc: 'Tips distributed across the shift.', icon: Coins, variant: 'success', actor: 'Manager' },
-  { id: 12, time: '2026-05-14T20:00:00', title: 'Close up', desc: 'Last lights off; alarm armed; doors locked.', icon: Star, variant: 'muted', actor: 'Margaret' },
+  {
+    id: 1,
+    time: '2026-05-14T05:00:00',
+    title: 'First bake',
+    desc: 'Ovens warmed; first sourdough loaves in.',
+    icon: Sun,
+    variant: 'warning',
+    actor: 'Linus',
+  },
+  {
+    id: 2,
+    time: '2026-05-14T06:30:00',
+    title: 'Doors open',
+    desc: 'Counter opens with fresh croissants and coffee.',
+    icon: ShoppingBag,
+    variant: 'default',
+    actor: 'Margaret',
+  },
+  {
+    id: 3,
+    time: '2026-05-14T08:14:00',
+    title: 'Morning rush',
+    desc: 'Peak hour — 42 orders in 60 minutes.',
+    icon: Coffee,
+    variant: 'success',
+    actor: 'Crew',
+  },
+  {
+    id: 4,
+    time: '2026-05-14T10:42:00',
+    title: 'Second bake',
+    desc: 'Almond + pain au chocolat trays in for 11 AM service.',
+    icon: CookingPot,
+    variant: 'warning',
+    actor: 'Ada',
+  },
+  {
+    id: 5,
+    time: '2026-05-14T12:00:00',
+    title: 'Lunch line',
+    desc: 'Salad-and-baguette specials sell out by 1:15 PM.',
+    icon: ShoppingBag,
+    variant: 'info',
+    actor: 'Margaret',
+  },
+  {
+    id: 6,
+    time: '2026-05-14T14:00:00',
+    title: 'Wholesale pickup',
+    desc: 'Le Bistro picks up the weekly wholesale order.',
+    icon: PackageCheck,
+    variant: 'info',
+    actor: 'Alan',
+  },
+  {
+    id: 7,
+    time: '2026-05-14T15:18:00',
+    title: 'New hire onboarded',
+    desc: 'Edsger signs the apprenticeship paperwork.',
+    icon: Sparkles,
+    variant: 'success',
+    actor: 'Manager',
+  },
+  {
+    id: 8,
+    time: '2026-05-14T17:00:00',
+    title: 'Third bake',
+    desc: 'Evening croissants for the takeaway crowd.',
+    icon: CookingPot,
+    variant: 'warning',
+    actor: 'Ada',
+  },
+  {
+    id: 9,
+    time: '2026-05-14T18:30:00',
+    title: 'MVP of the day',
+    desc: 'Grace closes the prep list 20 min early.',
+    icon: Crown,
+    variant: 'success',
+    actor: 'Grace',
+  },
+  {
+    id: 10,
+    time: '2026-05-14T19:00:00',
+    title: 'Inventory check',
+    desc: "Pastry case reset; tomorrow's prep list drafted.",
+    icon: FileText,
+    variant: 'muted',
+    actor: 'Linus',
+  },
+  {
+    id: 11,
+    time: '2026-05-14T19:45:00',
+    title: 'Tip share',
+    desc: 'Tips distributed across the shift.',
+    icon: Coins,
+    variant: 'success',
+    actor: 'Manager',
+  },
+  {
+    id: 12,
+    time: '2026-05-14T20:00:00',
+    title: 'Close up',
+    desc: 'Last lights off; alarm armed; doors locked.',
+    icon: Star,
+    variant: 'muted',
+    actor: 'Margaret',
+  },
 ];
 
 interface AuditRow {
@@ -70,13 +166,69 @@ interface AuditRow {
 }
 
 const AUDIT: ReadonlyArray<AuditRow> = [
-  { id: 'AU-001', ts: '07:01:12', actor: 'Linus', action: 'opened', target: 'Cash drawer', severity: 'info', json: '{"till":1,"opening":250}' },
-  { id: 'AU-002', ts: '08:14:43', actor: 'Margaret', action: 'sold', target: 'Order #1041', severity: 'info', json: '{"order":1041,"items":3,"total":24.0}' },
-  { id: 'AU-003', ts: '10:32:08', actor: 'Ada', action: 'refunded', target: 'Order #1039', severity: 'warning', json: '{"order":1039,"reason":"wrong item"}' },
-  { id: 'AU-004', ts: '12:01:00', actor: 'System', action: 'alert', target: 'Oven C', severity: 'danger', json: '{"oven":"C","temp":228,"target":210}' },
-  { id: 'AU-005', ts: '14:18:55', actor: 'Alan', action: 'dispatched', target: 'Le Bistro', severity: 'info', json: '{"customer":"Le Bistro","crates":4}' },
-  { id: 'AU-006', ts: '16:42:30', actor: 'Margaret', action: 'reset', target: 'Counter cash', severity: 'info', json: '{"till":1,"variance":-2.4}' },
-  { id: 'AU-007', ts: '18:55:01', actor: 'Grace', action: 'updated', target: 'Prep list', severity: 'info', json: '{"items":18,"changes":4}' },
+  {
+    id: 'AU-001',
+    ts: '07:01:12',
+    actor: 'Linus',
+    action: 'opened',
+    target: 'Cash drawer',
+    severity: 'info',
+    json: '{"till":1,"opening":250}',
+  },
+  {
+    id: 'AU-002',
+    ts: '08:14:43',
+    actor: 'Margaret',
+    action: 'sold',
+    target: 'Order #1041',
+    severity: 'info',
+    json: '{"order":1041,"items":3,"total":24.0}',
+  },
+  {
+    id: 'AU-003',
+    ts: '10:32:08',
+    actor: 'Ada',
+    action: 'refunded',
+    target: 'Order #1039',
+    severity: 'warning',
+    json: '{"order":1039,"reason":"wrong item"}',
+  },
+  {
+    id: 'AU-004',
+    ts: '12:01:00',
+    actor: 'System',
+    action: 'alert',
+    target: 'Oven C',
+    severity: 'danger',
+    json: '{"oven":"C","temp":228,"target":210}',
+  },
+  {
+    id: 'AU-005',
+    ts: '14:18:55',
+    actor: 'Alan',
+    action: 'dispatched',
+    target: 'Le Bistro',
+    severity: 'info',
+    json: '{"customer":"Le Bistro","crates":4}',
+  },
+  {
+    id: 'AU-006',
+    ts: '16:42:30',
+    actor: 'Margaret',
+    action: 'reset',
+    target: 'Counter cash',
+    severity: 'info',
+    json: '{"till":1,"variance":-2.4}',
+  },
+  {
+    id: 'AU-007',
+    ts: '18:55:01',
+    actor: 'Grace',
+    action: 'updated',
+    target: 'Prep list',
+    severity: 'info',
+    json: '{"items":18,"changes":4}',
+  },
 ];
 
 const COMPONENTS = [
@@ -114,11 +266,58 @@ export function TimelineActivityPage() {
   );
 
   const stats: ReadonlyArray<StatRailItem> = [
-    { id: 'orders', label: t('croissant.timeline.day.orders'), value: 312, delta: 4.2, deltaLabel: t('croissant.timeline.day.vsAvg'), icon: <ShoppingBag className="h-4 w-4" />, spark: [22, 36, 48, 42, 28, 22, 18, 14, 10, 8, 6, 4], tone: 'info' },
-    { id: 'peak', label: t('croissant.timeline.day.peak'), value: 8, unit: 'AM', delta: 0, deltaLabel: t('croissant.timeline.day.vsAvg'), icon: <Sun className="h-4 w-4" />, spark: [2, 3, 5, 7, 8, 7, 5, 4, 3, 2], tone: 'warning' },
-    { id: 'top', label: t('croissant.timeline.day.top'), value: 412, delta: 6.4, deltaLabel: t('croissant.timeline.day.vsAvg'), icon: <Crown className="h-4 w-4" />, spark: [60, 80, 110, 140, 120, 100, 90, 85, 80, 70, 60, 50], tone: 'success', accent: true },
-    { id: 'refunds', label: t('croissant.timeline.day.refunds'), value: 3, delta: -1.2, deltaLabel: t('croissant.timeline.day.vsAvg'), icon: <RotateCw className="h-4 w-4" />, spark: [1, 0, 2, 1, 0, 0, 1, 0], tone: 'danger' },
-    { id: 'customers', label: t('croissant.timeline.day.customers'), value: 247, delta: 5.1, deltaLabel: t('croissant.timeline.day.vsAvg'), icon: <Coffee className="h-4 w-4" />, spark: [10, 20, 30, 40, 30, 20, 18, 14, 10, 8, 6, 5], tone: 'primary' },
+    {
+      id: 'orders',
+      label: t('croissant.timeline.day.orders'),
+      value: 312,
+      delta: 4.2,
+      deltaLabel: t('croissant.timeline.day.vsAvg'),
+      icon: <ShoppingBag className="h-4 w-4" />,
+      spark: [22, 36, 48, 42, 28, 22, 18, 14, 10, 8, 6, 4],
+      tone: 'info',
+    },
+    {
+      id: 'peak',
+      label: t('croissant.timeline.day.peak'),
+      value: 8,
+      unit: 'AM',
+      delta: 0,
+      deltaLabel: t('croissant.timeline.day.vsAvg'),
+      icon: <Sun className="h-4 w-4" />,
+      spark: [2, 3, 5, 7, 8, 7, 5, 4, 3, 2],
+      tone: 'warning',
+    },
+    {
+      id: 'top',
+      label: t('croissant.timeline.day.top'),
+      value: 412,
+      delta: 6.4,
+      deltaLabel: t('croissant.timeline.day.vsAvg'),
+      icon: <Crown className="h-4 w-4" />,
+      spark: [60, 80, 110, 140, 120, 100, 90, 85, 80, 70, 60, 50],
+      tone: 'success',
+      accent: true,
+    },
+    {
+      id: 'refunds',
+      label: t('croissant.timeline.day.refunds'),
+      value: 3,
+      delta: -1.2,
+      deltaLabel: t('croissant.timeline.day.vsAvg'),
+      icon: <RotateCw className="h-4 w-4" />,
+      spark: [1, 0, 2, 1, 0, 0, 1, 0],
+      tone: 'danger',
+    },
+    {
+      id: 'customers',
+      label: t('croissant.timeline.day.customers'),
+      value: 247,
+      delta: 5.1,
+      deltaLabel: t('croissant.timeline.day.vsAvg'),
+      icon: <Coffee className="h-4 w-4" />,
+      spark: [10, 20, 30, 40, 30, 20, 18, 14, 10, 8, 6, 5],
+      tone: 'primary',
+    },
   ];
 
   const auditColumns = useMemo<ColumnDef<AuditRow, unknown>[]>(
@@ -253,7 +452,8 @@ export function TimelineActivityPage() {
                         {t('croissant.timeline.audit.detail')}
                       </p>
                       <h3 className="text-base font-semibold text-foreground">
-                        {auditDetail.id} · {auditDetail.actor} {auditDetail.action} {auditDetail.target}
+                        {auditDetail.id} · {auditDetail.actor} {auditDetail.action}{' '}
+                        {auditDetail.target}
                       </h3>
                     </div>
                     <Button size="sm" variant="ghost" onClick={() => setAuditDetail(null)}>
@@ -293,7 +493,11 @@ export function TimelineActivityPage() {
           title={t('croissant.timeline.chart.title')}
           description={t('croissant.timeline.chart.desc')}
         >
-          <div className="grid grid-cols-12 items-end gap-1 h-40" role="img" aria-label={t('croissant.timeline.chart.title')}>
+          <div
+            className="grid grid-cols-12 items-end gap-1 h-40"
+            role="img"
+            aria-label={t('croissant.timeline.chart.title')}
+          >
             {stats[0]?.spark?.map((v, i) => {
               const max = Math.max(...(stats[0]?.spark ?? [1]));
               const h = Math.max(4, Math.round((v / max) * 100));
@@ -333,10 +537,7 @@ export function TimelineActivityPage() {
                 <Crown className="h-3 w-3" /> {t('croissant.timeline.summary.crown')}
               </Badge>
             </div>
-            <IconButton
-              aria-label={t('croissant.timeline.summary.share')}
-              variant="ghost"
-            >
+            <IconButton aria-label={t('croissant.timeline.summary.share')} variant="ghost">
               <FileText className="h-4 w-4" />
             </IconButton>
           </div>

@@ -40,13 +40,7 @@ import { FormField, Input } from '@/components/forms';
 import { useToast } from '@/context/ToastProvider';
 import type { Placement } from '@/hooks/usePosition';
 import { AnimatePresence } from '@/components/motion';
-import {
-  Chip,
-  ComponentsUsedFooter,
-  EmptyHero,
-  SceneHeader,
-  StagedSection,
-} from '../_shared';
+import { Chip, ComponentsUsedFooter, EmptyHero, SceneHeader, StagedSection } from '../_shared';
 
 type DialogKind = 'confirm' | 'danger' | 'form' | 'image';
 type DrawerSide = 'left' | 'right' | 'top' | 'bottom';
@@ -108,11 +102,36 @@ const TOOLTIP_GRID: Placement[] = [
   'left',
 ];
 
-const DIALOG_CARDS: Array<{ kind: DialogKind; titleKey: string; bodyKey: string; icon: typeof Sparkles }> = [
-  { kind: 'confirm', titleKey: 'croissant.feedback.dialogs.confirmTitle', bodyKey: 'croissant.feedback.dialogs.confirmBody', icon: CheckCircle },
-  { kind: 'danger', titleKey: 'croissant.feedback.dialogs.dangerTitle', bodyKey: 'croissant.feedback.dialogs.dangerBody', icon: ShieldAlert },
-  { kind: 'form', titleKey: 'croissant.feedback.dialogs.formTitle', bodyKey: 'croissant.feedback.dialogs.formBody', icon: MessageSquare },
-  { kind: 'image', titleKey: 'croissant.feedback.dialogs.imageTitle', bodyKey: 'croissant.feedback.dialogs.imageBody', icon: ImageIcon },
+const DIALOG_CARDS: Array<{
+  kind: DialogKind;
+  titleKey: string;
+  bodyKey: string;
+  icon: typeof Sparkles;
+}> = [
+  {
+    kind: 'confirm',
+    titleKey: 'croissant.feedback.dialogs.confirmTitle',
+    bodyKey: 'croissant.feedback.dialogs.confirmBody',
+    icon: CheckCircle,
+  },
+  {
+    kind: 'danger',
+    titleKey: 'croissant.feedback.dialogs.dangerTitle',
+    bodyKey: 'croissant.feedback.dialogs.dangerBody',
+    icon: ShieldAlert,
+  },
+  {
+    kind: 'form',
+    titleKey: 'croissant.feedback.dialogs.formTitle',
+    bodyKey: 'croissant.feedback.dialogs.formBody',
+    icon: MessageSquare,
+  },
+  {
+    kind: 'image',
+    titleKey: 'croissant.feedback.dialogs.imageTitle',
+    bodyKey: 'croissant.feedback.dialogs.imageBody',
+    icon: ImageIcon,
+  },
 ];
 
 const DRAWER_SIDES: Array<{ side: DrawerSide; icon: typeof ChevronLeft; labelKey: string }> = [
@@ -123,10 +142,20 @@ const DRAWER_SIDES: Array<{ side: DrawerSide; icon: typeof ChevronLeft; labelKey
 ];
 
 const INITIAL_ALERTS: ReadonlyArray<AlertEntry> = [
-  { id: 'a1', variant: 'info', title: 'Heads up', body: 'Weather looks great for fresh sourdough today.' },
+  {
+    id: 'a1',
+    variant: 'info',
+    title: 'Heads up',
+    body: 'Weather looks great for fresh sourdough today.',
+  },
   { id: 'a2', variant: 'success', title: 'Saved', body: 'Order #1042 paid in full.' },
   { id: 'a3', variant: 'warning', title: 'Low stock', body: 'Only 2 croissants left in the case.' },
-  { id: 'a4', variant: 'danger', title: 'Card declined', body: 'Customer Ada — please retry checkout.' },
+  {
+    id: 'a4',
+    variant: 'danger',
+    title: 'Card declined',
+    body: 'Customer Ada — please retry checkout.',
+  },
   { id: 'a5', variant: 'neutral', title: 'New tip', body: 'Press Cmd+K to jump to any page.' },
 ];
 
@@ -164,18 +193,20 @@ export function FeedbackTheaterPage() {
   };
 
   const stormToasts = () => {
-    const order: Array<'success' | 'error' | 'warning' | 'info'> = ['success', 'info', 'warning', 'error', 'success', 'info'];
+    const order: Array<'success' | 'error' | 'warning' | 'info'> = [
+      'success',
+      'info',
+      'warning',
+      'error',
+      'success',
+      'info',
+    ];
     order.forEach((k, i) =>
-      setTimeout(
-        () =>
-          toast[k](t('croissant.feedback.toasts.storm', { n: i + 1 })),
-        i * 220,
-      ),
+      setTimeout(() => toast[k](t('croissant.feedback.toasts.storm', { n: i + 1 })), i * 220),
     );
   };
 
-  const dismissAlert = (id: string) =>
-    setAlerts((list) => list.filter((a) => a.id !== id));
+  const dismissAlert = (id: string) => setAlerts((list) => list.filter((a) => a.id !== id));
   const resetAlerts = () => setAlerts(INITIAL_ALERTS);
 
   const meta = (
@@ -210,7 +241,9 @@ export function FeedbackTheaterPage() {
               {TOAST_BUTTONS.map((b) => (
                 <Button
                   key={`${b.kind}-${b.position}`}
-                  variant={b.kind === 'error' ? 'danger' : b.kind === 'success' ? 'primary' : 'outline'}
+                  variant={
+                    b.kind === 'error' ? 'danger' : b.kind === 'success' ? 'primary' : 'outline'
+                  }
                   onClick={() => fireToast(b.kind, b.textKey)}
                 >
                   {t(b.textKey)}
@@ -240,7 +273,11 @@ export function FeedbackTheaterPage() {
         {DIALOG_CARDS.map((card) => {
           const Icon = card.icon;
           return (
-            <Card key={card.kind} variant="outlined" className="group transition-shadow hover:shadow-md">
+            <Card
+              key={card.kind}
+              variant="outlined"
+              className="group transition-shadow hover:shadow-md"
+            >
               <CardContent className="space-y-3">
                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-danger/10 text-danger">
                   <Icon className="h-5 w-5" />
@@ -250,7 +287,9 @@ export function FeedbackTheaterPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => (card.kind === 'danger' ? setConfirmOpen(true) : setDialogKind(card.kind))}
+                  onClick={() =>
+                    card.kind === 'danger' ? setConfirmOpen(true) : setDialogKind(card.kind)
+                  }
                 >
                   {t('croissant.feedback.dialogs.open')}
                 </Button>
@@ -348,17 +387,37 @@ export function FeedbackTheaterPage() {
               <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
                 {t('croissant.feedback.progress.indeterminate')}
               </p>
-              <Progress indeterminate variant="success" label={t('croissant.feedback.progress.indeterminate')} />
+              <Progress
+                indeterminate
+                variant="success"
+                label={t('croissant.feedback.progress.indeterminate')}
+              />
             </div>
             <div className="space-y-2">
               <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
                 {t('croissant.feedback.progress.tone')}
               </p>
               <div className="space-y-1.5">
-                <Progress value={20} variant="default" label={t('croissant.feedback.progress.tone')} />
-                <Progress value={50} variant="success" label={t('croissant.feedback.progress.tone')} />
-                <Progress value={75} variant="warning" label={t('croissant.feedback.progress.tone')} />
-                <Progress value={95} variant="danger" label={t('croissant.feedback.progress.tone')} />
+                <Progress
+                  value={20}
+                  variant="default"
+                  label={t('croissant.feedback.progress.tone')}
+                />
+                <Progress
+                  value={50}
+                  variant="success"
+                  label={t('croissant.feedback.progress.tone')}
+                />
+                <Progress
+                  value={75}
+                  variant="warning"
+                  label={t('croissant.feedback.progress.tone')}
+                />
+                <Progress
+                  value={95}
+                  variant="danger"
+                  label={t('croissant.feedback.progress.tone')}
+                />
               </div>
             </div>
             <div className="flex gap-2">
@@ -445,7 +504,10 @@ export function FeedbackTheaterPage() {
         }}
       />
 
-      <Dialog open={dialogKind !== null && dialogKind !== 'danger'} onOpenChange={(open) => !open && setDialogKind(null)}>
+      <Dialog
+        open={dialogKind !== null && dialogKind !== 'danger'}
+        onOpenChange={(open) => !open && setDialogKind(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -522,10 +584,13 @@ export function FeedbackTheaterPage() {
               <FormField label={t('croissant.feedback.drawer.field')}>
                 <Input placeholder={t('croissant.feedback.drawer.fieldPh')} />
               </FormField>
-              <p className="text-xs text-foreground-muted">
-                {t('croissant.feedback.drawer.hint')}
-              </p>
-              <Button onClick={() => setDrawerSide(null)} variant="outline" size="sm" leftIcon={<AlertCircle className="h-4 w-4" />}>
+              <p className="text-xs text-foreground-muted">{t('croissant.feedback.drawer.hint')}</p>
+              <Button
+                onClick={() => setDrawerSide(null)}
+                variant="outline"
+                size="sm"
+                leftIcon={<AlertCircle className="h-4 w-4" />}
+              >
                 {t('croissant.feedback.drawer.close')}
               </Button>
             </DrawerBody>
@@ -544,7 +609,15 @@ function CircularProgress({ value }: { value: number }) {
   const offset = c - (value / 100) * c;
   return (
     <svg width={96} height={96} viewBox="0 0 96 96" aria-hidden="true">
-      <circle cx={48} cy={48} r={r} stroke="currentColor" strokeWidth={6} fill="none" className="text-surface-muted" />
+      <circle
+        cx={48}
+        cy={48}
+        r={r}
+        stroke="currentColor"
+        strokeWidth={6}
+        fill="none"
+        className="text-surface-muted"
+      />
       <circle
         cx={48}
         cy={48}
@@ -558,7 +631,12 @@ function CircularProgress({ value }: { value: number }) {
         transform="rotate(-90 48 48)"
         className="text-primary transition-[stroke-dashoffset] duration-200"
       />
-      <text x="48" y="52" textAnchor="middle" className="fill-foreground text-sm font-semibold tabular-nums">
+      <text
+        x="48"
+        y="52"
+        textAnchor="middle"
+        className="fill-foreground text-sm font-semibold tabular-nums"
+      >
         {Math.round(value)}%
       </text>
     </svg>

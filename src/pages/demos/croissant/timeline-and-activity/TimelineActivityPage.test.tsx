@@ -12,7 +12,9 @@ describe('TimelineActivityPage', () => {
         <TimelineActivityPage />
       </CroissantTestWrapper>,
     );
-    expect(screen.getByRole('heading', { level: 1, name: /A day in the bakery/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: /A day in the bakery/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Hero timeline')).toBeInTheDocument();
   });
 

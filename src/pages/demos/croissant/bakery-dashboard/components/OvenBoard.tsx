@@ -37,21 +37,26 @@ export function OvenBoard({ className }: OvenBoardProps) {
   }, []);
 
   return (
-    <Stagger animation="bounce-in" stagger={70} className={cn('grid grid-cols-1 gap-4 sm:grid-cols-2', className)}>
+    <Stagger
+      animation="bounce-in"
+      stagger={70}
+      className={cn('grid grid-cols-1 gap-4 sm:grid-cols-2', className)}
+    >
       {OVENS.map((o) => {
         const elapsed = ((now + o.start) % o.duration) + 1;
         const pct = Math.min(100, Math.round((elapsed / o.duration) * 100));
         const eta = Math.max(0, o.duration - elapsed);
         const almostDone = pct >= 80;
-        const variant: 'default' | 'success' | 'warning' = almostDone ? 'success' : pct < 30 ? 'warning' : 'default';
+        const variant: 'default' | 'success' | 'warning' = almostDone
+          ? 'success'
+          : pct < 30
+            ? 'warning'
+            : 'default';
         return (
           <BounceIn key={o.id}>
             <Card
               variant="outlined"
-              className={cn(
-                'relative transition-shadow',
-                almostDone && 'ring-2 ring-success/40',
-              )}
+              className={cn('relative transition-shadow', almostDone && 'ring-2 ring-success/40')}
             >
               <CardContent className="space-y-3">
                 <div className="flex items-start justify-between gap-3">
@@ -74,7 +79,11 @@ export function OvenBoard({ className }: OvenBoardProps) {
                   </span>
                 </div>
 
-                <Progress value={pct} variant={variant} label={`${o.name} ${t('croissant.bakery.oven.progressLabel')}`} />
+                <Progress
+                  value={pct}
+                  variant={variant}
+                  label={`${o.name} ${t('croissant.bakery.oven.progressLabel')}`}
+                />
 
                 <div className="flex items-center justify-between text-xs text-foreground-muted">
                   <span className="inline-flex items-center gap-1.5">

@@ -17,10 +17,38 @@ interface FeedEvent {
 }
 
 const SEED: FeedEvent[] = [
-  { id: 1, kind: 'order', name: 'Ada Lovelace', detail: '3 × croissant, 1 × latte', at: Date.now() - 30_000, isNew: false },
-  { id: 2, kind: 'fulfilled', name: 'Grace Hopper', detail: 'Order #1041 marked fulfilled', at: Date.now() - 90_000, isNew: false },
-  { id: 3, kind: 'comment', name: 'Linus Torvalds', detail: 'Said the sourdough was great', at: Date.now() - 180_000, isNew: false },
-  { id: 4, kind: 'bake', name: 'Margaret Hamilton', detail: 'Pulled tray of pain au chocolat', at: Date.now() - 240_000, isNew: false },
+  {
+    id: 1,
+    kind: 'order',
+    name: 'Ada Lovelace',
+    detail: '3 × croissant, 1 × latte',
+    at: Date.now() - 30_000,
+    isNew: false,
+  },
+  {
+    id: 2,
+    kind: 'fulfilled',
+    name: 'Grace Hopper',
+    detail: 'Order #1041 marked fulfilled',
+    at: Date.now() - 90_000,
+    isNew: false,
+  },
+  {
+    id: 3,
+    kind: 'comment',
+    name: 'Linus Torvalds',
+    detail: 'Said the sourdough was great',
+    at: Date.now() - 180_000,
+    isNew: false,
+  },
+  {
+    id: 4,
+    kind: 'bake',
+    name: 'Margaret Hamilton',
+    detail: 'Pulled tray of pain au chocolat',
+    at: Date.now() - 240_000,
+    isNew: false,
+  },
 ];
 
 const KIND_META: Record<FeedEvent['kind'], { icon: typeof Bell; tint: string }> = {
@@ -87,7 +115,12 @@ export function LiveActivityFeed() {
                   ev.isNew && 'border-warning/30 bg-warning/10',
                 )}
               >
-                <span className={cn('inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full', meta.tint)}>
+                <span
+                  className={cn(
+                    'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+                    meta.tint,
+                  )}
+                >
                   <Icon className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -99,7 +132,11 @@ export function LiveActivityFeed() {
                     <span className="text-foreground-muted">{ev.detail}</span>
                   </p>
                   <p className="text-xs text-foreground-subtle">
-                    {timeFmt(ev.at)} · {new Date(ev.at).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })}
+                    {timeFmt(ev.at)} ·{' '}
+                    {new Date(ev.at).toLocaleTimeString(i18n.language, {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
                   </p>
                 </div>
                 {ev.isNew ? (

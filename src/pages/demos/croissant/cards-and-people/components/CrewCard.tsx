@@ -52,7 +52,18 @@ export function CrewCard({ member }: CrewCardProps) {
     >
       <CardContent className="space-y-3">
         <div className="flex items-start gap-3">
-          <Avatar size="md" name={member.name} status={member.status === 'on-shift' ? 'online' : member.status === 'on-break' ? 'away' : 'offline'} className="overflow-visible" />
+          <Avatar
+            size="md"
+            name={member.name}
+            status={
+              member.status === 'on-shift'
+                ? 'online'
+                : member.status === 'on-break'
+                  ? 'away'
+                  : 'offline'
+            }
+            className="overflow-visible"
+          />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-foreground">{member.name}</p>
             <p className="truncate text-xs text-foreground-muted">{member.role}</p>
@@ -86,7 +97,11 @@ export function CrewCard({ member }: CrewCardProps) {
               {t('croissant.cards.crew.schedule')}
             </Button>
           </div>
-          <IconButton aria-label={t('croissant.cards.crew.more', { name: member.name })} variant="ghost" size="sm">
+          <IconButton
+            aria-label={t('croissant.cards.crew.more', { name: member.name })}
+            variant="ghost"
+            size="sm"
+          >
             <MoreHorizontal className="h-4 w-4" />
           </IconButton>
         </div>

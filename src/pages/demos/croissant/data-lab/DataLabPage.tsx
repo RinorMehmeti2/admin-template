@@ -45,7 +45,14 @@ interface Batch {
   notes: string;
 }
 
-const PRODUCTS: ReadonlyArray<Product> = ['classic', 'almond', 'chocolate', 'sourdough', 'baguette', 'brioche'];
+const PRODUCTS: ReadonlyArray<Product> = [
+  'classic',
+  'almond',
+  'chocolate',
+  'sourdough',
+  'baguette',
+  'brioche',
+];
 
 function gen(): Batch[] {
   const rows: Batch[] = [];
@@ -259,10 +266,7 @@ export function DataLabPage() {
   }, []);
 
   // Outliers
-  const outliers = useMemo(
-    () => [...ROWS].sort((a, b) => a.score - b.score).slice(0, 3),
-    [],
-  );
+  const outliers = useMemo(() => [...ROWS].sort((a, b) => a.score - b.score).slice(0, 3), []);
 
   // Temperature curve for selected batch
   const tempCurve = useMemo(() => {
@@ -270,7 +274,11 @@ export function DataLabPage() {
     const base = selected.temp;
     return Array.from({ length: 12 }, (_, i) => ({
       t: i,
-      temp: base + Math.sin(i / 2) * 8 + (i === 6 ? 4 : 0) - (selected.status === 'fail' && i > 8 ? 10 : 0),
+      temp:
+        base +
+        Math.sin(i / 2) * 8 +
+        (i === 6 ? 4 : 0) -
+        (selected.status === 'fail' && i > 8 ? 10 : 0),
     }));
   }, [selected]);
 
@@ -285,7 +293,7 @@ export function DataLabPage() {
         // Bake mostly happens 5-10am and 12-6pm
         const morning = Math.max(0, 8 - Math.abs(h - 7));
         const afternoon = Math.max(0, 6 - Math.abs(h - 14));
-        const noise = ((d * 13 + h * 7) % 4);
+        const noise = (d * 13 + h * 7) % 4;
         row.push(Math.max(0, morning + afternoon + noise - 2));
       }
       data.push(row);
@@ -457,7 +465,9 @@ export function DataLabPage() {
             <BarChart
               xKey="range"
               data={[...histogram]}
-              series={[{ key: 'count', label: t('croissant.dataLab.hist.count'), color: 'secondary' }]}
+              series={[
+                { key: 'count', label: t('croissant.dataLab.hist.count'), color: 'secondary' },
+              ]}
               height={220}
             />
           </ChartFrame>
@@ -536,9 +546,21 @@ export function DataLabPage() {
         bodyClassName="grid grid-cols-1 gap-4 sm:grid-cols-3"
       >
         {[
-          { icon: Download, title: 'croissant.dataLab.export.csv', desc: 'croissant.dataLab.export.csvDesc' },
-          { icon: Calendar, title: 'croissant.dataLab.export.schedule', desc: 'croissant.dataLab.export.scheduleDesc' },
-          { icon: Bell, title: 'croissant.dataLab.export.alerts', desc: 'croissant.dataLab.export.alertsDesc' },
+          {
+            icon: Download,
+            title: 'croissant.dataLab.export.csv',
+            desc: 'croissant.dataLab.export.csvDesc',
+          },
+          {
+            icon: Calendar,
+            title: 'croissant.dataLab.export.schedule',
+            desc: 'croissant.dataLab.export.scheduleDesc',
+          },
+          {
+            icon: Bell,
+            title: 'croissant.dataLab.export.alerts',
+            desc: 'croissant.dataLab.export.alertsDesc',
+          },
         ].map(({ icon: Icon, title, desc }) => (
           <Card key={title} variant="outlined" className="group transition-shadow hover:shadow-md">
             <CardContent className="space-y-3">

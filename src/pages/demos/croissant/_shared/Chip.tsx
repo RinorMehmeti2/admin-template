@@ -5,7 +5,10 @@ import type { SectionTone } from './SectionHeader';
 
 // Badge currently lacks a 'secondary' variant — use neutral with a secondary
 // text/border tint when the page tone is secondary.
-const BADGE_VARIANT: Record<SectionTone, 'neutral' | 'primary' | 'success' | 'warning' | 'danger' | 'info'> = {
+const BADGE_VARIANT: Record<
+  SectionTone,
+  'neutral' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
+> = {
   primary: 'primary',
   success: 'success',
   warning: 'warning',
@@ -47,14 +50,13 @@ export function Chip({
     <Badge
       variant={BADGE_VARIANT[tone]}
       size={size}
-      className={cn(
-        'gap-1.5',
-        tone === 'secondary' && SECONDARY_TINT,
-        className,
-      )}
+      className={cn('gap-1.5', tone === 'secondary' && SECONDARY_TINT, className)}
     >
       {dot ? (
-        <span aria-hidden="true" className={cn('inline-block h-1.5 w-1.5 rounded-full', DOT[tone])} />
+        <span
+          aria-hidden="true"
+          className={cn('inline-block h-1.5 w-1.5 rounded-full', DOT[tone])}
+        />
       ) : null}
       {icon !== undefined ? (
         <span aria-hidden="true" className="inline-flex">

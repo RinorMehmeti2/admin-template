@@ -133,9 +133,15 @@ export function WholesaleWizard() {
                         value={field.value}
                         onValueChange={(v) => field.onChange(v as Values['size'])}
                       >
-                        <Radio value="small">{t('croissant.forms.wholesale.sizeOption.small')}</Radio>
-                        <Radio value="medium">{t('croissant.forms.wholesale.sizeOption.medium')}</Radio>
-                        <Radio value="large">{t('croissant.forms.wholesale.sizeOption.large')}</Radio>
+                        <Radio value="small">
+                          {t('croissant.forms.wholesale.sizeOption.small')}
+                        </Radio>
+                        <Radio value="medium">
+                          {t('croissant.forms.wholesale.sizeOption.medium')}
+                        </Radio>
+                        <Radio value="large">
+                          {t('croissant.forms.wholesale.sizeOption.large')}
+                        </Radio>
                       </RadioGroup>
                     )}
                   />
@@ -178,9 +184,15 @@ export function WholesaleWizard() {
                 </FormField>
                 <FormField label={t('croissant.forms.wholesale.field.schedule')}>
                   <Select {...form.register('schedule')}>
-                    <option value="daily">{t('croissant.forms.wholesale.scheduleOption.daily')}</option>
-                    <option value="weekly">{t('croissant.forms.wholesale.scheduleOption.weekly')}</option>
-                    <option value="monthly">{t('croissant.forms.wholesale.scheduleOption.monthly')}</option>
+                    <option value="daily">
+                      {t('croissant.forms.wholesale.scheduleOption.daily')}
+                    </option>
+                    <option value="weekly">
+                      {t('croissant.forms.wholesale.scheduleOption.weekly')}
+                    </option>
+                    <option value="monthly">
+                      {t('croissant.forms.wholesale.scheduleOption.monthly')}
+                    </option>
                   </Select>
                 </FormField>
               </div>
@@ -212,9 +224,15 @@ export function WholesaleWizard() {
                         value={field.value}
                         onValueChange={(v) => field.onChange(v as Values['window'])}
                       >
-                        <Radio value="morning">{t('croissant.forms.wholesale.window.morning')}</Radio>
-                        <Radio value="afternoon">{t('croissant.forms.wholesale.window.afternoon')}</Radio>
-                        <Radio value="evening">{t('croissant.forms.wholesale.window.evening')}</Radio>
+                        <Radio value="morning">
+                          {t('croissant.forms.wholesale.window.morning')}
+                        </Radio>
+                        <Radio value="afternoon">
+                          {t('croissant.forms.wholesale.window.afternoon')}
+                        </Radio>
+                        <Radio value="evening">
+                          {t('croissant.forms.wholesale.window.evening')}
+                        </Radio>
                       </RadioGroup>
                     )}
                   />

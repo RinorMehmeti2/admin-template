@@ -46,7 +46,9 @@ export function OrderReceipt({ customer, lines, notes, className }: OrderReceipt
       aria-label={t('croissant.forms.receipt.title')}
     >
       <div className="border-b border-dashed border-foreground/30 pb-2 text-center">
-        <p className="text-sm font-bold uppercase tracking-wider">{t('croissant.forms.receipt.title')}</p>
+        <p className="text-sm font-bold uppercase tracking-wider">
+          {t('croissant.forms.receipt.title')}
+        </p>
         <p className="mt-1 text-foreground-muted">{t('croissant.forms.receipt.bakery')}</p>
         <p className="text-foreground-subtle">{time}</p>
       </div>
@@ -56,7 +58,10 @@ export function OrderReceipt({ customer, lines, notes, className }: OrderReceipt
         <span className="font-semibold">{customer.trim() === '' ? '—' : customer}</span>
       </p>
 
-      <ul className="mt-3 space-y-1 border-b border-dashed border-foreground/30 pb-3" aria-live="polite">
+      <ul
+        className="mt-3 space-y-1 border-b border-dashed border-foreground/30 pb-3"
+        aria-live="polite"
+      >
         {lines.length === 0 ? (
           <li className="text-foreground-subtle">{t('croissant.forms.receipt.empty')}</li>
         ) : (
@@ -93,7 +98,9 @@ export function OrderReceipt({ customer, lines, notes, className }: OrderReceipt
         </p>
       ) : null}
 
-      <p className="mt-3 text-center text-foreground-subtle">{t('croissant.forms.receipt.thanks')}</p>
+      <p className="mt-3 text-center text-foreground-subtle">
+        {t('croissant.forms.receipt.thanks')}
+      </p>
     </div>
   );
 }

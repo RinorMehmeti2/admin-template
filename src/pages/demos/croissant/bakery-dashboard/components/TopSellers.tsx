@@ -40,7 +40,9 @@ export function TopSellers({ className }: TopSellersProps) {
                 <span
                   className={cn(
                     'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-base font-semibold tabular-nums',
-                    s.rank === 1 ? 'bg-warning/20 text-warning' : 'bg-surface-muted text-foreground-muted',
+                    s.rank === 1
+                      ? 'bg-warning/20 text-warning'
+                      : 'bg-surface-muted text-foreground-muted',
                   )}
                 >
                   {s.rank === 1 ? (
