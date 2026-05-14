@@ -25,6 +25,50 @@ interface CheckoutValues {
   itemPrice: number;
 }
 
+const CODE = `// Inputs on the left; SummaryTable on the right reads via useWatch().
+<Form form={form} onSubmit={() => undefined} className="grid gap-6 lg:grid-cols-2">
+  <div className="grid gap-3 sm:grid-cols-2">
+    <FormField label="Name"><Input {...form.register('name')} /></FormField>
+    <FormField label="Email"><Input type="email" {...form.register('email')} /></FormField>
+    <FormField label="Shipping method">
+      <Select {...form.register('shippingMethod')}>
+        {SHIPPING_METHODS.map((m) => (
+          <option key={m.id} value={m.id}>{m.label} (+\${m.flatRate})</option>
+        ))}
+      </Select>
+    </FormField>
+    <FormField label="Payment method">
+      <Select {...form.register('paymentMethod')}>
+        {PAYMENT_METHODS.map((p) => (<option key={p.id} value={p.id}>{p.label}</option>))}
+      </Select>
+    </FormField>
+    <FormField label="Items">
+      <Controller control={form.control} name="itemCount" render={({ field }) => (
+        <NumberInput min={0} step={1} precision={0} value={field.value} onValueChange={(v) => field.onChange(v ?? 0)} />
+      )} />
+    </FormField>
+    <FormField label="Unit price">
+      <Controller control={form.control} name="itemPrice" render={({ field }) => (
+        <NumberInput min={0} step={0.01} precision={2} value={field.value} onValueChange={(v) => field.onChange(v ?? 0)} />
+      )} />
+    </FormField>
+  </div>
+  <SummaryTable control={form.control} />
+</Form>
+
+// SummaryTable derives subtotal / shipping / total from useWatch(control).
+function SummaryTable({ control }: { control: Control<CheckoutValues> }) {
+  const values = useWatch({ control });
+  const subtotal = (values.itemCount ?? 0) * (values.itemPrice ?? 0);
+  const shipping = SHIPPING_METHODS.find((m) => m.id === values.shippingMethod)?.flatRate ?? 0;
+  const total = subtotal + shipping;
+  return (
+    <Table size="dense">
+      {/* …rows for name / email / shipping / payment / subtotal / total */}
+    </Table>
+  );
+}`;
+
 function SummaryTable({
   control,
 }: {
@@ -109,6 +153,7 @@ export function ReadOnlySummarySection() {
       id="summary"
       title={t('forms.tables.summary.title')}
       description={t('forms.tables.summary.description')}
+      code={CODE}
     >
       <Form form={form} onSubmit={() => undefined} className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-3">

@@ -46,6 +46,105 @@ export function TextFieldsSection() {
       id="text-inputs"
       title={t('forms.fields.text.title')}
       description={t('forms.fields.text.description')}
+      code={`<Form form={form} onSubmit={() => undefined} className="space-y-4">
+  <div className="grid gap-4 sm:grid-cols-2">
+    <FormField label="Full name">
+      <Input
+        autoComplete="name"
+        leftIcon={<User className="h-4 w-4" />}
+        {...form.register('name')}
+      />
+    </FormField>
+
+    <FormField label="Email" description="With a left adornment icon.">
+      <Input
+        type="email"
+        autoComplete="email"
+        leftIcon={<AtSign className="h-4 w-4" />}
+        {...form.register('email')}
+      />
+    </FormField>
+
+    <FormField label="Password" description="Click the eye to toggle.">
+      <Input
+        type={showPwd ? 'text' : 'password'}
+        autoComplete="new-password"
+        leftIcon={<Lock className="h-4 w-4" />}
+        rightIcon={
+          <IconButton
+            type="button"
+            size="sm"
+            variant="ghost"
+            aria-label={showPwd ? 'Hide password' : 'Show password'}
+            onClick={() => setShowPwd((v) => !v)}
+            className="h-7 w-7"
+          >
+            {showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </IconButton>
+        }
+        {...form.register('password')}
+      />
+    </FormField>
+
+    <FormField label="Age" description="NumberInput · integer, 0–120.">
+      <Controller
+        control={form.control}
+        name="age"
+        render={({ field }) => (
+          <NumberInput
+            min={0}
+            max={120}
+            step={1}
+            precision={0}
+            value={field.value}
+            onValueChange={(v) => field.onChange(v)}
+          />
+        )}
+      />
+    </FormField>
+
+    <FormField label="Phone" description="E.164-typed PhoneInput.">
+      <Controller
+        control={form.control}
+        name="phone"
+        render={({ field }) => (
+          <PhoneInput
+            value={field.value}
+            onValueChange={(e164) => field.onChange(e164 ?? '')}
+          />
+        )}
+      />
+    </FormField>
+
+    <FormField label="OTP" description="One-time code, 6 digits.">
+      <Controller
+        control={form.control}
+        name="otp"
+        render={({ field }) => (
+          <OtpInput length={6} value={field.value} onValueChange={field.onChange} />
+        )}
+      />
+    </FormField>
+  </div>
+
+  <FormField label="Bio" description="Textarea — multi-line, auto-grows.">
+    <Textarea rows={4} {...form.register('bio')} />
+  </FormField>
+
+  <FormField label="Tags" description="Comma or Enter to add. Backspace removes.">
+    <Controller
+      control={form.control}
+      name="tags"
+      render={({ field }) => (
+        <TagInput<string>
+          value={field.value as string[]}
+          onValueChange={field.onChange}
+          placeholder="Add a tag…"
+        />
+      )}
+    />
+  </FormField>
+</Form>`}
     >
       <Form form={form} onSubmit={() => undefined} className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">

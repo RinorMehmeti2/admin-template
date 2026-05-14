@@ -86,6 +86,54 @@ function InnerForm() {
   );
 }
 
+const CODE = `// Local cache so the suspense throws only on first mount.
+let cachedDefaults: DefaultsValues | null = null;
+let inflight: Promise<DefaultsValues> | null = null;
+
+function fetchDefaults(): DefaultsValues {
+  if (cachedDefaults !== null) return cachedDefaults;
+  if (inflight === null) {
+    inflight = new Promise<DefaultsValues>((resolve) => {
+      setTimeout(() => {
+        cachedDefaults = {
+          name: 'Alex Kowalski',
+          email: 'alex@acme.test',
+          timezone: 'America/Los_Angeles',
+          digest: true,
+        };
+        resolve(cachedDefaults);
+      }, 800);
+    });
+  }
+  throw inflight;
+}
+
+function InnerForm() {
+  const defaults = fetchDefaults();
+  const form = useForm<DefaultsValues>({ defaultValues: defaults });
+  useEffect(() => {
+    form.reset(defaults);
+  }, []);
+
+  return (
+    <Form form={form} onSubmit={() => undefined} className="space-y-4">
+      <FormField label="Name">
+        <Input {...form.register('name')} />
+      </FormField>
+      <FormField label="Email">
+        <Input type="email" {...form.register('email')} />
+      </FormField>
+      {/* …timezone Select, digest Switch… */}
+    </Form>
+  );
+}
+
+<LoadingBoundary fallback={<FormSkeleton />}>
+  <Suspense fallback={<FormSkeleton />}>
+    <InnerForm key={key} />
+  </Suspense>
+</LoadingBoundary>`;
+
 export function SuspenseDefaultsSection() {
   const { t } = useTranslation();
   const [key, setKey] = useState(0);
@@ -108,6 +156,7 @@ export function SuspenseDefaultsSection() {
           Refetch
         </button>
       }
+      code={CODE}
     >
       <LoadingBoundary fallback={<FormSkeleton />}>
         <Suspense fallback={<FormSkeleton />}>

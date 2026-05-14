@@ -64,6 +64,72 @@ export function BranchingWizardSection() {
       id="branching"
       title={t('forms.multiStep.branching.title')}
       description={t('forms.multiStep.branching.description')}
+      code={`<FormWizard
+  schema={fullSchema}
+  defaultValues={{
+    accountType: 'personal',
+    fullName: '',
+    email: '',
+    companyName: '',
+    vatId: '',
+    taxRegion: '',
+  }}
+  responsiveOrientation
+  compactBelow="sm"
+  labels={labels}
+  onSubmit={(values) => {
+    toast.success(\`Account created (\${values.accountType})\`);
+  }}
+>
+  <FormWizardStep<BranchValues>
+    id="type"
+    title="Account type"
+    icon={<UserCheck className="h-4 w-4" />}
+    schema={typeSchema}
+    render={({ form }) => (
+      <div className="max-w-md space-y-3">
+        <FormField label="Type">
+          <RadioGroup
+            name="accountType"
+            value={form.watch('accountType')}
+            onValueChange={(v) => {
+              const next = v as AccountType;
+              form.setValue('accountType', next, { shouldDirty: true });
+              setAccountType(next);
+            }}
+            orientation="vertical"
+          >
+            <Radio value="personal">Personal · 3-step flow</Radio>
+            <Radio value="business">Business · 5-step flow with VAT + tax region</Radio>
+          </RadioGroup>
+        </FormField>
+      </div>
+    )}
+  />
+  <FormWizardStep<BranchValues>
+    id="personal"
+    title="Identity"
+    icon={<User className="h-4 w-4" />}
+    schema={personalSchema}
+    render={({ form }) => (/* name + email inputs */)}
+  />
+  <FormWizardStep<BranchValues>
+    id="company"
+    title="Company"
+    icon={<Building2 className="h-4 w-4" />}
+    schema={companySchema}
+    hidden={accountType !== 'business'}
+    render={({ form }) => (/* companyName + vatId */)}
+  />
+  <FormWizardStep<BranchValues>
+    id="tax"
+    title="Tax region"
+    icon={<Receipt className="h-4 w-4" />}
+    schema={taxSchema}
+    hidden={accountType !== 'business'}
+    render={({ form }) => (/* taxRegion */)}
+  />
+</FormWizard>`}
     >
       <FormWizard
         schema={fullSchema}

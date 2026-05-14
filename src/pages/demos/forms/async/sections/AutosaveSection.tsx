@@ -27,6 +27,61 @@ async function fakeSave(): Promise<void> {
   // Random failure can be added; keep deterministic for demo.
 }
 
+const CODE = `const form = useForm<SettingsValues>({
+  defaultValues: {
+    workspace: 'Acme Engineering',
+    description: 'Builds calm tools for ops teams.',
+    visibility: 'private',
+  },
+});
+const watched = form.watch();
+const debounced = useDebouncedValue(watched, 800);
+const [state, setState] = useState<SaveState>({ kind: 'idle' });
+const mountedRef = useRef(false);
+
+useEffect(() => {
+  if (!mountedRef.current) {
+    mountedRef.current = true;
+    return;
+  }
+  setState({ kind: 'saving' });
+  let cancelled = false;
+  fakeSave()
+    .then(() => {
+      if (!cancelled) setState({ kind: 'saved', at: new Date() });
+    })
+    .catch(() => {
+      if (!cancelled) setState({ kind: 'error' });
+    });
+  return () => {
+    cancelled = true;
+  };
+}, [debounced]);
+
+<Form form={form} onSubmit={() => undefined} className="space-y-4">
+  <div className="flex items-center justify-between">
+    <h3 className="text-sm font-semibold tracking-tight">Workspace settings</h3>
+    <span className={cn('inline-flex items-center gap-1.5 text-xs', statusClass)}>
+      {statusIcon}
+      {statusText}
+    </span>
+  </div>
+  <div className="grid gap-3 sm:grid-cols-2">
+    <FormField label="Workspace name">
+      <Input {...form.register('workspace')} />
+    </FormField>
+    <FormField label="Visibility">
+      <Select {...form.register('visibility')}>
+        <option value="public">Public</option>
+        <option value="private">Private</option>
+      </Select>
+    </FormField>
+    <FormField label="Description" className="sm:col-span-2">
+      <Textarea rows={3} {...form.register('description')} />
+    </FormField>
+  </div>
+</Form>`;
+
 export function AutosaveSection() {
   const { t } = useTranslation();
   const form = useForm<SettingsValues>({
@@ -81,6 +136,7 @@ export function AutosaveSection() {
       id="autosave"
       title={t('forms.async.autosave.title')}
       description={t('forms.async.autosave.description')}
+      code={CODE}
     >
       <Form form={form} onSubmit={() => undefined} className="space-y-4">
         <div className="flex items-center justify-between">

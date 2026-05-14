@@ -71,11 +71,47 @@ export function ServerErrorSection() {
     },
   });
 
+  const code = `<Form form={form} onSubmit={onSubmit} className="space-y-4">
+  <div className="grid gap-4 sm:grid-cols-2">
+    <FormField label="Name" required error={errors.name?.message}>
+      <Input {...form.register('name')} />
+    </FormField>
+    <FormField label="Email" required error={errors.email?.message}>
+      <Input type="email" {...form.register('email')} />
+    </FormField>
+    <FormField
+      label="Username"
+      required
+      description="Try 'admin' to see the 422 land on this field."
+      error={errors.username?.message}
+      className="sm:col-span-2"
+    >
+      <Input {...form.register('username')} />
+    </FormField>
+  </div>
+  {errors.root?.serverError?.message !== undefined ? (
+    <p className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-xs text-danger">
+      {errors.root.serverError.message}
+    </p>
+  ) : null}
+  <div className="flex items-center justify-between">
+    {ok ? (
+      <p className="text-xs text-success-foreground">Submitted. Form reset.</p>
+    ) : (
+      <span />
+    )}
+    <Button type="submit" variant="primary" isLoading={mutation.isPending}>
+      Create account
+    </Button>
+  </div>
+</Form>`;
+
   return (
     <Section
       id="server"
       title={t('forms.validation.server.title')}
       description={t('forms.validation.server.description')}
+      code={code}
     >
       <Form form={form} onSubmit={onSubmit} className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">

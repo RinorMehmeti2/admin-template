@@ -10,6 +10,28 @@ interface EmailEntry {
   address: string;
 }
 
+const CODE = `<Repeater<EmailEntry>
+  label="Contact emails"
+  description="Used for password resets and audit alerts."
+  items={emails}
+  onChange={setEmails}
+  createItem={(): EmailEntry => ({ address: '' })}
+  min={1}
+  max={5}
+  addLabel="Add email"
+  renderItem={({ item, update, index }) => (
+    <FormField label={\`Email \${index + 1}\`} hideLabel>
+      <Input
+        type="email"
+        leftIcon={<Mail className="h-4 w-4" />}
+        value={item.address}
+        onChange={(e) => update({ address: e.target.value })}
+        placeholder="name@example.com"
+      />
+    </FormField>
+  )}
+/>`;
+
 export function SimpleListSection() {
   const { t } = useTranslation();
   const [emails, setEmails] = useState<EmailEntry[]>([{ address: 'alex@acme.test' }]);
@@ -18,6 +40,7 @@ export function SimpleListSection() {
       id="simple"
       title={t('forms.repeater.simple.title')}
       description={t('forms.repeater.simple.description')}
+      code={CODE}
     >
       <Repeater<EmailEntry>
         label="Contact emails"

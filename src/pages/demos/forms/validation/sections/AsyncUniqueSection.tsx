@@ -70,11 +70,32 @@ export function AsyncUniqueSection() {
     return undefined;
   }, [state.status]);
 
+  const code = `<Form form={form} onSubmit={() => undefined} className="space-y-4">
+  <FormField
+    label="Username"
+    description="Try 'admin', 'root', or 'test' to trigger the taken state."
+    error={form.formState.errors.username?.message}
+  >
+    <Input
+      {...form.register('username')}
+      autoComplete="username"
+      placeholder="At least 3 chars…"
+      {...(rightIcon !== undefined ? { rightIcon } : {})}
+    />
+  </FormField>
+  <div className="flex justify-end">
+    <Button type="submit" variant="primary" disabled={state.status !== 'available'}>
+      Continue
+    </Button>
+  </div>
+</Form>`;
+
   return (
     <Section
       id="async-unique"
       title={t('forms.validation.asyncUnique.title')}
       description={t('forms.validation.asyncUnique.description')}
+      code={code}
     >
       <Form form={form} onSubmit={() => undefined} className="space-y-4">
         <FormField

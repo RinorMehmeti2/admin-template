@@ -44,11 +44,30 @@ export function CrossFieldSection() {
   });
   const { errors } = form.formState;
 
+  const code = `<Form
+  form={form}
+  onSubmit={() => undefined}
+  className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+>
+  <FormField label="New password" required error={errors.password?.message}>
+    <Input type="password" autoComplete="new-password" {...form.register('password')} />
+  </FormField>
+  <FormField label="Confirm password" required error={errors.confirm?.message}>
+    <Input type="password" autoComplete="new-password" {...form.register('confirm')} />
+  </FormField>
+  <div className="flex justify-end sm:col-span-2">
+    <Button type="submit" variant="primary">
+      Update password
+    </Button>
+  </div>
+</Form>`;
+
   return (
     <Section
       id="cross"
       title={t('forms.validation.cross.title')}
       description={t('forms.validation.cross.description')}
+      code={code}
     >
       <Form
         form={form}

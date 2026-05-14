@@ -86,6 +86,75 @@ export function ProfileCardsSection() {
       id="profile-cards"
       title={t('forms.cards.sections.title')}
       description={t('forms.cards.sections.description')}
+      code={`<Form form={form} onSubmit={() => undefined} className="space-y-5">
+  <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <FormCard icon={<User className="h-4 w-4" />} title="Identity" description="Names visible across the platform.">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <FormField label="First name" required>
+          <Input {...form.register('firstName')} autoComplete="given-name" />
+        </FormField>
+        <FormField label="Last name" required>
+          <Input {...form.register('lastName')} autoComplete="family-name" />
+        </FormField>
+      </div>
+      <FormField label="Email" required>
+        <Input type="email" leftIcon={<Mail className="h-4 w-4" />} {...form.register('email')} />
+      </FormField>
+    </FormCard>
+
+    <FormCard icon={<Briefcase className="h-4 w-4" />} title="Job" description="Department, role, reporting line.">
+      <FormField label="Department">
+        <Select {...form.register('department')}>
+          {EMPLOYEE_DEPARTMENTS.map((d) => (
+            <option key={d} value={d}>{d}</option>
+          ))}
+        </Select>
+      </FormField>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <FormField label="Role"><Input {...form.register('role')} /></FormField>
+        <FormField label="Manager">
+          <Select {...form.register('manager')}>
+            <option value="emp-1">Amara Dao</option>
+            <option value="emp-2">Bao Eklund</option>
+          </Select>
+        </FormField>
+      </div>
+    </FormCard>
+
+    <FormCard icon={<Lock className="h-4 w-4" />} title="Compensation" description="Sensitive — visible to People only.">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <FormField label="Annual salary">
+          <Input inputMode="decimal" {...form.register('salary')} />
+        </FormField>
+        <FormField label="Currency">
+          <Select {...form.register('currency')}>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+          </Select>
+        </FormField>
+      </div>
+    </FormCard>
+
+    <FormCard icon={<ShieldCheck className="h-4 w-4" />} title="Access" description="Toggle permissions for this account.">
+      <label htmlFor="profile-isAdmin" className="flex items-center justify-between gap-3 text-sm">
+        <span>Admin</span>
+        <Controller
+          control={form.control}
+          name="isAdmin"
+          render={({ field }) => (
+            <Switch id="profile-isAdmin" checked={field.value} onChange={(e) => field.onChange(e.target.checked)} />
+          )}
+        />
+      </label>
+    </FormCard>
+  </div>
+
+  <FormCard icon={<User className="h-4 w-4" />} title="Notes" description="Internal — never shown to the employee.">
+    <FormField label="Notes" hideLabel>
+      <Textarea rows={4} {...form.register('notes')} placeholder="Add any context…" />
+    </FormField>
+  </FormCard>
+</Form>`}
     >
       <Form form={form} onSubmit={() => undefined} className="space-y-5">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

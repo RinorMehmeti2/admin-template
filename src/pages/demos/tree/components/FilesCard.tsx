@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/data-display/Card';
+import { ExampleBlock } from '@/components/data-display';
 import { TreeView } from '@/components/data-display/TreeView';
 import { TREE } from '../data';
 import type { FileMeta } from '../model';
@@ -15,26 +9,33 @@ interface FilesCardProps {
   setSelected: (ids: string[]) => void;
 }
 
+const code = `<TreeView<FileMeta>
+  items={TREE}
+  selectionMode="single"
+  defaultExpandedIds={['src', 'src/components']}
+  selectedIds={selected}
+  onSelectedChange={setSelected}
+  renderItem={(ctx) => <Row ctx={ctx} />}
+  aria-label="Project files"
+/>`;
+
 export function FilesCard({ selected, setSelected }: FilesCardProps) {
   return (
-    <Card variant="outlined" className="h-fit">
-      <CardHeader>
-        <CardTitle>Files</CardTitle>
-        <CardDescription>
-          2 folders, {TREE.filter((n) => n.data?.kind !== 'folder').length} files at root
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <TreeView<FileMeta>
-          items={TREE}
-          selectionMode="single"
-          defaultExpandedIds={['src', 'src/components']}
-          selectedIds={selected}
-          onSelectedChange={setSelected}
-          renderItem={(ctx) => <Row ctx={ctx} />}
-          aria-label="Project files"
-        />
-      </CardContent>
-    </Card>
+    <ExampleBlock
+      title="Files"
+      description={`2 folders, ${TREE.filter((n) => n.data?.kind !== 'folder').length} files at root`}
+      code={code}
+      className="h-fit"
+    >
+      <TreeView<FileMeta>
+        items={TREE}
+        selectionMode="single"
+        defaultExpandedIds={['src', 'src/components']}
+        selectedIds={selected}
+        onSelectedChange={setSelected}
+        renderItem={(ctx) => <Row ctx={ctx} />}
+        aria-label="Project files"
+      />
+    </ExampleBlock>
   );
 }

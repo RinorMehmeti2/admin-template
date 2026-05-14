@@ -12,6 +12,20 @@ interface SingleValues {
   description: string;
 }
 
+const CODE = `<div className="mx-auto max-w-md">
+  <Form form={form} onSubmit={() => undefined} className="space-y-4">
+    <FormField label="Title" required>
+      <Input {...form.register('title')} placeholder="Give it a name…" />
+    </FormField>
+    <FormField label="Description">
+      <Textarea rows={4} {...form.register('description')} placeholder="Optional details…" />
+    </FormField>
+    <div className="flex justify-end">
+      <Button type="submit" variant="primary">Save</Button>
+    </div>
+  </Form>
+</div>`;
+
 export function SingleColumnLayout() {
   const { t } = useTranslation();
   const form = useForm<SingleValues>({
@@ -22,6 +36,7 @@ export function SingleColumnLayout() {
       id="single"
       title={t('forms.layouts.single.title')}
       description={t('forms.layouts.single.description')}
+      code={CODE}
     >
       <div className="mx-auto max-w-md">
         <Form form={form} onSubmit={() => undefined} className="space-y-4">

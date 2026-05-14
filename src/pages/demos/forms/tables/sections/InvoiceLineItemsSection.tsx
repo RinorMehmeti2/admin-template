@@ -53,6 +53,71 @@ interface InvoiceValues {
   }>;
 }
 
+const CODE = `// zod schema + useFieldArray("lines"); LineTotal + Totals read via useWatch.
+const schema = z.object({
+  // …header fields,
+  lines: z.array(z.object({
+    sku: z.string().min(1),
+    qty: z.number().int().min(1),
+    unitPrice: z.number().nonnegative(),
+    taxRatePct: z.number().min(0).max(100),
+  })).min(1, 'At least one line'),
+});
+
+const { fields, append, remove } = useFieldArray({ control: form.control, name: 'lines' });
+
+<Table size="dense">
+  <TableHeader>{/* Product · Qty · Unit price · Tax % · Line total · Remove */}</TableHeader>
+  <TableBody>
+    {fields.map((row, i) => (
+      <TableRow key={row.id}>
+        <TableCell>
+          <Controller
+            control={form.control}
+            name={\`lines.\${i}.sku\`}
+            render={({ field }) => (
+              <Combobox<Product>
+                items={PRODUCTS}
+                getItemLabel={(p) => \`\${p.name} · \${p.sku}\`}
+                getItemValue={(p) => p.sku}
+                value={field.value}
+                onValueChange={(v) => {
+                  const sku = typeof v === 'string' ? v : (v[0] ?? '');
+                  field.onChange(sku);
+                  const product = getProductBySku(sku);
+                  if (product !== undefined) {
+                    form.setValue(\`lines.\${i}.unitPrice\`, product.unitPrice);
+                    form.setValue(\`lines.\${i}.taxRatePct\`, product.taxRatePct);
+                  }
+                }}
+              >
+                <ComboboxTrigger placeholder="Pick a product…" />
+                <ComboboxContent>{/* items */}</ComboboxContent>
+              </Combobox>
+            )}
+          />
+        </TableCell>
+        <TableCell>
+          <Controller control={form.control} name={\`lines.\${i}.qty\`} render={({ field }) => (
+            <NumberInput min={1} max={999} value={field.value} onValueChange={(v) => field.onChange(v ?? 0)} />
+          )} />
+        </TableCell>
+        <TableCell>
+          <Controller control={form.control} name={\`lines.\${i}.unitPrice\`} render={({ field }) => (
+            <NumberInput min={0} step={0.01} precision={2} value={field.value} onValueChange={(v) => field.onChange(v ?? 0)} />
+          )} />
+        </TableCell>
+        <TableCell>{/* tax % Select */}</TableCell>
+        <TableCell><LineTotal index={i} /></TableCell>
+        <TableCell><IconButton onClick={() => remove(i)}><Trash2 /></IconButton></TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+  <TableFooter><Totals /></TableFooter>
+</Table>
+
+// LineTotal / Totals read via useWatch + formatMoney(amount, currency).`;
+
 function makeSchema(t: TFunction) {
   return z.object({
     vendor: z.string().min(1, t('forms.zod.required')),
@@ -159,6 +224,7 @@ export function InvoiceLineItemsSection() {
       id="invoice"
       title={t('forms.tables.invoice.title')}
       description={t('forms.tables.invoice.description')}
+      code={CODE}
     >
       <Form
         form={form}

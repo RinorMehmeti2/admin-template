@@ -63,11 +63,89 @@ export function ErrorSummarySection() {
     }
   }
 
+  const code = `<Form form={form} onSubmit={() => undefined} className="space-y-4">
+  {errorList.length > 0 ? (
+    <Alert
+      variant="danger"
+      role="alert"
+      title={
+        <span className="inline-flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+          {errorList.length} field{errorList.length === 1 ? '' : 's'} need attention
+        </span>
+      }
+      description={
+        <ul className="mt-2 space-y-1">
+          {errorList.map((e) => (
+            <li key={e.field}>
+              <a
+                href={\`#\${FIELD_ID(e.field)}\`}
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  const el = document.getElementById(FIELD_ID(e.field));
+                  if (el !== null) {
+                    el.focus();
+                    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                  }
+                }}
+                className="underline decoration-dotted underline-offset-2"
+              >
+                {e.label}
+              </a>
+              <span className="text-foreground-subtle"> — {e.message}</span>
+            </li>
+          ))}
+        </ul>
+      }
+    />
+  ) : null}
+
+  <div className="grid gap-4 sm:grid-cols-2">
+    <FormField label="Title" required error={errors.title?.message}>
+      <Input id={FIELD_ID('title')} {...form.register('title')} />
+    </FormField>
+    <FormField label="Type" required error={errors.type?.message}>
+      <Select id={FIELD_ID('type')} {...form.register('type')}>
+        <option value="">Select…</option>
+        <option value="bug">Bug</option>
+        <option value="feature">Feature request</option>
+        <option value="task">Task</option>
+      </Select>
+    </FormField>
+    <FormField
+      label="Description"
+      required
+      description="Min 10 chars."
+      error={errors.description?.message}
+      className="sm:col-span-2"
+    >
+      <Textarea id={FIELD_ID('description')} rows={4} {...form.register('description')} />
+    </FormField>
+    <FormField label="Priority" error={errors.priority?.message}>
+      <Select id={FIELD_ID('priority')} {...form.register('priority')}>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </Select>
+    </FormField>
+    <FormField label="Contact email" required error={errors.contact?.message}>
+      <Input id={FIELD_ID('contact')} type="email" {...form.register('contact')} />
+    </FormField>
+  </div>
+
+  <div className="flex justify-end">
+    <Button type="submit" variant="primary">
+      Create ticket
+    </Button>
+  </div>
+</Form>`;
+
   return (
     <Section
       id="summary"
       title={t('forms.validation.summary.title')}
       description={t('forms.validation.summary.description')}
+      code={code}
     >
       <Form form={form} onSubmit={() => undefined} className="space-y-4">
         {errorList.length > 0 ? (

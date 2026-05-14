@@ -260,6 +260,18 @@ export function TablesOverviewPage() {
         eyebrow="Everything turned on"
         title={t('tables.overview.everythingTitle')}
         description={t('tables.overview.everythingSubtitle')}
+        code={`<DataTable<Employee>
+  columns={columns}
+  data={data}
+  getRowId={(r) => r.id}
+  enableMultiSort
+  enableColumnFilters
+  enableRowSelection="multi"
+  enableExpanding
+  getSubRows={(r) => r.reports}
+  searchPlaceholder="Search by name, email, role, department…"
+  pageSize={8}
+/>`}
       >
         <DataTable<Employee>
           columns={columns}

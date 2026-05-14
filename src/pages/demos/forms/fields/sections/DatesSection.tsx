@@ -37,6 +37,69 @@ export function DatesSection() {
       id="dates"
       title={t('forms.fields.dates.title')}
       description={t('forms.fields.dates.description')}
+      code={`<Form form={form} onSubmit={() => undefined} className="space-y-5">
+  <div className="grid gap-4 sm:grid-cols-2">
+    <FormField label="Date" description="DatePicker — click to open the calendar.">
+      <Controller
+        control={form.control}
+        name="date"
+        render={({ field }) => (
+          <DatePicker value={field.value} onChange={field.onChange} placeholder="Pick a date" />
+        )}
+      />
+    </FormField>
+
+    <FormField label="Date range" description="Two-month picker with presets.">
+      <Controller
+        control={form.control}
+        name="range"
+        render={({ field }) => (
+          <DateRangePicker value={field.value} onChange={field.onChange} />
+        )}
+      />
+    </FormField>
+
+    <FormField label="Date + time" description="DateTimePicker — date then time.">
+      <Controller
+        control={form.control}
+        name="dateTime"
+        render={({ field }) => (
+          <DateTimePicker value={field.value} onChange={field.onChange} />
+        )}
+      />
+    </FormField>
+
+    <FormField label="Time" description="TimePicker — 24h, step 15.">
+      <Controller
+        control={form.control}
+        name="time"
+        render={({ field }) => (
+          <TimePicker
+            value={field.value}
+            onChange={(v) => field.onChange(typeof v === 'string' ? v : (v?.toString() ?? ''))}
+            step={15}
+            format="24h"
+          />
+        )}
+      />
+    </FormField>
+  </div>
+
+  <FormField label="Inline calendar" description="Calendar rendered inline.">
+    <Controller
+      control={form.control}
+      name="inline"
+      render={({ field }) => (
+        <Calendar
+          month={month}
+          onMonthChange={setMonth}
+          value={field.value}
+          onChange={(d) => field.onChange(d)}
+        />
+      )}
+    />
+  </FormField>
+</Form>`}
     >
       <Form form={form} onSubmit={() => undefined} className="space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">

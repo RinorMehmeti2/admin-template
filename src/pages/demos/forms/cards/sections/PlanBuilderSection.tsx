@@ -270,6 +270,86 @@ export function PlanBuilderSection() {
       id="plan-builder"
       title={t('forms.cards.selectable.title')}
       description={t('forms.cards.selectable.description')}
+      code={`<Form form={form} onSubmit={() => undefined} className="space-y-6">
+  <SummaryStats control={form.control} />
+
+  <div className="space-y-2">
+    <h3 className="text-sm font-semibold tracking-tight">Pick a plan</h3>
+    <Controller
+      control={form.control}
+      name="plan"
+      render={({ field }) => {
+        const idx = PLANS.findIndex((p) => p.id === field.value);
+        return (
+          <RovingFocusGroup orientation="horizontal" defaultIndex={Math.max(0, idx)}>
+            <div
+              role="radiogroup"
+              aria-label="Pick a plan"
+              className="grid grid-cols-1 gap-3 sm:grid-cols-3"
+            >
+              {PLANS.map((p, i) => (
+                <PlanCard
+                  key={p.id}
+                  index={i}
+                  plan={p}
+                  selected={field.value === p.id}
+                  onSelect={(id) => field.onChange(id)}
+                />
+              ))}
+            </div>
+          </RovingFocusGroup>
+        );
+      }}
+    />
+  </div>
+
+  <div className="space-y-2">
+    <h3 className="text-sm font-semibold tracking-tight">Add-ons</h3>
+    <Controller
+      control={form.control}
+      name="addons"
+      render={({ field }) => (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {ADDONS.map((a) => {
+            const checked = field.value.includes(a.id);
+            return (
+              <label key={a.id} className="flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm">
+                <Checkbox
+                  checked={checked}
+                  onChange={(e) => {
+                    const cur = field.value;
+                    field.onChange(
+                      e.target.checked ? [...cur, a.id] : cur.filter((id) => id !== a.id),
+                    );
+                  }}
+                />
+                <span>
+                  <span className="flex items-center justify-between gap-2 font-medium">
+                    {a.label}
+                    <span className="text-foreground-muted">\${a.price}/mo</span>
+                  </span>
+                  <span className="block text-xs text-foreground-muted">{a.description}</span>
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      )}
+    />
+  </div>
+
+  <Controller
+    control={form.control}
+    name="billingAddress"
+    render={({ field }) => (
+      <AddressCard values={field.value} onSave={(v) => field.onChange(v)} />
+    )}
+  />
+
+  <div className="flex justify-end">
+    <Button type="submit" variant="primary">Subscribe</Button>
+  </div>
+</Form>`}
     >
       <Form form={form} onSubmit={() => undefined} className="space-y-6">
         <SummaryStats control={form.control} />

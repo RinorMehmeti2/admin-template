@@ -35,11 +35,40 @@ export function SyncZodSection() {
   });
   const { errors } = form.formState;
 
+  const code = `<Form
+  form={form}
+  onSubmit={(values) => {
+    setSubmitted(values);
+  }}
+  className="space-y-4"
+>
+  <FormField label="Email" required error={errors.email?.message}>
+    <Input type="email" autoComplete="email" {...form.register('email')} />
+  </FormField>
+  <FormField label="Password" required error={errors.password?.message}>
+    <Input type="password" autoComplete="new-password" {...form.register('password')} />
+  </FormField>
+  <div className="flex items-center justify-between">
+    <p className="text-xs text-foreground-muted">
+      Submit blanks to see both errors fire and focus jump to the first.
+    </p>
+    <Button type="submit" variant="primary">
+      Sign in
+    </Button>
+  </div>
+  {submitted !== null ? (
+    <p className="rounded-md border border-success/30 bg-success/10 px-3 py-2 text-xs text-success-foreground">
+      Validated. Submitted email: {submitted.email}
+    </p>
+  ) : null}
+</Form>`;
+
   return (
     <Section
       id="sync"
       title={t('forms.validation.sync.title')}
       description={t('forms.validation.sync.description')}
+      code={code}
     >
       <Form
         form={form}
