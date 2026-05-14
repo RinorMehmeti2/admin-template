@@ -1,416 +1,368 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Inbox } from 'lucide-react';
-import { PageHeader } from '@/components/layout/PageHeader';
-import { Badge } from '@/components/primitives/Badge';
-import { Card, CardContent } from '@/components/data-display/Card';
-import { DataTable, type ColumnDef } from '@/components/data-display/DataTable';
-import { EmptyState } from '@/components/data-display/EmptyState';
 import {
-  FilterableSearch,
-  type ActiveFilter,
-  type FilterDef,
-} from '@/components/data-display/FilterableSearch';
-import { Tabs, TabsList, TabsTrigger } from '@/components/navigation/Tabs';
-import { ComponentsUsedFooter, SectionHeader } from '../_shared';
+  AlertTriangle,
+  Bell,
+  Calendar,
+  ClipboardList,
+  Download,
+  FileBarChart,
+  Inbox,
+  X,
+} from 'lucide-react';
+import { Badge } from '@/components/primitives/Badge';
+import { Button } from '@/components/primitives/Button';
+import { IconButton } from '@/components/primitives/IconButton';
+import { Card, CardContent } from '@/components/data-display/Card';
+import { DataTable, type ColumnDef, type Row } from '@/components/data-display/DataTable';
+import { EmptyState } from '@/components/data-display/EmptyState';
+import { BarChart } from '@/components/data-display/charts/BarChart';
+import { LineChart } from '@/components/data-display/charts/LineChart';
+import { Stagger, SlideInRight } from '@/components/motion';
+import { cn } from '@/lib/cn';
+import {
+  ChartFrame,
+  Chip,
+  ComponentsUsedFooter,
+  SceneHeader,
+  StagedSection,
+  StatRail,
+  type StatRailItem,
+} from '../_shared';
 
-type Category = 'pastry' | 'bread' | 'cake' | 'drink';
-type StockStatus = 'in-stock' | 'low' | 'out';
+type Product = 'classic' | 'almond' | 'chocolate' | 'sourdough' | 'baguette' | 'brioche';
+type Status = 'pass' | 'fail' | 'review';
 
-interface InventoryRow {
-  sku: string;
-  name: string;
-  category: Category;
-  stock: number;
-  price: number;
-  updated: string;
+interface Batch {
+  id: string;
+  product: Product;
+  oven: 'A' | 'B' | 'C' | 'D';
+  bakeTime: number;
+  temp: number;
+  score: number;
+  status: Status;
+  date: string;
+  notes: string;
 }
 
-const ROWS: ReadonlyArray<InventoryRow> = [
-  {
-    sku: 'CRO-001',
-    name: 'Classic butter croissant',
-    category: 'pastry',
-    stock: 42,
-    price: 3.5,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'CRO-002',
-    name: 'Almond croissant',
-    category: 'pastry',
-    stock: 18,
-    price: 4.5,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'CRO-003',
-    name: 'Pain au chocolat',
-    category: 'pastry',
-    stock: 31,
-    price: 4.0,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'CRO-004',
-    name: 'Kouign-amann',
-    category: 'pastry',
-    stock: 0,
-    price: 5.0,
-    updated: '2026-05-11',
-  },
-  {
-    sku: 'CRO-005',
-    name: 'Cinnamon roll',
-    category: 'pastry',
-    stock: 8,
-    price: 4.25,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'BRD-001',
-    name: 'Country sourdough',
-    category: 'bread',
-    stock: 24,
-    price: 8.0,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'BRD-002',
-    name: 'Whole wheat loaf',
-    category: 'bread',
-    stock: 12,
-    price: 7.0,
-    updated: '2026-05-11',
-  },
-  {
-    sku: 'BRD-003',
-    name: 'Baguette',
-    category: 'bread',
-    stock: 36,
-    price: 3.75,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'BRD-004',
-    name: 'Rye loaf',
-    category: 'bread',
-    stock: 4,
-    price: 7.5,
-    updated: '2026-05-11',
-  },
-  {
-    sku: 'BRD-005',
-    name: 'Brioche',
-    category: 'bread',
-    stock: 0,
-    price: 6.0,
-    updated: '2026-05-10',
-  },
-  {
-    sku: 'BRD-006',
-    name: 'Focaccia',
-    category: 'bread',
-    stock: 14,
-    price: 9.5,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'CAK-001',
-    name: 'Vanilla layer cake',
-    category: 'cake',
-    stock: 6,
-    price: 28.0,
-    updated: '2026-05-11',
-  },
-  {
-    sku: 'CAK-002',
-    name: 'Chocolate ganache',
-    category: 'cake',
-    stock: 9,
-    price: 32.0,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'CAK-003',
-    name: 'Lemon tart',
-    category: 'cake',
-    stock: 11,
-    price: 22.0,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'CAK-004',
-    name: 'Carrot cake',
-    category: 'cake',
-    stock: 0,
-    price: 30.0,
-    updated: '2026-05-10',
-  },
-  {
-    sku: 'CAK-005',
-    name: 'Cheesecake',
-    category: 'cake',
-    stock: 7,
-    price: 26.0,
-    updated: '2026-05-11',
-  },
-  {
-    sku: 'DRK-001',
-    name: 'Espresso',
-    category: 'drink',
-    stock: 999,
-    price: 3.25,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'DRK-002',
-    name: 'Cappuccino',
-    category: 'drink',
-    stock: 999,
-    price: 4.5,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'DRK-003',
-    name: 'Cold brew',
-    category: 'drink',
-    stock: 28,
-    price: 5.0,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'DRK-004',
-    name: 'Hot chocolate',
-    category: 'drink',
-    stock: 16,
-    price: 4.75,
-    updated: '2026-05-11',
-  },
-  {
-    sku: 'DRK-005',
-    name: 'Lemonade',
-    category: 'drink',
-    stock: 0,
-    price: 4.0,
-    updated: '2026-05-10',
-  },
-  {
-    sku: 'CRO-006',
-    name: 'Ham & cheese croissant',
-    category: 'pastry',
-    stock: 22,
-    price: 5.25,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'CRO-007',
-    name: 'Croissant aux raisins',
-    category: 'pastry',
-    stock: 9,
-    price: 4.25,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'BRD-007',
-    name: 'Bagel',
-    category: 'bread',
-    stock: 30,
-    price: 3.0,
-    updated: '2026-05-12',
-  },
-  {
-    sku: 'BRD-008',
-    name: 'Pretzel',
-    category: 'bread',
-    stock: 2,
-    price: 3.5,
-    updated: '2026-05-12',
-  },
-];
+const PRODUCTS: ReadonlyArray<Product> = ['classic', 'almond', 'chocolate', 'sourdough', 'baguette', 'brioche'];
+
+function gen(): Batch[] {
+  const rows: Batch[] = [];
+  const start = new Date('2026-05-08').getTime();
+  for (let i = 0; i < 64; i++) {
+    const product = PRODUCTS[i % PRODUCTS.length] as Product;
+    const oven = (['A', 'B', 'C', 'D'] as const)[i % 4] as 'A' | 'B' | 'C' | 'D';
+    const bakeTime = 18 + (i % 24);
+    const temp = 188 + ((i * 7) % 14);
+    const score = Math.max(40, Math.min(99, 84 + ((i * 13) % 20) - 8));
+    let status: Status = 'pass';
+    if (score < 70) status = 'fail';
+    else if (score < 80) status = 'review';
+    const date = new Date(start + i * 36e5).toISOString().slice(0, 10);
+    rows.push({
+      id: `B-${(i + 1).toString().padStart(3, '0')}`,
+      product,
+      oven,
+      bakeTime,
+      temp,
+      score,
+      status,
+      date,
+      notes:
+        status === 'fail'
+          ? 'Temperature spiked late in the bake. Crust over-browned, crumb underdone.'
+          : status === 'review'
+            ? 'Color slightly uneven — proofing time may be a touch short.'
+            : 'Even crumb, golden top, clean release. Standard batch.',
+    });
+  }
+  return rows;
+}
+
+const ROWS = gen();
 
 const COMPONENTS = [
+  'SceneHeader',
+  'StagedSection',
+  'StatRail',
+  'StatCard',
+  'ChartFrame',
   'DataTable',
-  'Table',
-  'Tabs',
-  'FilterableSearch',
-  'EmptyState',
-  'Badge',
+  'BarChart',
+  'LineChart',
   'Card',
+  'Badge',
+  'Button',
+  'IconButton',
+  'EmptyState',
+  'SlideInRight',
+  'Stagger',
 ];
 
-function classify(stock: number): StockStatus {
-  if (stock === 0) return 'out';
-  if (stock < 10) return 'low';
-  return 'in-stock';
-}
+const PRODUCT_LABEL_KEY: Record<Product, string> = {
+  classic: 'croissant.dataLab.product.classic',
+  almond: 'croissant.dataLab.product.almond',
+  chocolate: 'croissant.dataLab.product.chocolate',
+  sourdough: 'croissant.dataLab.product.sourdough',
+  baguette: 'croissant.dataLab.product.baguette',
+  brioche: 'croissant.dataLab.product.brioche',
+};
+
+const STATUS_VARIANT: Record<Status, 'success' | 'warning' | 'danger'> = {
+  pass: 'success',
+  review: 'warning',
+  fail: 'danger',
+};
 
 export function DataLabPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const [activeKpi, setActiveKpi] = useState<null | 'low' | 'review' | 'fail'>(null);
+  const [selected, setSelected] = useState<Batch | null>(null);
 
-  const currency = useMemo(
-    () => new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'USD' }),
-    [i18n.language],
-  );
-  const dateFmt = useMemo(
-    () =>
-      new Intl.DateTimeFormat(i18n.language, {
-        month: 'short',
-        day: 'numeric',
-      }),
-    [i18n.language],
-  );
+  const filtered = useMemo(() => {
+    if (activeKpi === null) return ROWS;
+    if (activeKpi === 'low') return ROWS.filter((r) => r.score < 80);
+    if (activeKpi === 'review') return ROWS.filter((r) => r.status === 'review');
+    return ROWS.filter((r) => r.status === 'fail');
+  }, [activeKpi]);
 
-  const [tab, setTab] = useState<'all' | 'low' | 'out'>('all');
-  const [activeFilters, setActiveFilters] = useState<ReadonlyArray<ActiveFilter>>([]);
-  const [loading, setLoading] = useState(true);
+  const stats: ReadonlyArray<StatRailItem> = [
+    {
+      id: 'batches',
+      label: t('croissant.dataLab.kpi.batches'),
+      value: ROWS.length,
+      delta: 4.4,
+      deltaLabel: t('croissant.dataLab.kpi.deltaLabel'),
+      icon: <FileBarChart className="h-4 w-4" />,
+      spark: [40, 45, 50, 48, 55, 60, 58, 64, 62, 64],
+      tone: 'secondary',
+      onClick: () => setActiveKpi(null),
+      active: activeKpi === null,
+    },
+    {
+      id: 'avgScore',
+      label: t('croissant.dataLab.kpi.avgScore'),
+      value: Math.round(ROWS.reduce((s, r) => s + r.score, 0) / ROWS.length),
+      delta: 1.2,
+      deltaLabel: t('croissant.dataLab.kpi.deltaLabel'),
+      icon: <ClipboardList className="h-4 w-4" />,
+      spark: [78, 80, 81, 82, 79, 84, 83, 85],
+      tone: 'success',
+      onClick: () => setActiveKpi('low'),
+      active: activeKpi === 'low',
+    },
+    {
+      id: 'review',
+      label: t('croissant.dataLab.kpi.review'),
+      value: ROWS.filter((r) => r.status === 'review').length,
+      delta: -1.1,
+      deltaLabel: t('croissant.dataLab.kpi.deltaLabel'),
+      icon: <AlertTriangle className="h-4 w-4" />,
+      spark: [12, 10, 11, 9, 8, 7, 8, 7],
+      tone: 'warning',
+      onClick: () => setActiveKpi('review'),
+      active: activeKpi === 'review',
+    },
+    {
+      id: 'fail',
+      label: t('croissant.dataLab.kpi.fail'),
+      value: ROWS.filter((r) => r.status === 'fail').length,
+      delta: 0.8,
+      deltaLabel: t('croissant.dataLab.kpi.deltaLabel'),
+      icon: <X className="h-4 w-4" />,
+      spark: [3, 4, 2, 3, 5, 4, 6, 3],
+      tone: 'danger',
+      onClick: () => setActiveKpi('fail'),
+      active: activeKpi === 'fail',
+    },
+  ];
 
-  useEffect(() => {
-    const id = window.setTimeout(() => setLoading(false), 600);
-    return () => window.clearTimeout(id);
-  }, []);
-
-  const filterDefs = useMemo<ReadonlyArray<FilterDef>>(
+  const columns = useMemo<ColumnDef<Batch, unknown>[]>(
     () => [
+      { id: 'id', header: t('croissant.dataLab.col.id'), accessorKey: 'id' },
       {
-        id: 'category',
-        label: t('croissant.dataLab.filter.category'),
-        type: 'multi-select',
-        options: [
-          { value: 'pastry', label: t('croissant.dataLab.category.pastry') },
-          { value: 'bread', label: t('croissant.dataLab.category.bread') },
-          { value: 'cake', label: t('croissant.dataLab.category.cake') },
-          { value: 'drink', label: t('croissant.dataLab.category.drink') },
-        ],
-      },
-    ],
-    [t],
-  );
-
-  const filteredData = useMemo(() => {
-    const categoryFilter = activeFilters.find((f) => f.id === 'category');
-    const categories = Array.isArray(categoryFilter?.value) ? new Set(categoryFilter.value) : null;
-    return ROWS.filter((r) => {
-      if (tab === 'low' && classify(r.stock) !== 'low') return false;
-      if (tab === 'out' && classify(r.stock) !== 'out') return false;
-      if (categories !== null && categories.size > 0 && !categories.has(r.category)) return false;
-      return true;
-    });
-  }, [tab, activeFilters]);
-
-  const categoryLabel = (c: Category) => t(`croissant.dataLab.category.${c}`);
-
-  const columns = useMemo<ColumnDef<InventoryRow>[]>(
-    () => [
-      { id: 'sku', header: t('croissant.dataLab.col.sku'), accessorKey: 'sku' },
-      { id: 'name', header: t('croissant.dataLab.col.name'), accessorKey: 'name' },
-      {
-        id: 'category',
-        header: t('croissant.dataLab.col.category'),
-        accessorKey: 'category',
+        id: 'product',
+        header: t('croissant.dataLab.col.product'),
+        accessorKey: 'product',
         cell: ({ row }) => (
-          <Badge variant="neutral" size="sm">
-            {categoryLabel(row.original.category)}
-          </Badge>
+          <span className="text-sm">{t(PRODUCT_LABEL_KEY[row.original.product])}</span>
         ),
+        meta: {
+          filterVariant: 'multi-select',
+          filterOptions: PRODUCTS.map((p) => ({ value: p, label: t(PRODUCT_LABEL_KEY[p]) })),
+          headerLabel: t('croissant.dataLab.col.product'),
+        },
+      },
+      { id: 'oven', header: t('croissant.dataLab.col.oven'), accessorKey: 'oven' },
+      {
+        id: 'bakeTime',
+        header: t('croissant.dataLab.col.bakeTime'),
+        accessorKey: 'bakeTime',
+        cell: ({ row }) => <span className="tabular-nums">{row.original.bakeTime}m</span>,
       },
       {
-        id: 'stock',
-        header: t('croissant.dataLab.col.stock'),
-        accessorKey: 'stock',
-        cell: ({ row }) => <span className="tabular-nums">{row.original.stock}</span>,
+        id: 'temp',
+        header: t('croissant.dataLab.col.temp'),
+        accessorKey: 'temp',
+        cell: ({ row }) => <span className="tabular-nums">{row.original.temp}°C</span>,
       },
       {
-        id: 'price',
-        header: t('croissant.dataLab.col.price'),
-        accessorKey: 'price',
-        cell: ({ row }) => (
-          <span className="tabular-nums">{currency.format(row.original.price)}</span>
-        ),
+        id: 'score',
+        header: t('croissant.dataLab.col.score'),
+        accessorKey: 'score',
+        cell: ({ row }) => {
+          const score = row.original.score;
+          const tone = score >= 80 ? 'text-success' : score >= 70 ? 'text-warning' : 'text-danger';
+          return <span className={cn('font-semibold tabular-nums', tone)}>{score}</span>;
+        },
       },
       {
         id: 'status',
         header: t('croissant.dataLab.col.status'),
-        cell: ({ row }) => {
-          const s = classify(row.original.stock);
-          if (s === 'in-stock')
-            return (
-              <Badge variant="success" dot>
-                {t('croissant.dataLab.status.inStock')}
-              </Badge>
-            );
-          if (s === 'low')
-            return (
-              <Badge variant="warning" dot>
-                {t('croissant.dataLab.status.low')}
-              </Badge>
-            );
-          return (
-            <Badge variant="danger" dot>
-              {t('croissant.dataLab.status.out')}
-            </Badge>
-          );
+        accessorKey: 'status',
+        cell: ({ row }) => (
+          <Badge variant={STATUS_VARIANT[row.original.status]} dot>
+            {t(`croissant.dataLab.statusLabel.${row.original.status}`)}
+          </Badge>
+        ),
+        meta: {
+          filterVariant: 'multi-select',
+          filterOptions: (['pass', 'review', 'fail'] as const).map((s) => ({
+            value: s,
+            label: t(`croissant.dataLab.statusLabel.${s}`),
+          })),
+          headerLabel: t('croissant.dataLab.col.status'),
         },
       },
-      {
-        id: 'updated',
-        header: t('croissant.dataLab.col.updated'),
-        accessorKey: 'updated',
-        cell: ({ row }) => (
-          <span className="text-xs text-foreground-muted">
-            {dateFmt.format(new Date(row.original.updated))}
-          </span>
-        ),
-      },
+      { id: 'date', header: t('croissant.dataLab.col.date'), accessorKey: 'date' },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [t, currency, dateFmt],
+    [t],
+  );
+
+  // Score distribution histogram
+  const histogram = useMemo(() => {
+    const bins = [
+      { range: '40-49', count: 0 },
+      { range: '50-59', count: 0 },
+      { range: '60-69', count: 0 },
+      { range: '70-79', count: 0 },
+      { range: '80-89', count: 0 },
+      { range: '90-99', count: 0 },
+    ];
+    ROWS.forEach((r) => {
+      const idx = Math.min(5, Math.floor((r.score - 40) / 10));
+      const bin = bins[idx];
+      if (bin !== undefined) bin.count += 1;
+    });
+    return bins;
+  }, []);
+
+  // Outliers
+  const outliers = useMemo(
+    () => [...ROWS].sort((a, b) => a.score - b.score).slice(0, 3),
+    [],
+  );
+
+  // Temperature curve for selected batch
+  const tempCurve = useMemo(() => {
+    if (selected === null) return [];
+    const base = selected.temp;
+    return Array.from({ length: 12 }, (_, i) => ({
+      t: i,
+      temp: base + Math.sin(i / 2) * 8 + (i === 6 ? 4 : 0) - (selected.status === 'fail' && i > 8 ? 10 : 0),
+    }));
+  }, [selected]);
+
+  // Inspector heatmap 7x24 (day x hour)
+  const heatmap = useMemo(() => {
+    const days = 7;
+    const hours = 24;
+    const data: number[][] = [];
+    for (let d = 0; d < days; d++) {
+      const row: number[] = [];
+      for (let h = 0; h < hours; h++) {
+        // Bake mostly happens 5-10am and 12-6pm
+        const morning = Math.max(0, 8 - Math.abs(h - 7));
+        const afternoon = Math.max(0, 6 - Math.abs(h - 14));
+        const noise = ((d * 13 + h * 7) % 4);
+        row.push(Math.max(0, morning + afternoon + noise - 2));
+      }
+      data.push(row);
+    }
+    return data;
+  }, []);
+
+  const heatmapMax = Math.max(...heatmap.flat());
+
+  const meta = (
+    <>
+      <Chip tone="secondary" dot>
+        {t('croissant.dataLab.meta.batches', { n: ROWS.length })}
+      </Chip>
+      <Chip tone="danger">{t('croissant.dataLab.meta.anomalies', { n: outliers.length })}</Chip>
+    </>
   );
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
-      <PageHeader
-        title={t('croissant.dataLab.title')}
-        description={t('croissant.dataLab.subtitle')}
+    <div className="mx-auto max-w-7xl space-y-12">
+      <SceneHeader
+        tone="secondary"
+        pattern="grid"
+        eyebrow={t('croissant.dataLab.scene.eyebrow')}
+        title={t('croissant.dataLab.scene.title')}
+        description={t('croissant.dataLab.scene.description')}
+        meta={meta}
       />
 
-      <SectionHeader
-        tone="primary"
-        eyebrow={loading ? t('croissant.dataLab.loading.title') : 'DataTable'}
-        title={t('croissant.dataLab.title')}
-        description={loading ? t('croissant.dataLab.loading.desc') : undefined}
-      />
+      <StagedSection
+        tone="secondary"
+        eyebrow={t('croissant.dataLab.section.kpiEyebrow')}
+        title={t('croissant.dataLab.section.kpi')}
+        description={t('croissant.dataLab.section.kpiDesc')}
+        headingId="data-kpi"
+      >
+        <StatRail items={stats} />
+      </StagedSection>
 
-      <Card variant="outlined">
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <Tabs
-              value={tab}
-              onValueChange={(v) => setTab(v as 'all' | 'low' | 'out')}
-              variant="segmented"
-            >
-              <TabsList>
-                <TabsTrigger value="all">{t('croissant.dataLab.tabs.all')}</TabsTrigger>
-                <TabsTrigger value="low">{t('croissant.dataLab.tabs.low')}</TabsTrigger>
-                <TabsTrigger value="out">{t('croissant.dataLab.tabs.out')}</TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <FilterableSearch
-              filters={filterDefs}
-              activeFilters={activeFilters}
-              onActiveFiltersChange={setActiveFilters}
-              placeholder={t('croissant.dataLab.col.name')}
-            />
-          </div>
-
-          <DataTable<InventoryRow>
+      <StagedSection
+        tone="secondary"
+        eyebrow={t('croissant.dataLab.section.inspectEyebrow')}
+        title={t('croissant.dataLab.section.inspect')}
+        description={t('croissant.dataLab.section.inspectDesc')}
+        headingId="data-inspect"
+      >
+        <div className="space-y-3">
+          {activeKpi !== null ? (
+            <div className="flex items-center justify-between gap-2 rounded-md border border-border bg-surface-muted/40 px-3 py-2 text-sm">
+              <span>
+                {t('croissant.dataLab.filter.active', {
+                  label: t(`croissant.dataLab.kpiFilter.${activeKpi}`),
+                })}
+              </span>
+              <Button size="sm" variant="ghost" onClick={() => setActiveKpi(null)}>
+                {t('croissant.dataLab.filter.clear')}
+              </Button>
+            </div>
+          ) : null}
+          <DataTable<Batch>
             columns={columns}
-            data={[...filteredData]}
-            isLoading={loading}
-            skeletonRows={6}
+            data={[...filtered]}
+            getRowId={(r) => r.id}
             enableRowSelection
+            enableExpanding
+            renderExpandedRow={(row: Row<Batch>) => (
+              <div className="rounded-md bg-surface-muted/40 p-3 text-sm text-foreground-muted">
+                <p className="font-medium text-foreground">
+                  {t('croissant.dataLab.expanded.notes')}
+                </p>
+                <p className="mt-1">{row.original.notes}</p>
+              </div>
+            )}
             enableGlobalFilter={false}
-            getRowId={(r) => r.sku}
+            enableColumnFilters
+            enableColumnVisibility
+            onRowClick={(row) => setSelected(row)}
             pageSize={10}
             emptyState={
               <EmptyState
@@ -420,8 +372,188 @@ export function DataLabPage() {
               />
             }
           />
-        </CardContent>
-      </Card>
+        </div>
+      </StagedSection>
+
+      {/* Anomaly side panel */}
+      {selected !== null ? (
+        <SlideInRight>
+          <Card variant="outlined" className="border-secondary/30">
+            <CardContent className="space-y-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-secondary">
+                    {t('croissant.dataLab.detail.eyebrow')}
+                  </p>
+                  <h3 className="text-lg font-semibold text-foreground">
+                    {selected.id} · {t(PRODUCT_LABEL_KEY[selected.product])}
+                  </h3>
+                  <p className="text-sm text-foreground-muted">{selected.notes}</p>
+                </div>
+                <IconButton
+                  aria-label={t('croissant.dataLab.detail.close')}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelected(null)}
+                >
+                  <X className="h-4 w-4" />
+                </IconButton>
+              </div>
+
+              <ChartFrame
+                tone="secondary"
+                eyebrow={t('croissant.dataLab.detail.tempEyebrow')}
+                title={t('croissant.dataLab.detail.tempTitle')}
+              >
+                <LineChart
+                  xKey="t"
+                  data={tempCurve}
+                  series={[
+                    {
+                      key: 'temp',
+                      label: t('croissant.dataLab.detail.tempLabel'),
+                      color: 'secondary',
+                    },
+                  ]}
+                  height={200}
+                  yFormatter={(v) => `${Math.round(v)}°C`}
+                />
+              </ChartFrame>
+
+              <div className="grid grid-cols-3 gap-2">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      'flex h-20 items-center justify-center rounded-md',
+                      i === 1 ? 'bg-warning/15' : i === 2 ? 'bg-info/15' : 'bg-success/15',
+                    )}
+                    aria-label={t('croissant.dataLab.detail.photo', { n: i })}
+                  >
+                    <span className="text-xs text-foreground-muted">
+                      {t('croissant.dataLab.detail.photoLabel', { n: i })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </SlideInRight>
+      ) : null}
+
+      <StagedSection
+        tone="secondary"
+        eyebrow={t('croissant.dataLab.section.histEyebrow')}
+        title={t('croissant.dataLab.section.hist')}
+        description={t('croissant.dataLab.section.histDesc')}
+        headingId="data-hist"
+      >
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr]">
+          <ChartFrame
+            tone="secondary"
+            eyebrow={t('croissant.dataLab.hist.eyebrow')}
+            title={t('croissant.dataLab.hist.title')}
+          >
+            <BarChart
+              xKey="range"
+              data={[...histogram]}
+              series={[{ key: 'count', label: t('croissant.dataLab.hist.count'), color: 'secondary' }]}
+              height={220}
+            />
+          </ChartFrame>
+          <Card variant="outlined">
+            <CardContent className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+                {t('croissant.dataLab.outliers.title')}
+              </p>
+              <Stagger animation="slide-in-up" stagger={40}>
+                {outliers.map((o) => (
+                  <div
+                    key={o.id}
+                    className="flex items-start justify-between gap-3 rounded-md border border-border bg-surface-muted/30 px-3 py-2"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground">
+                        {o.id} · {t(PRODUCT_LABEL_KEY[o.product])}
+                      </p>
+                      <p className="truncate text-xs text-foreground-muted">{o.notes}</p>
+                    </div>
+                    <Badge variant="danger" size="sm">
+                      {o.score}
+                    </Badge>
+                  </div>
+                ))}
+              </Stagger>
+            </CardContent>
+          </Card>
+        </div>
+      </StagedSection>
+
+      <StagedSection
+        tone="secondary"
+        eyebrow={t('croissant.dataLab.section.heatmapEyebrow')}
+        title={t('croissant.dataLab.section.heatmap')}
+        description={t('croissant.dataLab.section.heatmapDesc')}
+        headingId="data-heatmap"
+      >
+        <Card variant="outlined">
+          <CardContent>
+            <div className="overflow-x-auto">
+              <div className="grid grid-cols-[auto_repeat(24,minmax(0,1fr))] gap-1 text-[10px]">
+                <span aria-hidden="true" />
+                {Array.from({ length: 24 }, (_, h) => (
+                  <span key={h} className="text-center text-foreground-subtle">
+                    {h}
+                  </span>
+                ))}
+                {heatmap.map((row, d) => (
+                  <Stagger key={d} animation="fade-in" stagger={20} className="contents">
+                    <span className="self-center pr-1 text-right text-foreground-subtle">
+                      {t(`croissant.dataLab.heatmap.day.${d}`)}
+                    </span>
+                    {row.map((val, h) => (
+                      <span
+                        key={h}
+                        title={t('croissant.dataLab.heatmap.cell', { day: d, hour: h, count: val })}
+                        className="block h-5 rounded-sm bg-secondary"
+                        style={{ opacity: Math.max(0.05, val / heatmapMax) }}
+                      />
+                    ))}
+                  </Stagger>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </StagedSection>
+
+      <StagedSection
+        tone="secondary"
+        eyebrow={t('croissant.dataLab.section.exportEyebrow')}
+        title={t('croissant.dataLab.section.export')}
+        description={t('croissant.dataLab.section.exportDesc')}
+        headingId="data-export"
+        bodyClassName="grid grid-cols-1 gap-4 sm:grid-cols-3"
+      >
+        {[
+          { icon: Download, title: 'croissant.dataLab.export.csv', desc: 'croissant.dataLab.export.csvDesc' },
+          { icon: Calendar, title: 'croissant.dataLab.export.schedule', desc: 'croissant.dataLab.export.scheduleDesc' },
+          { icon: Bell, title: 'croissant.dataLab.export.alerts', desc: 'croissant.dataLab.export.alertsDesc' },
+        ].map(({ icon: Icon, title, desc }) => (
+          <Card key={title} variant="outlined" className="group transition-shadow hover:shadow-md">
+            <CardContent className="space-y-3">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary/10 text-secondary">
+                <Icon className="h-5 w-5" />
+              </span>
+              <p className="text-sm font-semibold text-foreground">{t(title)}</p>
+              <p className="text-xs text-foreground-muted">{t(desc)}</p>
+              <Button size="sm" variant="outline">
+                {t('croissant.dataLab.export.cta')}
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </StagedSection>
 
       <ComponentsUsedFooter components={COMPONENTS} />
     </div>

@@ -1,310 +1,347 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Clock, Coins, Smile } from 'lucide-react';
-import { PageHeader } from '@/components/layout/PageHeader';
+import {
+  Coffee,
+  Coins,
+  CookingPot,
+  Crown,
+  FileText,
+  PackageCheck,
+  RotateCw,
+  ShoppingBag,
+  Sparkles,
+  Star,
+  Sun,
+} from 'lucide-react';
 import { Avatar } from '@/components/primitives/Avatar';
 import { Badge } from '@/components/primitives/Badge';
-import { Skeleton } from '@/components/primitives/Skeleton';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/data-display/Card';
-import { Stat } from '@/components/data-display/Stat';
-import { List, ListItem } from '@/components/data-display/List';
-import { Progress } from '@/components/feedback/Progress';
+import { Button } from '@/components/primitives/Button';
+import { IconButton } from '@/components/primitives/IconButton';
+import { Card, CardContent } from '@/components/data-display/Card';
 import { Timeline, TimelineItem, type TimelineVariant } from '@/components/data-display/Timeline';
-import { ComponentsUsedFooter, SectionHeader } from '../_shared';
+import { DataTable, type ColumnDef, type Row } from '@/components/data-display/DataTable';
+import { SlideInLeft, Stagger } from '@/components/motion';
+import {
+  ChartFrame,
+  Chip,
+  ComponentsUsedFooter,
+  HeroCard,
+  SceneHeader,
+  StagedSection,
+  StatRail,
+  type StatRailItem,
+} from '../_shared';
+import { LiveActivityFeed } from './components/LiveActivityFeed';
+import { CommentsThread } from './components/CommentsThread';
 
-type EventKind = 'created' | 'delivered' | 'refunded' | 'comment' | 'statusChange';
-
-interface ActivityEvent {
+interface TimelineEntry {
   id: number;
-  kind: EventKind;
-  name: string;
-  orderId: number;
-  status?: string;
-  at: Date;
+  time: string;
+  title: string;
+  desc: string;
+  icon: typeof Sparkles;
   variant: TimelineVariant;
+  actor?: string;
 }
 
-const NOW = Date.now();
-const minutesAgo = (n: number) => new Date(NOW - n * 60_000);
-
-const EVENTS: ReadonlyArray<ActivityEvent> = [
-  {
-    id: 1,
-    kind: 'created',
-    name: 'Ada Lovelace',
-    orderId: 1042,
-    at: minutesAgo(5),
-    variant: 'default',
-  },
-  {
-    id: 2,
-    kind: 'statusChange',
-    name: 'Grace Hopper',
-    orderId: 1041,
-    status: 'pending',
-    at: minutesAgo(18),
-    variant: 'info',
-  },
-  {
-    id: 3,
-    kind: 'delivered',
-    name: 'Linus Torvalds',
-    orderId: 1040,
-    at: minutesAgo(45),
-    variant: 'success',
-  },
-  {
-    id: 4,
-    kind: 'refunded',
-    name: 'Margaret Hamilton',
-    orderId: 1039,
-    at: minutesAgo(75),
-    variant: 'danger',
-  },
-  {
-    id: 5,
-    kind: 'comment',
-    name: 'Alan Turing',
-    orderId: 1038,
-    at: minutesAgo(120),
-    variant: 'muted',
-  },
-  {
-    id: 6,
-    kind: 'created',
-    name: 'Edsger Dijkstra',
-    orderId: 1037,
-    at: minutesAgo(180),
-    variant: 'default',
-  },
-  {
-    id: 7,
-    kind: 'statusChange',
-    name: 'Hedy Lamarr',
-    orderId: 1036,
-    status: 'paid',
-    at: minutesAgo(240),
-    variant: 'success',
-  },
-  {
-    id: 8,
-    kind: 'comment',
-    name: 'Donald Knuth',
-    orderId: 1035,
-    at: minutesAgo(360),
-    variant: 'muted',
-  },
+const ENTRIES: ReadonlyArray<TimelineEntry> = [
+  { id: 1, time: '2026-05-14T05:00:00', title: 'First bake', desc: 'Ovens warmed; first sourdough loaves in.', icon: Sun, variant: 'warning', actor: 'Linus' },
+  { id: 2, time: '2026-05-14T06:30:00', title: 'Doors open', desc: 'Counter opens with fresh croissants and coffee.', icon: ShoppingBag, variant: 'default', actor: 'Margaret' },
+  { id: 3, time: '2026-05-14T08:14:00', title: 'Morning rush', desc: 'Peak hour — 42 orders in 60 minutes.', icon: Coffee, variant: 'success', actor: 'Crew' },
+  { id: 4, time: '2026-05-14T10:42:00', title: 'Second bake', desc: 'Almond + pain au chocolat trays in for 11 AM service.', icon: CookingPot, variant: 'warning', actor: 'Ada' },
+  { id: 5, time: '2026-05-14T12:00:00', title: 'Lunch line', desc: 'Salad-and-baguette specials sell out by 1:15 PM.', icon: ShoppingBag, variant: 'info', actor: 'Margaret' },
+  { id: 6, time: '2026-05-14T14:00:00', title: 'Wholesale pickup', desc: 'Le Bistro picks up the weekly wholesale order.', icon: PackageCheck, variant: 'info', actor: 'Alan' },
+  { id: 7, time: '2026-05-14T15:18:00', title: 'New hire onboarded', desc: 'Edsger signs the apprenticeship paperwork.', icon: Sparkles, variant: 'success', actor: 'Manager' },
+  { id: 8, time: '2026-05-14T17:00:00', title: 'Third bake', desc: 'Evening croissants for the takeaway crowd.', icon: CookingPot, variant: 'warning', actor: 'Ada' },
+  { id: 9, time: '2026-05-14T18:30:00', title: 'MVP of the day', desc: 'Grace closes the prep list 20 min early.', icon: Crown, variant: 'success', actor: 'Grace' },
+  { id: 10, time: '2026-05-14T19:00:00', title: 'Inventory check', desc: 'Pastry case reset; tomorrow\'s prep list drafted.', icon: FileText, variant: 'muted', actor: 'Linus' },
+  { id: 11, time: '2026-05-14T19:45:00', title: 'Tip share', desc: 'Tips distributed across the shift.', icon: Coins, variant: 'success', actor: 'Manager' },
+  { id: 12, time: '2026-05-14T20:00:00', title: 'Close up', desc: 'Last lights off; alarm armed; doors locked.', icon: Star, variant: 'muted', actor: 'Margaret' },
 ];
 
-const COMMENTS = [
-  { id: 1, name: 'Ada Lovelace', text: 'Can we have extra butter on the croissants?' },
-  { id: 2, name: 'Grace Hopper', text: 'Big order coming tomorrow — please bake fresh.' },
-  { id: 3, name: 'Linus Torvalds', text: 'Delivery showed up early. Nice.' },
-  { id: 4, name: 'Hedy Lamarr', text: 'Loving the new kouign-amann.' },
+interface AuditRow {
+  id: string;
+  ts: string;
+  actor: string;
+  action: string;
+  target: string;
+  severity: 'info' | 'warning' | 'danger';
+  json: string;
+}
+
+const AUDIT: ReadonlyArray<AuditRow> = [
+  { id: 'AU-001', ts: '07:01:12', actor: 'Linus', action: 'opened', target: 'Cash drawer', severity: 'info', json: '{"till":1,"opening":250}' },
+  { id: 'AU-002', ts: '08:14:43', actor: 'Margaret', action: 'sold', target: 'Order #1041', severity: 'info', json: '{"order":1041,"items":3,"total":24.0}' },
+  { id: 'AU-003', ts: '10:32:08', actor: 'Ada', action: 'refunded', target: 'Order #1039', severity: 'warning', json: '{"order":1039,"reason":"wrong item"}' },
+  { id: 'AU-004', ts: '12:01:00', actor: 'System', action: 'alert', target: 'Oven C', severity: 'danger', json: '{"oven":"C","temp":228,"target":210}' },
+  { id: 'AU-005', ts: '14:18:55', actor: 'Alan', action: 'dispatched', target: 'Le Bistro', severity: 'info', json: '{"customer":"Le Bistro","crates":4}' },
+  { id: 'AU-006', ts: '16:42:30', actor: 'Margaret', action: 'reset', target: 'Counter cash', severity: 'info', json: '{"till":1,"variance":-2.4}' },
+  { id: 'AU-007', ts: '18:55:01', actor: 'Grace', action: 'updated', target: 'Prep list', severity: 'info', json: '{"items":18,"changes":4}' },
 ];
 
 const COMPONENTS = [
+  'SceneHeader',
+  'HeroCard',
+  'StagedSection',
+  'StatRail',
+  'StatCard',
   'Timeline',
   'TimelineItem',
-  'List',
+  'DataTable',
   'Card',
-  'Stat',
-  'Progress',
-  'Avatar',
   'Badge',
-  'Skeleton',
+  'Avatar',
+  'Button',
+  'IconButton',
+  'ChartFrame',
+  'SlideInLeft',
+  'Stagger',
 ];
 
+const SEVERITY_VARIANT: Record<AuditRow['severity'], 'info' | 'warning' | 'danger'> = {
+  info: 'info',
+  warning: 'warning',
+  danger: 'danger',
+};
+
 export function TimelineActivityPage() {
-  const { t } = useTranslation();
-  const [commentsLoading, setCommentsLoading] = useState(true);
+  const { t, i18n } = useTranslation();
+  const [auditDetail, setAuditDetail] = useState<AuditRow | null>(null);
 
-  const eventBadge = (kind: EventKind) => {
-    switch (kind) {
-      case 'created':
-        return (
-          <Badge variant="info" size="sm">
-            {t('croissant.timeline.event.tag.paid')}
-          </Badge>
-        );
-      case 'delivered':
-        return (
-          <Badge variant="success" size="sm">
-            {t('croissant.timeline.event.tag.delivered')}
-          </Badge>
-        );
-      case 'refunded':
-        return (
-          <Badge variant="danger" size="sm">
-            {t('croissant.timeline.event.tag.refunded')}
-          </Badge>
-        );
-      case 'comment':
-        return (
-          <Badge variant="neutral" size="sm">
-            {t('croissant.timeline.event.tag.comment')}
-          </Badge>
-        );
-      case 'statusChange':
-        return (
-          <Badge variant="warning" size="sm">
-            {t('croissant.timeline.event.tag.status')}
-          </Badge>
-        );
-    }
-  };
+  const timeFmt = useMemo(
+    () => new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }),
+    [i18n.language],
+  );
 
-  const eventAction = (ev: ActivityEvent): string => {
-    const id = ev.orderId;
-    switch (ev.kind) {
-      case 'created':
-        return t('croissant.timeline.event.created', { name: '', id });
-      case 'delivered':
-        return t('croissant.timeline.event.delivered', { name: '', id });
-      case 'refunded':
-        return t('croissant.timeline.event.refunded', { name: '', id });
-      case 'comment':
-        return t('croissant.timeline.event.comment', { name: '', id });
-      case 'statusChange':
-        return t('croissant.timeline.event.statusChange', {
-          name: '',
-          id,
-          status: ev.status ?? '',
-        });
-    }
-  };
+  const stats: ReadonlyArray<StatRailItem> = [
+    { id: 'orders', label: t('croissant.timeline.day.orders'), value: 312, delta: 4.2, deltaLabel: t('croissant.timeline.day.vsAvg'), icon: <ShoppingBag className="h-4 w-4" />, spark: [22, 36, 48, 42, 28, 22, 18, 14, 10, 8, 6, 4], tone: 'info' },
+    { id: 'peak', label: t('croissant.timeline.day.peak'), value: 8, unit: 'AM', delta: 0, deltaLabel: t('croissant.timeline.day.vsAvg'), icon: <Sun className="h-4 w-4" />, spark: [2, 3, 5, 7, 8, 7, 5, 4, 3, 2], tone: 'warning' },
+    { id: 'top', label: t('croissant.timeline.day.top'), value: 412, delta: 6.4, deltaLabel: t('croissant.timeline.day.vsAvg'), icon: <Crown className="h-4 w-4" />, spark: [60, 80, 110, 140, 120, 100, 90, 85, 80, 70, 60, 50], tone: 'success', accent: true },
+    { id: 'refunds', label: t('croissant.timeline.day.refunds'), value: 3, delta: -1.2, deltaLabel: t('croissant.timeline.day.vsAvg'), icon: <RotateCw className="h-4 w-4" />, spark: [1, 0, 2, 1, 0, 0, 1, 0], tone: 'danger' },
+    { id: 'customers', label: t('croissant.timeline.day.customers'), value: 247, delta: 5.1, deltaLabel: t('croissant.timeline.day.vsAvg'), icon: <Coffee className="h-4 w-4" />, spark: [10, 20, 30, 40, 30, 20, 18, 14, 10, 8, 6, 5], tone: 'primary' },
+  ];
 
-  useEffect(() => {
-    const id = window.setTimeout(() => setCommentsLoading(false), 1000);
-    return () => window.clearTimeout(id);
-  }, []);
+  const auditColumns = useMemo<ColumnDef<AuditRow, unknown>[]>(
+    () => [
+      { id: 'ts', header: t('croissant.timeline.audit.col.ts'), accessorKey: 'ts' },
+      { id: 'actor', header: t('croissant.timeline.audit.col.actor'), accessorKey: 'actor' },
+      { id: 'action', header: t('croissant.timeline.audit.col.action'), accessorKey: 'action' },
+      { id: 'target', header: t('croissant.timeline.audit.col.target'), accessorKey: 'target' },
+      {
+        id: 'severity',
+        header: t('croissant.timeline.audit.col.severity'),
+        accessorKey: 'severity',
+        cell: ({ row }: { row: Row<AuditRow> }) => (
+          <Badge variant={SEVERITY_VARIANT[row.original.severity]} dot>
+            {t(`croissant.timeline.audit.severity.${row.original.severity}`)}
+          </Badge>
+        ),
+        meta: {
+          filterVariant: 'multi-select',
+          filterOptions: (['info', 'warning', 'danger'] as const).map((s) => ({
+            value: s,
+            label: t(`croissant.timeline.audit.severity.${s}`),
+          })),
+          headerLabel: t('croissant.timeline.audit.col.severity'),
+        },
+      },
+    ],
+    [t],
+  );
+
+  const meta = (
+    <>
+      <Chip tone="info" dot>
+        {t('croissant.timeline.meta.live')}
+      </Chip>
+      <Chip tone="warning">{t('croissant.timeline.meta.events', { n: 47 })}</Chip>
+    </>
+  );
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
-      <PageHeader
-        title={t('croissant.timeline.title')}
-        description={t('croissant.timeline.subtitle')}
+    <div className="mx-auto max-w-7xl space-y-12">
+      <SceneHeader
+        tone="info"
+        eyebrow={t('croissant.timeline.scene.eyebrow')}
+        title={t('croissant.timeline.scene.title')}
+        description={t('croissant.timeline.scene.description')}
+        meta={meta}
       />
 
-      <Card variant="outlined">
-        <CardContent className="space-y-2">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-foreground">
-              {t('croissant.timeline.progress.label')}
-            </p>
-            <Badge variant="primary" size="sm">
-              64%
-            </Badge>
-          </div>
-          <Progress value={64} label={t('croissant.timeline.progress.label')} />
-        </CardContent>
-      </Card>
+      <StagedSection
+        tone="info"
+        eyebrow={t('croissant.timeline.section.dayEyebrow')}
+        title={t('croissant.timeline.section.day')}
+        description={t('croissant.timeline.section.dayDesc')}
+        headingId="timeline-day"
+      >
+        <StatRail items={stats} />
+      </StagedSection>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <section className="space-y-4 lg:col-span-2" aria-labelledby="feed-heading">
-          <SectionHeader
-            tone="primary"
-            eyebrow={t('croissant.timeline.section.feedEyebrow')}
-            title={<span id="feed-heading">{t('croissant.timeline.section.feed')}</span>}
-          />
-          <Card variant="outlined">
-            <CardContent>
+      <StagedSection
+        tone="info"
+        eyebrow={t('croissant.timeline.section.heroEyebrow')}
+        title={t('croissant.timeline.section.hero')}
+        description={t('croissant.timeline.section.heroDesc')}
+        headingId="timeline-hero"
+      >
+        <Card variant="outlined">
+          <CardContent>
+            <SlideInLeft whenInView>
               <Timeline>
-                {EVENTS.map((ev) => (
-                  <TimelineItem
-                    key={ev.id}
-                    timestamp={ev.at}
-                    variant={ev.variant}
-                    actor={
-                      <span className="inline-flex items-center gap-2">
-                        <Avatar size="xs" name={ev.name} />
-                        <span className="font-medium">{ev.name}</span>
-                      </span>
-                    }
-                    action={eventAction(ev)}
-                    description={eventBadge(ev.kind)}
-                  />
-                ))}
+                {ENTRIES.map((e) => {
+                  const Icon = e.icon;
+                  return (
+                    <TimelineItem
+                      key={e.id}
+                      timestamp={new Date(e.time)}
+                      variant={e.variant}
+                      icon={<Icon className="h-4 w-4" />}
+                      actor={
+                        e.actor !== undefined ? (
+                          <span className="inline-flex items-center gap-2">
+                            <Avatar size="xs" name={e.actor} />
+                            {e.actor}
+                          </span>
+                        ) : undefined
+                      }
+                      action={e.title}
+                      description={e.desc}
+                    />
+                  );
+                })}
               </Timeline>
-            </CardContent>
-          </Card>
-        </section>
+            </SlideInLeft>
+          </CardContent>
+        </Card>
+      </StagedSection>
 
-        <aside className="space-y-6">
-          <div className="space-y-4">
-            <SectionHeader
-              tone="info"
-              eyebrow={t('croissant.timeline.section.commentsEyebrow')}
-              title={t('croissant.timeline.section.comments')}
-            />
-            <Card variant="outlined">
-              <CardHeader>
-                <CardTitle>{t('croissant.timeline.comments.title')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {commentsLoading ? (
-                  <ul className="space-y-3" aria-busy="true">
-                    {[0, 1, 2].map((i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <Skeleton className="h-8 w-8 shrink-0 rounded-full" />
-                        <div className="flex-1 space-y-1.5">
-                          <Skeleton className="h-3 w-1/3" />
-                          <Skeleton className="h-3 w-full" />
-                          <Skeleton className="h-3 w-2/3" />
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <List variant="divided">
-                    {COMMENTS.map((c) => (
-                      <ListItem
-                        key={c.id}
-                        leading={<Avatar size="sm" name={c.name} />}
-                        primary={c.name}
-                        secondary={c.text}
-                      />
-                    ))}
-                  </List>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+      <StagedSection
+        tone="info"
+        eyebrow={t('croissant.timeline.section.feedEyebrow')}
+        title={t('croissant.timeline.section.feed')}
+        description={t('croissant.timeline.section.feedDesc')}
+        headingId="timeline-feed"
+      >
+        <LiveActivityFeed />
+      </StagedSection>
 
-          <div className="space-y-4">
-            <SectionHeader
-              tone="success"
-              eyebrow={t('croissant.timeline.section.statsEyebrow')}
-              title={t('croissant.timeline.section.stats')}
-            />
-            <Card variant="outlined">
-              <CardContent className="grid grid-cols-1 gap-4">
-                <Stat
-                  variant="compact"
-                  label={t('croissant.timeline.stat.openOrders')}
-                  value="12"
-                  delta={2}
-                  icon={<Coins className="h-5 w-5" />}
-                />
-                <Stat
-                  variant="compact"
-                  label={t('croissant.timeline.stat.avgTime')}
-                  value="18 min"
-                  delta="-3 min"
-                  icon={<Clock className="h-5 w-5" />}
-                />
-                <Stat
-                  variant="compact"
-                  label={t('croissant.timeline.stat.satisfaction')}
-                  value="4.8 / 5"
-                  delta={0.2}
-                  icon={<Smile className="h-5 w-5" />}
-                />
-              </CardContent>
-            </Card>
+      <StagedSection
+        tone="info"
+        eyebrow={t('croissant.timeline.section.auditEyebrow')}
+        title={t('croissant.timeline.section.audit')}
+        description={t('croissant.timeline.section.auditDesc')}
+        headingId="timeline-audit"
+      >
+        <div className="space-y-3">
+          <DataTable<AuditRow>
+            columns={auditColumns}
+            data={[...AUDIT]}
+            getRowId={(r) => r.id}
+            enableColumnFilters
+            enableGlobalFilter={false}
+            onRowClick={(row) => setAuditDetail(row)}
+            pageSize={7}
+          />
+          {auditDetail !== null ? (
+            <SlideInLeft>
+              <Card variant="outlined" className="border-info/30">
+                <CardContent className="space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-info">
+                        {t('croissant.timeline.audit.detail')}
+                      </p>
+                      <h3 className="text-base font-semibold text-foreground">
+                        {auditDetail.id} · {auditDetail.actor} {auditDetail.action} {auditDetail.target}
+                      </h3>
+                    </div>
+                    <Button size="sm" variant="ghost" onClick={() => setAuditDetail(null)}>
+                      {t('croissant.timeline.audit.close')}
+                    </Button>
+                  </div>
+                  <pre className="overflow-x-auto rounded-md bg-surface-muted/40 p-3 text-xs">
+                    {JSON.stringify(JSON.parse(auditDetail.json), null, 2)}
+                  </pre>
+                </CardContent>
+              </Card>
+            </SlideInLeft>
+          ) : null}
+        </div>
+      </StagedSection>
+
+      <StagedSection
+        tone="info"
+        eyebrow={t('croissant.timeline.section.commentsEyebrow')}
+        title={t('croissant.timeline.section.comments')}
+        description={t('croissant.timeline.section.commentsDesc')}
+        headingId="timeline-comments"
+      >
+        <CommentsThread />
+      </StagedSection>
+
+      <StagedSection
+        tone="info"
+        eyebrow={t('croissant.timeline.section.chartEyebrow')}
+        title={t('croissant.timeline.section.chart')}
+        description={t('croissant.timeline.section.chartDesc')}
+        headingId="timeline-chart"
+      >
+        <ChartFrame
+          tone="info"
+          eyebrow={t('croissant.timeline.chart.eyebrow')}
+          title={t('croissant.timeline.chart.title')}
+          description={t('croissant.timeline.chart.desc')}
+        >
+          <div className="grid grid-cols-12 items-end gap-1 h-40" role="img" aria-label={t('croissant.timeline.chart.title')}>
+            {stats[0]?.spark?.map((v, i) => {
+              const max = Math.max(...(stats[0]?.spark ?? [1]));
+              const h = Math.max(4, Math.round((v / max) * 100));
+              const label = timeFmt.format(new Date(2026, 4, 14, i + 6));
+              return (
+                <Stagger key={i} animation="slide-in-up" stagger={30} className="contents">
+                  <span
+                    aria-hidden="true"
+                    title={label}
+                    className="block rounded-t bg-info/70"
+                    style={{ height: `${h}%` }}
+                  />
+                </Stagger>
+              );
+            })}
           </div>
-        </aside>
-      </div>
+        </ChartFrame>
+      </StagedSection>
+
+      <HeroCard
+        tone="info"
+        eyebrow={t('croissant.timeline.summary.eyebrow')}
+        title={t('croissant.timeline.summary.title')}
+        description={t('croissant.timeline.summary.desc')}
+        action={
+          <Button leftIcon={<FileText className="h-4 w-4" />}>
+            {t('croissant.timeline.summary.generate')}
+          </Button>
+        }
+        illustration={
+          <div className="flex items-center gap-4">
+            <Avatar size="xl" name="Grace Hopper" />
+            <div className="space-y-1 text-sm">
+              <p className="font-semibold text-foreground">Grace Hopper</p>
+              <p className="text-foreground-muted">{t('croissant.timeline.summary.mvp')}</p>
+              <Badge variant="primary" size="sm">
+                <Crown className="h-3 w-3" /> {t('croissant.timeline.summary.crown')}
+              </Badge>
+            </div>
+            <IconButton
+              aria-label={t('croissant.timeline.summary.share')}
+              variant="ghost"
+            >
+              <FileText className="h-4 w-4" />
+            </IconButton>
+          </div>
+        }
+      />
 
       <ComponentsUsedFooter components={COMPONENTS} />
     </div>
