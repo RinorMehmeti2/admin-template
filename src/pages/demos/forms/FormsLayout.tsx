@@ -17,15 +17,7 @@ const TABS: ReadonlyArray<{ to: string; labelKey: string; end?: boolean }> = [
 export function FormsLayout() {
   const { t } = useTranslation();
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
-      <header className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wider text-foreground-subtle">
-          {t('forms.layout.eyebrow')}
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight">{t('forms.layout.title')}</h1>
-        <p className="max-w-3xl text-foreground-muted">{t('forms.layout.subtitle')}</p>
-      </header>
-
+    <div className="mx-auto max-w-[1400px] space-y-6">
       <nav
         aria-label={t('forms.layout.title')}
         data-print="hide"

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import {
   CompoundRowsSection,
   InCardSection,
@@ -9,11 +10,12 @@ import {
 export function FormRepeaterPage() {
   const { t } = useTranslation();
   return (
-    <div className="space-y-8">
-      <header className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight">{t('forms.repeater.title')}</h2>
-        <p className="max-w-3xl text-foreground-muted">{t('forms.repeater.subtitle')}</p>
-      </header>
+    <div className="space-y-6">
+      <SimsPageHeader
+        title={t('forms.repeater.title')}
+        description={t('forms.repeater.subtitle')}
+        className="mb-0"
+      />
 
       <SimpleListSection />
       <CompoundRowsSection />

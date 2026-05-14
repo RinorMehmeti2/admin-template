@@ -33,6 +33,7 @@ import {
   CardTitle,
 } from '@/components/data-display/Card';
 import { useApiFormSubmit, useApiMutation } from '@/data';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import { Section } from './_shared/Section';
 import { PreviewPanel } from './_shared/PreviewPanel';
 import { COUNTRY_OPTIONS } from './_shared/data';
@@ -342,11 +343,12 @@ function TrailerDemo() {
 export function FormsOverviewPage() {
   const { t } = useTranslation();
   return (
-    <div className="space-y-8">
-      <header className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight">{t('forms.overview.title')}</h2>
-        <p className="max-w-3xl text-foreground-muted">{t('forms.overview.subtitle')}</p>
-      </header>
+    <div className="space-y-6">
+      <SimsPageHeader
+        title={t('forms.overview.title')}
+        description={t('forms.overview.subtitle')}
+        className="mb-0"
+      />
 
       <ul
         aria-label="Capabilities"
