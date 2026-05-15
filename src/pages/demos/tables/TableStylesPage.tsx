@@ -166,6 +166,31 @@ export function TableStylesPage() {
         eyebrow="Visual"
         title="Variants matrix"
         description="Same data, three variants. The differences pop side-by-side."
+        code={`<div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+  <DataTable
+    columns={deploymentColumns()}
+    data={deployments}
+    enableGlobalFilter={false}
+    enableColumnVisibility={false}
+    pageSize={6}
+  />
+  <DataTable
+    columns={deploymentColumns()}
+    data={deployments}
+    variant="striped"
+    enableGlobalFilter={false}
+    enableColumnVisibility={false}
+    pageSize={6}
+  />
+  <DataTable
+    columns={deploymentColumns()}
+    data={deployments}
+    variant="bordered"
+    enableGlobalFilter={false}
+    enableColumnVisibility={false}
+    pageSize={6}
+  />
+</div>`}
       >
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
           <VariantBlock title="Default" variant="default">
@@ -204,6 +229,18 @@ export function TableStylesPage() {
         eyebrow="Spacing"
         title="Density"
         description="size=dense / default / comfortable. Token-driven padding scales with each step."
+        code={`{(['dense', 'default', 'comfortable'] as const).map((s) => (
+  <DataTable
+    key={s}
+    columns={deploymentColumns()}
+    data={deployments}
+    size={s}
+    variant="striped"
+    enableGlobalFilter={false}
+    enableColumnVisibility={false}
+    pageSize={6}
+  />
+))}`}
       >
         <div className="space-y-6">
           {(['dense', 'default', 'comfortable'] as const).map((s) => (
@@ -229,6 +266,37 @@ export function TableStylesPage() {
         eyebrow="Semantic accents"
         title="Status-tinted rows"
         description="The status cell renders a full-row tint via a -mx-/-my- bleed. Each tint uses a semantic accent token (success/warning/info/danger) so it adapts to palettes."
+        code={`const ORDER_ROW_TINT: Record<OrderStatus, string> = {
+  pending: 'border-l-4 border-warning bg-warning/5',
+  paid: 'border-l-4 border-foreground-subtle/40 bg-surface',
+  shipped: 'border-l-4 border-info bg-info/5',
+  delivered: 'border-l-4 border-success bg-success/5',
+  refunded: 'border-l-4 border-danger bg-danger/5',
+};
+
+// status cell bleeds via negative margins to tint the full row:
+{
+  accessorKey: 'status',
+  header: 'Status',
+  cell: ({ row }) => {
+    const tint = ORDER_ROW_TINT[row.original.status];
+    return (
+      <div className={cn('-mx-4 -my-2.5 px-4 py-2.5 sm:-mx-5 sm:-my-4 sm:px-5 sm:py-4', tint)}>
+        <Badge variant={orderStatusVariant(row.original.status)} dot size="sm">
+          {row.original.status}
+        </Badge>
+      </div>
+    );
+  },
+}
+
+<DataTable
+  columns={ordersColumns()}
+  data={orders}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={8}
+/>`}
       >
         <DataTable
           columns={ordersColumns()}
@@ -243,6 +311,17 @@ export function TableStylesPage() {
         eyebrow="Embed"
         title="Compact card-grid table"
         description="Bordered + dense + striped fits neatly inside a smaller card — useful for dashboards."
+        code={`<div className="max-w-2xl">
+  <DataTable
+    columns={deploymentColumns()}
+    data={deployments.slice(0, 5)}
+    variant="bordered"
+    size="dense"
+    enableGlobalFilter={false}
+    enableColumnVisibility={false}
+    pageSize={5}
+  />
+</div>`}
       >
         <div className="max-w-2xl">
           <DataTable
@@ -261,6 +340,16 @@ export function TableStylesPage() {
         eyebrow="Scroll"
         title="Sticky header + tall container"
         description="50-row dataset with stickyHeader and maxHeight — header pins as the body scrolls."
+        code={`<DataTable
+  columns={employeesColumns()}
+  data={employees}
+  stickyHeader
+  maxHeight="24rem"
+  variant="striped"
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={50}
+/>`}
       >
         <DataTable
           columns={employeesColumns()}

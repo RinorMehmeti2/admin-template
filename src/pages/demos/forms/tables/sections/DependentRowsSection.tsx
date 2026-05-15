@@ -33,6 +33,61 @@ interface DependentValues {
   }>;
 }
 
+const CODE = `// Picking a parent product appends it + its accessories (each tagged with parent SKU).
+const onAddSku = (sku: string) => {
+  const product = getProductBySku(sku);
+  if (product === undefined) return;
+  append({ sku: product.sku, qty: 1 });
+  for (const accSku of product.accessories ?? []) {
+    const acc = getProductBySku(accSku);
+    if (acc !== undefined) append({ sku: acc.sku, qty: 1, parent: product.sku });
+  }
+};
+
+<Form form={form} onSubmit={() => undefined} className="space-y-4">
+  <Combobox<Product>
+    items={PRODUCTS.filter((p) => p.accessories !== undefined)}
+    getItemLabel={(p) => \`\${p.name} (auto-adds \${p.accessories?.length ?? 0})\`}
+    getItemValue={(p) => p.sku}
+    value=""
+    onValueChange={(v) => onAddSku(typeof v === 'string' ? v : (v[0] ?? ''))}
+  >
+    <ComboboxTrigger placeholder="Pick a parent product…" />
+    <ComboboxContent>{/* items */}</ComboboxContent>
+  </Combobox>
+
+  <Table size="dense">
+    <TableHeader>{/* Product · Qty · Type · Remove */}</TableHeader>
+    <TableBody>
+      {fields.map((row, i) => {
+        const isAccessory = row.parent !== undefined;
+        return (
+          <TableRow key={row.id}>
+            <TableCell>{getProductBySku(row.sku)?.name}</TableCell>
+            <TableCell>
+              <Controller
+                control={form.control}
+                name={\`rows.\${i}.qty\`}
+                render={({ field }) => (
+                  <NumberInput min={1} max={99} value={field.value} onValueChange={(v) => field.onChange(v ?? 1)} />
+                )}
+              />
+            </TableCell>
+            <TableCell>
+              <Badge variant={isAccessory ? 'info' : 'success'}>
+                {isAccessory ? 'accessory' : 'parent'}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <IconButton onClick={() => remove(i)}><Trash2 /></IconButton>
+            </TableCell>
+          </TableRow>
+        );
+      })}
+    </TableBody>
+  </Table>
+</Form>`;
+
 export function DependentRowsSection() {
   const { t } = useTranslation();
   const [lastAppended, setLastAppended] = useState<string | null>(null);
@@ -60,6 +115,7 @@ export function DependentRowsSection() {
       id="dependent"
       title={t('forms.tables.dependent.title')}
       description={t('forms.tables.dependent.description')}
+      code={CODE}
     >
       <Form form={form} onSubmit={() => undefined} className="space-y-4">
         <div className="flex flex-wrap items-end gap-3">

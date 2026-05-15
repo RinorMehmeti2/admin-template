@@ -120,6 +120,35 @@ export function TableSelectionPage() {
         eyebrow="Single"
         title="Single-select with detail panel"
         description="enableRowSelection='single' renders a radio-style checkbox. The selected row highlights and feeds the inspector pane."
+        code={`const [activeId, setActiveId] = useState<string | null>(null);
+const activeEmp = useMemo(
+  () => (activeId === null ? null : employees.find((e) => e.id === activeId) ?? null),
+  [employees, activeId],
+);
+
+<div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+  <div className="lg:col-span-2">
+    <DataTable
+      columns={empColumns}
+      data={empWithDisabled.slice(0, 25)}
+      getRowId={(r) => r.id}
+      enableRowSelection="single"
+      onRowSelectionChange={(rows) => setActiveId(rows[0]?.id ?? null)}
+      enableGlobalFilter={false}
+      enableColumnVisibility={false}
+      pageSize={10}
+    />
+  </div>
+  <Card variant="outlined" className="h-fit">
+    <CardContent>
+      {activeEmp === null ? (
+        <p className="text-sm text-foreground-muted">Select a row to see its details here.</p>
+      ) : (
+        <EmployeeInspector employee={activeEmp} />
+      )}
+    </CardContent>
+  </Card>
+</div>`}
       >
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <div className="lg:col-span-2">
@@ -176,6 +205,39 @@ export function TableSelectionPage() {
         eyebrow="Bulk"
         title="Multi-select with action bar"
         description="When the selection set is non-empty, an action bar fades in above the table with bulk actions."
+        code={`const [selectedOrders, setSelectedOrders] = useState<Order[]>([]);
+const bulkVisible = selectedOrders.length > 0;
+
+<div className="space-y-3">
+  <div
+    data-state={bulkVisible ? 'open' : 'closed'}
+    aria-hidden={!bulkVisible}
+    className={cn(
+      'flex flex-wrap items-center justify-between gap-3 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 transition-all duration-150',
+      bulkVisible
+        ? 'pointer-events-auto translate-y-0 opacity-100'
+        : 'pointer-events-none -translate-y-1 opacity-0',
+    )}
+  >
+    <span className="text-sm font-medium">
+      {selectedOrders.length} order{selectedOrders.length === 1 ? '' : 's'} selected
+    </span>
+    <div className="flex flex-wrap gap-2">
+      <Button size="sm" variant="outline" leftIcon={<CheckCircle2 className="h-4 w-4" />}>Mark as paid</Button>
+      <Button size="sm" variant="outline" leftIcon={<Download className="h-4 w-4" />}>Export CSV</Button>
+      <Button size="sm" variant="ghost" leftIcon={<X className="h-4 w-4" />} onClick={() => setSelectedOrders([])}>Clear</Button>
+    </div>
+  </div>
+  <DataTable
+    columns={orderColumns}
+    data={ordersPool.slice(0, 30)}
+    getRowId={(r) => r.id}
+    enableRowSelection="multi"
+    onRowSelectionChange={setSelectedOrders}
+    enableColumnVisibility={false}
+    pageSize={10}
+  />
+</div>`}
       >
         <div className="space-y-3">
           <div
@@ -234,6 +296,18 @@ export function TableSelectionPage() {
         eyebrow="Predicate"
         title="Disabled rows"
         description="enableRowSelection accepts a (row) => boolean predicate. Terminated employees can't be selected."
+        code={`const canSelectRow = (row: Row<Employee>): boolean =>
+  row.original.status !== 'terminated';
+
+<DataTable
+  columns={empColumns}
+  data={empWithDisabled}
+  getRowId={(r) => r.id}
+  enableRowSelection={canSelectRow}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={empColumns}
@@ -250,6 +324,24 @@ export function TableSelectionPage() {
         eyebrow="Persistence"
         title="Cross-page selection"
         description="getRowId returns a stable id, so selection persists when paging. The count below tracks all selected rows across pages."
+        code={`const [crossSelected, setCrossSelected] = useState<Order[]>([]);
+
+<DataTable
+  columns={orderColumns}
+  data={ordersPool}
+  getRowId={(r) => r.id}
+  enableRowSelection="multi"
+  onRowSelectionChange={setCrossSelected}
+  enableColumnVisibility={false}
+  toolbar={{
+    right: crossSelected.length > 0 ? (
+      <Button size="sm" variant="outline" leftIcon={<FileDown className="h-4 w-4" />}>
+        Export selected
+      </Button>
+    ) : null,
+  }}
+  pageSize={10}
+/>`}
       >
         <div className="space-y-2">
           <p className="text-sm text-foreground-muted">

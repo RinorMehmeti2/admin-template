@@ -29,6 +29,67 @@ async function fakeCommit(): Promise<void> {
   if (Math.random() < 0.25) throw new Error('Commit failed');
 }
 
+const CODE = `const handleAdd = async () => {
+  const title = draft.trim();
+  if (title.length === 0) return;
+  const id = \`rev-\${Date.now().toString(36)}\`;
+  const optimistic: Revision = { id, title, pending: true };
+  // Optimistically reflect both row + counter.
+  setRows((cur) => [optimistic, ...cur]);
+  setCommitted((c) => c + 1);
+  setDraft('');
+  try {
+    await fakeCommit();
+    setRows((cur) => cur.map((r) => (r.id === id ? { ...r, pending: false } : r)));
+  } catch {
+    // Roll back on failure.
+    setRows((cur) => cur.filter((r) => r.id !== id));
+    setCommitted((c) => c - 1);
+    toast.error('Commit failed — rolled back');
+  }
+};
+
+<div className="flex gap-2">
+  <Input
+    placeholder="Revision title…"
+    value={draft}
+    onChange={(e) => setDraft(e.target.value)}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        void handleAdd();
+      }
+    }}
+  />
+  <Button
+    type="button"
+    variant="primary"
+    leftIcon={<Plus className="h-4 w-4" />}
+    onClick={() => void handleAdd()}
+  >
+    Add
+  </Button>
+</div>
+<Table size="dense">
+  <TableHeader>
+    <TableRow>
+      <TableHead>Revision</TableHead>
+      <TableHead className="text-right">Status</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {rows.map((row) => (
+      <TableRow key={row.id}>
+        <TableCell>{row.title}</TableCell>
+        <TableCell className="text-right">
+          {row.pending ? 'Committing…' : 'Committed'}
+        </TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+</Table>
+<Stat label="Draft revisions" value={String(committed)} />`;
+
 export function OptimisticUpdateSection() {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -61,6 +122,7 @@ export function OptimisticUpdateSection() {
       id="optimistic"
       title={t('forms.async.optimistic.title')}
       description={t('forms.async.optimistic.description')}
+      code={CODE}
     >
       <div className="grid gap-4 lg:grid-cols-[1fr_18rem]">
         <div className="space-y-3">

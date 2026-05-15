@@ -26,6 +26,64 @@ interface RosterValues {
   }>;
 }
 
+const CODE = `<Form form={form} onSubmit={() => undefined} className="space-y-4">
+  <div className="rounded-md border border-border bg-surface">
+    <Table size="dense" containerClassName="rounded-md">
+      <TableHeader>
+        <TableRow>
+          <TableHead style={{ width: '32%' }}>Name</TableHead>
+          <TableHead style={{ width: '38%' }}>Email</TableHead>
+          <TableHead style={{ width: '22%' }}>Role</TableHead>
+          <TableHead style={{ width: '8%' }}>
+            <span className="sr-only">Remove</span>
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {fields.map((row, i) => (
+          <TableRow key={row.id} className="align-top">
+            <TableCell>
+              <Input inputSize="sm" {...form.register(\`members.\${i}.name\`)} />
+            </TableCell>
+            <TableCell>
+              <Input type="email" inputSize="sm" {...form.register(\`members.\${i}.email\`)} />
+            </TableCell>
+            <TableCell>
+              <Controller
+                control={form.control}
+                name={\`members.\${i}.role\`}
+                render={({ field }) => (
+                  <Select selectSize="sm" value={field.value} onChange={(e) => field.onChange(e.target.value)}>
+                    {EMPLOYEE_ROLES.map((r) => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </Select>
+                )}
+              />
+            </TableCell>
+            <TableCell>
+              <IconButton type="button" variant="ghost" size="sm" onClick={() => remove(i)}>
+                <Trash2 className="h-4 w-4" />
+              </IconButton>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+  <div className="flex justify-between gap-2">
+    <Button
+      type="button"
+      variant="outline"
+      leftIcon={<Plus className="h-4 w-4" />}
+      onClick={() => append({ name: '', email: '', role: 'viewer' })}
+    >
+      Add member
+    </Button>
+    <Button type="submit" variant="primary">Save roster</Button>
+  </div>
+</Form>`;
+
 export function EditableRosterSection() {
   const { t } = useTranslation();
   const form = useForm<RosterValues>({
@@ -48,6 +106,7 @@ export function EditableRosterSection() {
       id="roster"
       title={t('forms.tables.roster.title')}
       description={t('forms.tables.roster.description')}
+      code={CODE}
     >
       <Form form={form} onSubmit={() => undefined} className="space-y-4">
         <div className="rounded-md border border-border bg-surface">

@@ -28,6 +28,57 @@ interface AnchorDef {
   label: string;
 }
 
+const CODE = `<div className="grid grid-cols-1 gap-6 md:grid-cols-[12rem_minmax(0,1fr)]">
+  <aside aria-label="Section nav" className="md:sticky md:top-24 md:self-start">
+    <ul className="flex gap-1 overflow-x-auto md:flex-col md:gap-0.5 md:overflow-visible">
+      {anchors.map((a) => (
+        <li key={a.id}>
+          <a
+            href={\`#sec-\${a.id}\`}
+            className={cn(
+              'inline-block whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium',
+              activeId === a.id
+                ? 'bg-primary text-primary-foreground'
+                : 'text-foreground-muted hover:bg-surface-muted',
+            )}
+            aria-current={activeId === a.id ? 'true' : undefined}
+          >
+            {a.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+
+  <Form form={form} onSubmit={() => undefined} className="min-w-0 space-y-8">
+    <section id="sec-identity" className="scroll-mt-24 space-y-3">
+      <h3 className="text-base font-semibold">Identity</h3>
+      <FormField label="Full name" required>
+        <Input {...form.register('fullName')} />
+      </FormField>
+    </section>
+
+    <section id="sec-contact" className="scroll-mt-24 space-y-3">
+      <h3 className="text-base font-semibold">Contact</h3>
+      <FormField label="Email" required>
+        <Input type="email" {...form.register('email')} />
+      </FormField>
+    </section>
+
+    <section id="sec-permissions" className="scroll-mt-24 space-y-3">
+      <h3 className="text-base font-semibold">Permissions</h3>
+      <label className="flex items-center gap-3 text-sm">
+        <Checkbox {...form.register('canAdmin')} />
+        Can administer the workspace
+      </label>
+    </section>
+
+    <div className="flex justify-end pt-2">
+      <Button type="submit" variant="primary">Save profile</Button>
+    </div>
+  </Form>
+</div>`;
+
 export function SectionedSidebarLayout() {
   const { t } = useTranslation();
   const form = useForm<ProfileValues>({
@@ -92,6 +143,7 @@ export function SectionedSidebarLayout() {
       id="sectioned"
       title={t('forms.layouts.sectioned.title')}
       description={t('forms.layouts.sectioned.description')}
+      code={CODE}
     >
       <div ref={containerRef} className="grid grid-cols-1 gap-6 md:grid-cols-[12rem_minmax(0,1fr)]">
         <aside

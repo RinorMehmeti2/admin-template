@@ -175,6 +175,34 @@ function ExpandAllProjectsExample({ data }: { data: Project[] }) {
       eyebrow="Toolbar"
       title="Expand all / Collapse all"
       description="Controlled expanded state — the toolbar Button flips the whole tree at once via expanded=true / {}."
+      code={`const [expanded, setExpanded] = useState<ExpandedState>({});
+const allExpanded = expanded === true;
+
+<DataTable
+  columns={projectColumns()}
+  data={data}
+  enableExpanding
+  getSubRows={(r) => r.subProjects}
+  expanded={expanded}
+  onExpandedChange={setExpanded}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  toolbar={{
+    left: (
+      <Button
+        size="sm"
+        variant="outline"
+        leftIcon={allExpanded
+          ? <ChevronsDownUp className="h-4 w-4" />
+          : <ChevronsUpDown className="h-4 w-4" />}
+        onClick={() => setExpanded(allExpanded ? {} : true)}
+      >
+        {allExpanded ? 'Collapse all' : 'Expand all'}
+      </Button>
+    ),
+  }}
+  pageSize={10}
+/>`}
     >
       <DataTable
         columns={projectColumns()}
@@ -294,6 +322,15 @@ export function TableSubRowsPage() {
         eyebrow="Tree"
         title="Nested project sub-projects"
         description="getSubRows traverses subProjects (up to depth 3). Indent grows with row.depth × 1rem."
+        code={`<DataTable
+  columns={projectColumns()}
+  data={projects}
+  enableExpanding
+  getSubRows={(r) => r.subProjects}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={projectColumns()}
@@ -310,6 +347,42 @@ export function TableSubRowsPage() {
         eyebrow="Custom panel"
         title="Order line items panel"
         description="renderExpandedRow draws a full-width inner table under each order row, scoped to that row's items."
+        code={`function OrderItemsPanel({ row }: { row: Row<Order> }) {
+  const o = row.original;
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-medium uppercase tracking-wider text-foreground-subtle">Line items</p>
+      <table className="w-full text-sm">
+        <thead>
+          <tr>
+            <th>SKU</th><th>Name</th><th>Qty</th><th>Unit price</th><th>Line total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {o.items.map((it) => (
+            <tr key={it.sku}>
+              <td>{it.sku}</td>
+              <td>{it.name}</td>
+              <td>{it.qty}</td>
+              <td>{formatMoney(it.unitPrice, o.currency)}</td>
+              <td>{formatMoney(it.unitPrice * it.qty, o.currency)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+<DataTable
+  columns={orderCols}
+  data={orders}
+  enableExpanding
+  renderExpandedRow={(row) => <OrderItemsPanel row={row} />}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={orderCols}
@@ -326,6 +399,40 @@ export function TableSubRowsPage() {
         eyebrow="Detail"
         title="Invoice detail panel"
         description="Two-column layout: Stat for the amount + meta on the left, line items on the right."
+        code={`function InvoiceDetailPanel({ row }: { row: Row<Invoice> }) {
+  const inv = row.original;
+  return (
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="space-y-3">
+        <Stat
+          label={inv.vendor}
+          value={formatMoney(inv.amount, inv.currency)}
+          deltaLabel={<>Issued {formatDateShort(inv.issuedAt)} · Due {formatDateShort(inv.dueAt)}</>}
+        />
+        <Badge variant={invoiceStatusVariant(inv.status)} dot>{inv.status}</Badge>
+      </div>
+      <ul>
+        {inv.lineItems.map((line, i) => (
+          <li key={i}>
+            <span>{line.description}</span>
+            <span>{line.qty} × {formatMoney(line.unit, inv.currency)}</span>
+            <span>{formatMoney(line.amount, inv.currency)}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+<DataTable
+  columns={invoiceCols}
+  data={invoices}
+  enableExpanding
+  renderExpandedRow={(row) => <InvoiceDetailPanel row={row} />}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={invoiceCols}

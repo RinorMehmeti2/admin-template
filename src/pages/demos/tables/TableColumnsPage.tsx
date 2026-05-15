@@ -121,6 +121,13 @@ export function TableColumnsPage() {
         eyebrow="Visibility"
         title="Column visibility"
         description="Toggle columns from the Columns menu in the toolbar — checkbox per column. Internal columns (selection, expand) stay locked."
+        code={`<DataTable
+  columns={fullEmployeeColumns()}
+  data={employees}
+  enableColumnVisibility
+  enableGlobalFilter={false}
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={fullEmployeeColumns()}
@@ -151,6 +158,21 @@ export function TableColumnsPage() {
             Unpin all
           </Button>
         }
+        code={`const [pinning, setPinning] = useState<ColumnPinningState>({
+  left: ['name'],
+  right: ['salary'],
+});
+
+<DataTable
+  columns={fullEmployeeColumns()}
+  data={employees}
+  enableColumnPinning
+  defaultColumnPinning={pinning}
+  enableGlobalFilter={false}
+  enableColumnVisibility
+  pageSize={10}
+  containerClassName="overflow-x-auto"
+/>`}
       >
         <p className="mb-3 text-xs text-foreground-muted">
           Active pins: {(pinning.left ?? []).map((c) => `${c}↤`).join(', ') || '—'}{' '}
@@ -173,6 +195,32 @@ export function TableColumnsPage() {
         eyebrow="Sized"
         title="Sized columns"
         description="Every column declares an explicit size; the table renders honoring those widths."
+        code={`function sizedInvoiceColumns(): ColumnDef<Invoice, unknown>[] {
+  return [
+    { accessorKey: 'number', header: 'Invoice', size: 120 },
+    { accessorKey: 'vendor', header: 'Vendor', size: 240 },
+    { accessorKey: 'issuedAt', header: 'Issued', size: 130, cell: ({ row }) => (
+        <span className="tabular-nums">{formatDateShort(row.original.issuedAt)}</span>
+      ) },
+    { accessorKey: 'dueAt', header: 'Due', size: 130, cell: ({ row }) => (
+        <span className="tabular-nums">{formatDateShort(row.original.dueAt)}</span>
+      ) },
+    { accessorKey: 'amount', header: 'Amount', size: 140, cell: ({ row }) => (
+        <span className="tabular-nums">{formatMoney(row.original.amount, row.original.currency)}</span>
+      ) },
+    { accessorKey: 'status', header: 'Status', size: 110, cell: ({ row }) => (
+        <Badge variant={invoiceStatusVariant(row.original.status)} dot size="sm">{row.original.status}</Badge>
+      ) },
+  ];
+}
+
+<DataTable
+  columns={sizedInvoiceColumns()}
+  data={invoices}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={sizedInvoiceColumns()}
@@ -193,6 +241,10 @@ export function TableColumnsPage() {
             lands. See the TODO in <code>DataTable.tsx</code>.
           </>
         }
+        code={`<div className="rounded-md border border-dashed border-border bg-surface-muted/30 p-6 text-sm text-foreground-muted">
+  The grip-handle + insertion-line affordance will live here. For now, use Pin left / Pin
+  right to lock high-priority columns to the edges.
+</div>`}
       >
         <div className="rounded-md border border-dashed border-border bg-surface-muted/30 p-6 text-sm text-foreground-muted">
           The grip-handle + insertion-line affordance will live here. For now, use Pin left / Pin

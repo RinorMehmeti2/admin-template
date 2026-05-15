@@ -84,6 +84,17 @@ function LoadingDemo() {
           Reload
         </Button>
       }
+      code={`const [phase, setPhase] = useState<'ready' | 'loading' | 'error'>('ready');
+
+<DataTable
+  columns={baseColumns()}
+  data={EMPLOYEES.slice(0, 12)}
+  isLoading={phase === 'loading'}
+  skeletonRows={8}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
     >
       <p className="mb-3 text-xs text-foreground-muted">
         State: <span className="font-medium text-foreground">{STATE_LABELS[phase]}</span>
@@ -107,6 +118,27 @@ function EmptyDemo() {
       eyebrow="Empty"
       title="No data — default + custom"
       description="When data is empty, the table replaces the body with an EmptyState. Pass a custom node via the emptyState prop."
+      code={`// Default empty state — built into DataTable:
+<DataTable columns={baseColumns()} data={[]} pageSize={10} />
+
+// Custom empty state via the emptyState prop:
+<DataTable
+  columns={baseColumns()}
+  data={[]}
+  pageSize={10}
+  emptyState={
+    <EmptyState
+      icon={<Inbox className="h-6 w-6" />}
+      title="No employees yet"
+      description="Invite a teammate to get started — your roster will populate here."
+      action={
+        <Button size="sm" leftIcon={<Plus className="h-4 w-4" />}>
+          Invite teammate
+        </Button>
+      }
+    />
+  }
+/>`}
     >
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="space-y-2">
@@ -156,6 +188,22 @@ function FilteredEmptyDemo() {
       eyebrow="Empty (filtered)"
       title="No matches"
       description="A hard-coded filter that matches nothing produces the empty body — the table is still operational so users can adjust the filter."
+      code={`<DataTable
+  columns={baseColumns()}
+  data={EMPLOYEES.slice(0, 25)}
+  defaultSorting={[{ id: 'name', desc: false }]}
+  enableGlobalFilter={false}
+  enableColumnFilters={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+  emptyState={
+    <EmptyState
+      icon={<Inbox className="h-6 w-6" />}
+      title="No results"
+      description="Try adjusting the filters or clearing your search."
+    />
+  }
+/>`}
     >
       <DataTable
         columns={baseColumns()}
@@ -198,6 +246,34 @@ function ErrorDemo() {
           Toggle state
         </Button>
       }
+      code={`<div className="space-y-3">
+  {phase === 'error' ? (
+    <Alert variant="danger" title="Could not load employees">
+      The server returned a 503. We tried 3 retries — give it a moment and click retry.
+    </Alert>
+  ) : null}
+  <DataTable
+    columns={baseColumns()}
+    data={phase === 'error' ? [] : EMPLOYEES.slice(0, 12)}
+    enableGlobalFilter={false}
+    enableColumnVisibility={false}
+    pageSize={10}
+    emptyState={
+      phase === 'error' ? (
+        <EmptyState
+          icon={<AlertTriangle className="h-6 w-6" />}
+          title="Loading failed"
+          description="Click retry to attempt again."
+          action={
+            <Button size="sm" leftIcon={<RefreshCw className="h-4 w-4" />} onClick={() => setPhase('ready')}>
+              Retry
+            </Button>
+          }
+        />
+      ) : undefined
+    }
+  />
+</div>`}
     >
       <div className="space-y-3">
         {phase === 'error' ? (
@@ -242,6 +318,29 @@ function DensityDemo() {
       eyebrow="Spacing"
       title="Density A / B"
       description="Same data re-renders at different row heights. Cell padding scales via the size variant on Table."
+      code={`const [size, setSize] = useState<'dense' | 'default' | 'comfortable'>('default');
+
+<div className="mb-3 flex flex-wrap items-center gap-2">
+  {(['dense', 'default', 'comfortable'] as const).map((s) => (
+    <Button
+      key={s}
+      size="sm"
+      variant={size === s ? 'primary' : 'outline'}
+      onClick={() => setSize(s)}
+    >
+      {s}
+    </Button>
+  ))}
+</div>
+<DataTable
+  columns={baseColumns()}
+  data={EMPLOYEES.slice(0, 25)}
+  size={size}
+  variant="striped"
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
     >
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {(['dense', 'default', 'comfortable'] as const).map((s) => (

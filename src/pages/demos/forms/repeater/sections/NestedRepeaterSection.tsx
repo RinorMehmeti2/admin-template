@@ -18,6 +18,40 @@ interface NestedValues {
   }>;
 }
 
+const CODE = `// Top-level: useFieldArray for "orders". Each OrderCard hosts its own
+// useFieldArray for "orders.\${i}.lines" — nested write paths via dot syntax.
+<Form form={form} onSubmit={() => undefined} className="space-y-4">
+  <div className="space-y-3">
+    {fields.map((order, i) => (
+      <OrderCard
+        key={order.id}
+        control={form.control}
+        register={form.register}
+        orderIndex={i}
+        onRemove={() => remove(i)}
+      />
+    ))}
+  </div>
+  <div className="flex justify-between gap-2">
+    <Button
+      type="button"
+      variant="outline"
+      leftIcon={<Plus className="h-4 w-4" />}
+      onClick={() => append({ customer: '', lines: [] })}
+    >
+      Add order
+    </Button>
+    <Button type="submit" variant="primary">Save all orders</Button>
+  </div>
+</Form>
+
+// Inside OrderCard:
+const { fields, append, remove } = useFieldArray({
+  control,
+  name: \`orders.\${orderIndex}.lines\`,
+});
+// …render <FormField>+<Input> + <NumberInput> per line, "Add line" appends.`;
+
 function OrderCard({
   control,
   register,
@@ -136,6 +170,7 @@ export function NestedRepeaterSection() {
       id="nested"
       title={t('forms.repeater.nested.title')}
       description={t('forms.repeater.nested.description')}
+      code={CODE}
     >
       <Form form={form} onSubmit={() => undefined} className="space-y-4">
         <div className="space-y-3">

@@ -458,6 +458,24 @@ export function AppendToTableWizardSection() {
         id="append-table"
         title={t('forms.multiStep.appendTable.title')}
         description={t('forms.multiStep.appendTable.description')}
+        code={`<div className="flex flex-col items-start gap-3 rounded-md border border-success/30 bg-success/10 p-4">
+  <CheckCircle2 className="h-6 w-6 text-success" aria-hidden="true" />
+  <div>
+    <p className="text-sm font-semibold">Order placed</p>
+    <p className="text-xs text-foreground-muted">Order ID · {orderId}</p>
+  </div>
+  <Button
+    type="button"
+    variant="ghost"
+    size="sm"
+    onClick={() => {
+      setOrderId(null);
+      wizardRef.current?.reset();
+    }}
+  >
+    Start a new order
+  </Button>
+</div>`}
       >
         <div className="flex flex-col items-start gap-3 rounded-md border border-success/30 bg-success/10 p-4">
           <CheckCircle2 className="h-6 w-6 text-success" aria-hidden="true" />
@@ -486,6 +504,60 @@ export function AppendToTableWizardSection() {
       id="append-table"
       title={t('forms.multiStep.appendTable.title')}
       description={t('forms.multiStep.appendTable.description')}
+      code={`<FormWizard
+  ref={wizardRef}
+  schema={fullSchema}
+  defaultValues={{
+    customer: { name: '', email: '', company: '' },
+    items: [],
+  }}
+  responsiveOrientation
+  compactBelow="sm"
+  showSummaryStep
+  labels={labels}
+  onSubmit={() => {
+    const id = \`ORD-\${Date.now().toString(36).toUpperCase()}\`;
+    setOrderId(id);
+    toast.success('Order placed');
+  }}
+  summaryRender={() => <ReviewStep />}
+>
+  <FormWizardStep<OrderValues>
+    id="customer"
+    title="Customer"
+    description="Who is this order for?"
+    icon={<User className="h-4 w-4" />}
+    schema={customerSchema}
+    render={({ form }) => (
+      <div className="max-w-md space-y-4">
+        <FormField label="Name" required error={form.formState.errors.customer?.name?.message}>
+          <Input {...form.register('customer.name')} />
+        </FormField>
+        <FormField label="Email" required error={form.formState.errors.customer?.email?.message}>
+          <Input type="email" {...form.register('customer.email')} />
+        </FormField>
+        <FormField label="Company">
+          <Input {...form.register('customer.company')} />
+        </FormField>
+      </div>
+    )}
+  />
+  <FormWizardStep<OrderValues>
+    id="items"
+    title="Add items"
+    description="Each Add submit appends a row below."
+    icon={<ListChecks className="h-4 w-4" />}
+    schema={itemsStepSchema}
+    render={({ form }) => <ItemsStep outer={form} />}
+  />
+  <FormWizardStep<OrderValues>
+    id="review"
+    title="Review"
+    description="Confirm before placing the order."
+    icon={<ReceiptText className="h-4 w-4" />}
+    render={() => <ReviewStep />}
+  />
+</FormWizard>`}
     >
       <FormWizard
         ref={wizardRef}

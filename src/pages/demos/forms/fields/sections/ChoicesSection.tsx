@@ -59,6 +59,82 @@ export function ChoicesSection() {
       id="choices"
       title={t('forms.fields.choices.title')}
       description={t('forms.fields.choices.description')}
+      code={`<Form form={form} onSubmit={() => undefined} className="space-y-5">
+  <div className="grid gap-4 sm:grid-cols-2">
+    <label htmlFor="choices-newsletter" className="flex items-start gap-3">
+      <Controller
+        control={form.control}
+        name="newsletter"
+        render={({ field }) => (
+          <Checkbox
+            id="choices-newsletter"
+            checked={field.value}
+            onChange={(e) => field.onChange(e.target.checked)}
+          />
+        )}
+      />
+      <span className="text-sm text-foreground">Send me the weekly newsletter</span>
+    </label>
+
+    <label htmlFor="choices-notifications" className="flex items-start gap-3">
+      <Controller
+        control={form.control}
+        name="notifications"
+        render={({ field }) => (
+          <Switch
+            id="choices-notifications"
+            checked={field.value}
+            onChange={(e) => field.onChange(e.target.checked)}
+          />
+        )}
+      />
+      <span className="text-sm text-foreground">Push notifications</span>
+    </label>
+  </div>
+
+  <FormField label="Role">
+    <Controller
+      control={form.control}
+      name="role"
+      render={({ field }) => (
+        <RadioGroup name={field.name} value={field.value} onValueChange={field.onChange}>
+          <Radio value="admin">Admin</Radio>
+          <Radio value="editor">Editor</Radio>
+          <Radio value="viewer">Viewer</Radio>
+        </RadioGroup>
+      )}
+    />
+  </FormField>
+
+  <FormField label="Department">
+    <Select {...form.register('department')}>
+      {EMPLOYEE_DEPARTMENTS.map((d) => (
+        <option key={d} value={d}>{d}</option>
+      ))}
+    </Select>
+  </FormField>
+
+  <Controller
+    control={form.control}
+    name="country"
+    render={({ field }) => (
+      <Combobox
+        items={COUNTRY_OPTIONS}
+        getItemLabel={(c) => c.label}
+        getItemValue={(c) => c.code}
+        value={field.value}
+        onValueChange={(v) => field.onChange(typeof v === 'string' ? v : (v[0] ?? ''))}
+      >
+        <ComboboxTrigger id="fields-country" placeholder="Pick a country…" />
+        <ComboboxContent>
+          {COUNTRY_OPTIONS.map((c, i) => (
+            <ComboboxItem key={c.code} index={i} comboItem={{ kind: 'item', item: c }} />
+          ))}
+        </ComboboxContent>
+      </Combobox>
+    )}
+  />
+</Form>`}
     >
       <Form form={form} onSubmit={() => undefined} className="space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">

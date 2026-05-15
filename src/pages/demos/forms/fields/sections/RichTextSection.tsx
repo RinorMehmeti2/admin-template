@@ -25,6 +25,21 @@ export function RichTextSection() {
       id="rich"
       title={t('forms.fields.rich.title')}
       description={t('forms.fields.rich.description')}
+      code={`<Form form={form} onSubmit={() => undefined}>
+  <FormField label="Bio" description="LazyRichTextEditor — TipTap loads on demand.">
+    <Controller
+      control={form.control}
+      name="bio"
+      render={({ field }) => (
+        <LazyRichTextEditor
+          value={field.value}
+          onChange={(html) => field.onChange(html)}
+          minHeight={160}
+        />
+      )}
+    />
+  </FormField>
+</Form>`}
     >
       <Form form={form} onSubmit={() => undefined}>
         <FormField label="Bio" description="LazyRichTextEditor — TipTap loads on demand.">

@@ -185,6 +185,13 @@ export function TableSortingPage() {
         eyebrow="One axis"
         title="Single-column sort"
         description="Click any header to cycle asc → desc → unsorted. Arrow indicator and aria-sort track the state."
+        code={`<DataTable
+  columns={employeeColumns}
+  data={employees}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={employeeColumns}
@@ -204,6 +211,18 @@ export function TableSortingPage() {
             secondary. The numbered badge after each arrow shows priority.
           </span>
         }
+        code={`<DataTable
+  columns={employeeColumns}
+  data={employees}
+  enableMultiSort
+  defaultSorting={[
+    { id: 'department', desc: false },
+    { id: 'salary', desc: true },
+  ]}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={employeeColumns}
@@ -223,6 +242,25 @@ export function TableSortingPage() {
         eyebrow="Custom sortFn"
         title="Currency-aware total sort"
         description="The displayed value is currency-formatted (USD / EUR), but the sort is purely numeric on row.original.total so a string sort doesn't sneak in."
+        code={`// Column with a custom sortingFn that compares the raw numeric value
+{
+  accessorKey: 'total',
+  header: 'Amount',
+  cell: ({ row }) => (
+    <span className="tabular-nums">
+      {formatMoney(row.original.total, row.original.currency)}
+    </span>
+  ),
+  sortingFn: (a, b) => a.original.total - b.original.total,
+}
+
+<DataTable
+  columns={orderColumns}
+  data={orders}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={orderColumns}
@@ -237,6 +275,24 @@ export function TableSortingPage() {
         eyebrow="Selective"
         title="Non-sortable columns"
         description="Avatar and Actions columns set enableSorting: false; the rest behave normally."
+        code={`// Avatar + Actions opt out via enableSorting: false
+const projectColumns: ColumnDef<Project, unknown>[] = [
+  { id: 'avatar', header: '', enableSorting: false, size: 32, cell: AvatarCell },
+  { accessorKey: 'name', header: 'Project' },
+  { accessorKey: 'owner', header: 'Owner' },
+  { accessorKey: 'status', header: 'Status', cell: StatusCell },
+  { accessorKey: 'progress', header: 'Progress', cell: ProgressCell },
+  { id: '__actions__', header: () => <span className="sr-only">Actions</span>,
+    enableSorting: false, cell: () => <span>…</span> },
+];
+
+<DataTable
+  columns={projectColumns}
+  data={projects}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={projectColumns}
@@ -251,6 +307,14 @@ export function TableSortingPage() {
         eyebrow="Initial state"
         title="Default sort: most overdue first"
         description="defaultSorting=[{ id: 'dueAt', desc: false }] surfaces the most-imminent invoices on mount."
+        code={`<DataTable
+  columns={invoiceColumns}
+  data={invoices}
+  defaultSorting={[{ id: 'dueAt', desc: false }]}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={invoiceColumns}

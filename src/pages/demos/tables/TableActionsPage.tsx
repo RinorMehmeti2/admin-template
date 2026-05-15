@@ -317,6 +317,39 @@ export function TableActionsPage() {
         eyebrow="Dropdown"
         title="Per-row dropdown menu"
         description="Last column is __actions__ — un-sortable, un-hideable, right-aligned. Each item shows a lucide icon. Destructive item opens a ConfirmDialog (variant=danger)."
+        code={`// Column def for the __actions__ column:
+{
+  id: '__actions__',
+  header: () => <span className="sr-only">Actions</span>,
+  enableSorting: false,
+  enableHiding: false,
+  enablePinning: false,
+  size: 56,
+  cell: ({ row }) => (
+    <div className="flex justify-end">
+      <EmployeeActionsMenu employee={row.original} onDelete={setPendingDelete} />
+    </div>
+  ),
+}
+
+<DataTable
+  columns={empColumns}
+  data={employees}
+  getRowId={(r) => r.id}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>
+
+// Destructive item opens a ConfirmDialog:
+<ConfirmDialog
+  open={pendingDelete !== null}
+  onOpenChange={(open) => { if (!open) setPendingDelete(null); }}
+  variant="danger"
+  title={\`Delete \${pendingDelete?.name}?\`}
+  confirmLabel="Delete"
+  onConfirm={() => { /* delete */ }}
+/>`}
       >
         <DataTable
           columns={empColumns}
@@ -332,6 +365,44 @@ export function TableActionsPage() {
         eyebrow="Inline"
         title="Inline icon actions"
         description="3 IconButtons side-by-side wrapped in Tooltips — useful for dense layouts where a dropdown is overkill."
+        code={`function InlineOrderActions({ order }: { order: Order }) {
+  return (
+    <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+      <Tooltip>
+        <TooltipTrigger>
+          <IconButton aria-label={\`View \${order.orderNumber}\`} variant="ghost" size="sm">
+            <Eye className="h-4 w-4" />
+          </IconButton>
+        </TooltipTrigger>
+        <TooltipContent>View</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger>
+          <IconButton aria-label={\`Edit \${order.orderNumber}\`} variant="ghost" size="sm">
+            <Edit className="h-4 w-4" />
+          </IconButton>
+        </TooltipTrigger>
+        <TooltipContent>Edit</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger>
+          <IconButton aria-label={\`Delete \${order.orderNumber}\`} variant="ghost" size="sm">
+            <Trash2 className="h-4 w-4 text-danger" />
+          </IconButton>
+        </TooltipTrigger>
+        <TooltipContent>Delete</TooltipContent>
+      </Tooltip>
+    </div>
+  );
+}
+
+<DataTable
+  columns={orderColsInline}
+  data={orders}
+  enableGlobalFilter={false}
+  enableColumnVisibility={false}
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={orderColsInline}
@@ -346,6 +417,34 @@ export function TableActionsPage() {
         eyebrow="Right-click"
         title="Context menu"
         description="Right-click any row to open the same actions via a cursor-anchored ContextMenu."
+        code={`<ContextMenu>
+  <ContextMenuTrigger>
+    <DataTable
+      columns={orderColsInline.slice(0, -1)}
+      data={orders}
+      enableGlobalFilter={false}
+      enableColumnVisibility={false}
+      pageSize={10}
+    />
+  </ContextMenuTrigger>
+  <ContextMenuContent>
+    <ContextMenuLabel>Row actions</ContextMenuLabel>
+    <ContextMenuSeparator />
+    <ContextMenuItem onSelect={() => toast.info('View')}>
+      <Eye className="h-3.5 w-3.5" />
+      View
+    </ContextMenuItem>
+    <ContextMenuItem onSelect={() => toast.info('Edit')}>
+      <Edit className="h-3.5 w-3.5" />
+      Edit
+    </ContextMenuItem>
+    <ContextMenuSeparator />
+    <ContextMenuItem className="text-danger" onSelect={() => toast.info('Deleted')}>
+      <Trash2 className="h-3.5 w-3.5" />
+      Delete
+    </ContextMenuItem>
+  </ContextMenuContent>
+</ContextMenu>`}
       >
         <ContextMenu>
           <ContextMenuTrigger>
@@ -381,6 +480,36 @@ export function TableActionsPage() {
         eyebrow="Combined"
         title="Bulk + per-row actions"
         description="Selection bar appears when 1+ rows selected; per-row dropdown always works regardless of selection state."
+        code={`<div className="space-y-3">
+  {selectedBulk.length > 0 ? (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-primary/30 bg-primary/5 px-3 py-2">
+      <span className="text-sm font-medium">
+        {selectedBulk.length} order{selectedBulk.length === 1 ? '' : 's'} selected
+      </span>
+      <div className="flex gap-2">
+        <Button size="sm" variant="outline" onClick={() => toast.success(\`Refunded \${selectedBulk.length}\`)}>
+          Refund all
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => toast.info(\`Exported \${selectedBulk.length}\`)}>
+          Export
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setSelectedBulk([])}>
+          Clear
+        </Button>
+      </div>
+    </div>
+  ) : null}
+  <DataTable
+    columns={orderColsBulk}
+    data={ordersForBulk}
+    getRowId={(r) => r.id}
+    enableRowSelection="multi"
+    onRowSelectionChange={setSelectedBulk}
+    enableGlobalFilter={false}
+    enableColumnVisibility={false}
+    pageSize={10}
+  />
+</div>`}
       >
         <div className="space-y-3">
           {selectedBulk.length > 0 ? (

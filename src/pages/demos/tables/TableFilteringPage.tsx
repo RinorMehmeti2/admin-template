@@ -190,6 +190,14 @@ export function TableFilteringPage() {
         eyebrow="Global"
         title="Global search"
         description="One input narrows across every accessor. enableColumnFilters=false; no per-column inputs."
+        code={`<DataTable
+  columns={globalOnly}
+  data={employees}
+  enableGlobalFilter
+  enableColumnFilters={false}
+  enableColumnVisibility={false}
+  pageSize={8}
+/>`}
       >
         <DataTable
           columns={globalOnly}
@@ -205,6 +213,14 @@ export function TableFilteringPage() {
         eyebrow="Per column"
         title="Per-column text filters"
         description="A free-text Input per visible column. Use with global search for layered narrowing."
+        code={`<DataTable
+  columns={textFilter}
+  data={employees}
+  enableGlobalFilter={false}
+  enableColumnFilters
+  enableColumnVisibility={false}
+  pageSize={8}
+/>`}
       >
         <DataTable
           columns={textFilter}
@@ -225,6 +241,28 @@ export function TableFilteringPage() {
             chip strip above the table shows active filters with X buttons + Clear all.
           </>
         }
+        code={`// Set meta.filterVariant on column defs:
+const facetedColumns = useMemo<ColumnDef<Employee, unknown>[]>(() => {
+  const cols = baseEmployeeColumns();
+  cols[2] = {
+    ...cols[2]!,
+    meta: { filterVariant: 'multi-select', filterOptions: DEPARTMENT_OPTIONS },
+  };
+  cols[4] = {
+    ...cols[4]!,
+    meta: { filterVariant: 'multi-select', filterOptions: EMPLOYEE_STATUS_OPTIONS },
+  };
+  return cols;
+}, []);
+
+<DataTable
+  columns={facetedColumns}
+  data={employees}
+  enableGlobalFilter={false}
+  enableColumnFilters
+  enableColumnVisibility={false}
+  pageSize={8}
+/>`}
       >
         <DataTable
           columns={facetedColumns}
@@ -240,6 +278,26 @@ export function TableFilteringPage() {
         eyebrow="Range"
         title="Numeric range"
         description="Two number inputs side-by-side. Undefined endpoints are open."
+        code={`// Column def with meta.filterVariant = 'range':
+{
+  accessorKey: 'amount',
+  header: 'Amount',
+  cell: ({ row }) => (
+    <span className="tabular-nums">
+      {formatMoney(row.original.amount, row.original.currency)}
+    </span>
+  ),
+  meta: { filterVariant: 'range' },
+}
+
+<DataTable
+  columns={invoiceColumns}
+  data={invoices}
+  enableGlobalFilter={false}
+  enableColumnFilters
+  enableColumnVisibility={false}
+  pageSize={8}
+/>`}
       >
         <DataTable
           columns={invoiceColumns}
@@ -255,6 +313,24 @@ export function TableFilteringPage() {
         eyebrow="Date range"
         title="Date range"
         description="Reuses the existing <DateRangePicker> with built-in presets."
+        code={`// Column def with meta.filterVariant = 'date-range':
+{
+  accessorKey: 'deployedAt',
+  header: 'Deployed',
+  cell: ({ row }) => (
+    <span className="tabular-nums">{formatDateShort(row.original.deployedAt)}</span>
+  ),
+  meta: { filterVariant: 'date-range' },
+}
+
+<DataTable
+  columns={deploymentColumns}
+  data={deployments}
+  enableGlobalFilter={false}
+  enableColumnFilters
+  enableColumnVisibility={false}
+  pageSize={8}
+/>`}
       >
         <DataTable
           columns={deploymentColumns}
@@ -270,6 +346,22 @@ export function TableFilteringPage() {
         eyebrow="Everything"
         title="Combined: global + facets + range + date range"
         description="Real admin filter bar — every input layered. Column visibility + pagination on top."
+        code={`// Mix multi-select facets with range + date-range columns:
+const combinedColumns = useMemo<ColumnDef<Employee, unknown>[]>(() => {
+  const cols = facetedColumns.map((c) => ({ ...c }));
+  cols[5] = { ...cols[5]!, meta: { filterVariant: 'date-range' } };
+  cols[6] = { ...cols[6]!, meta: { filterVariant: 'range' } };
+  return cols;
+}, [facetedColumns]);
+
+<DataTable
+  columns={combinedColumns}
+  data={employees}
+  enableGlobalFilter
+  enableColumnFilters
+  enableColumnVisibility
+  pageSize={10}
+/>`}
       >
         <DataTable
           columns={combinedColumns}

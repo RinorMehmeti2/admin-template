@@ -66,6 +66,21 @@ export function ClassicWizardSection() {
         id="classic"
         title={t('forms.multiStep.classic.title')}
         description={t('forms.multiStep.classic.description')}
+        code={`<div className="flex flex-col items-start gap-3 rounded-md border border-success/30 bg-success/10 p-4">
+  <CheckCircle2 className="h-6 w-6 text-success" aria-hidden="true" />
+  <p className="text-sm font-semibold">Account created.</p>
+  <Button
+    type="button"
+    variant="ghost"
+    size="sm"
+    onClick={() => {
+      setSubmitted(false);
+      wizardRef.current?.reset();
+    }}
+  >
+    Start over
+  </Button>
+</div>`}
       >
         <div className="flex flex-col items-start gap-3 rounded-md border border-success/30 bg-success/10 p-4">
           <CheckCircle2 className="h-6 w-6 text-success" aria-hidden="true" />
@@ -91,6 +106,83 @@ export function ClassicWizardSection() {
       id="classic"
       title={t('forms.multiStep.classic.title')}
       description={t('forms.multiStep.classic.description')}
+      code={`<FormWizard
+  ref={wizardRef}
+  schema={fullSchema}
+  defaultValues={{
+    email: '',
+    password: '',
+    fullName: '',
+    bio: '',
+    workspace: '',
+    plan: 'free',
+    digest: true,
+  }}
+  persistKey="demo:forms:classic-wizard"
+  autoRestore
+  responsiveOrientation
+  compactBelow="sm"
+  showSummaryStep
+  labels={labels}
+  onSubmit={() => {
+    toast.success('Account created');
+    setSubmitted(true);
+  }}
+>
+  <FormWizardStep<ClassicValues>
+    id="account"
+    title="Account"
+    description="Sign-in credentials"
+    icon={<User className="h-4 w-4" />}
+    schema={stepAccount}
+    render={({ form }) => (
+      <div className="max-w-md space-y-4">
+        <FormField label="Email" required error={form.formState.errors.email?.message}>
+          <Input type="email" autoComplete="email" {...form.register('email')} />
+        </FormField>
+        <FormField label="Password" required error={form.formState.errors.password?.message}>
+          <Input type="password" autoComplete="new-password" {...form.register('password')} />
+        </FormField>
+      </div>
+    )}
+  />
+  <FormWizardStep<ClassicValues>
+    id="profile"
+    title="Profile"
+    description="Tell us about you"
+    icon={<Briefcase className="h-4 w-4" />}
+    schema={stepProfile}
+    render={({ form }) => (/* fullName + bio */)}
+  />
+  <FormWizardStep<ClassicValues>
+    id="preferences"
+    title="Preferences"
+    description="Workspace & plan"
+    icon={<Settings className="h-4 w-4" />}
+    schema={stepPrefs}
+    render={({ form }) => (
+      <div className="max-w-md space-y-4">
+        <FormField label="Workspace" required error={form.formState.errors.workspace?.message}>
+          <Input {...form.register('workspace')} />
+        </FormField>
+        <FormField label="Plan">
+          <Select {...form.register('plan')}>
+            <option value="free">Free</option>
+            <option value="pro">Pro</option>
+            <option value="enterprise">Enterprise</option>
+          </Select>
+        </FormField>
+        <label className="flex items-center justify-between rounded-md border border-border bg-surface px-3 py-2 text-sm">
+          <span>Weekly digest email</span>
+          <Switch
+            checked={form.watch('digest')}
+            onChange={(e) => form.setValue('digest', e.target.checked, { shouldDirty: true })}
+          />
+        </label>
+      </div>
+    )}
+  />
+</FormWizard>`}
     >
       <FormWizard
         ref={wizardRef}
