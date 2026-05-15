@@ -8,7 +8,7 @@ export function KpiStats() {
 
   return (
     <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <Card className="p-5">
+      <Card variant="outlined" className="p-5">
         <Stat
           icon={<DollarSign className="h-5 w-5" />}
           label="Revenue (YTD)"
@@ -17,7 +17,7 @@ export function KpiStats() {
           deltaLabel="vs. last year"
         />
       </Card>
-      <Card className="p-5">
+      <Card variant="outlined" className="p-5">
         <Stat
           icon={<ShoppingBag className="h-5 w-5" />}
           label="Orders"
@@ -26,7 +26,7 @@ export function KpiStats() {
           deltaLabel="vs. last year"
         />
       </Card>
-      <Card className="p-5">
+      <Card variant="outlined" className="p-5">
         <Stat
           icon={<Users className="h-5 w-5" />}
           label="Active subscribers"
@@ -35,7 +35,7 @@ export function KpiStats() {
           deltaLabel="this month"
         />
       </Card>
-      <Card className="p-5">
+      <Card variant="outlined" className="p-5">
         <Stat
           icon={<Activity className="h-5 w-5" />}
           label="Conversion rate"

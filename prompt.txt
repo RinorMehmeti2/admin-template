@@ -1,0 +1,157 @@
+Apply the SIMS visual style to all pages under `src/pages/demos/Components` in this admin-template repo.
+
+  The full style guide is in `docs/sims-style-port.md` — **read it first**, then follow it as the source of truth. Highlights:
+
+  ## What "apply the SIMS style" means
+
+  Take the look-and-feel established by the SIMS port (`/sims/*` routes, built from `/SIMS/app.tsx` which used MUI + Tailwind) and re-render the
+   existing pages with our own admin-template components — **no MUI, no Chakra, no Radix, no shadcn, no headless UI lib**. Visual parity with
+  SIMS, zero new dependencies.
+
+  ## Scope
+
+  - **Path A only** — keep the existing `<AppLayout>` shell. Do NOT build a new layout for these routes. Only restyle the page bodies and any
+  feature-local components they render.
+  - Target folder: `src/pages/Components/` and everything it imports under `src/pages/demos/Components/`.
+  - Do not touch other menus, the shell, the sidebar, or `/sims/*`.
+
+  ## Hard rules (from CLAUDE.md + the style port doc)
+
+  1. **No new UI library deps.** lucide-react is the only icon set. Tailwind utilities only — no CSS modules, no inline `style={{}}` except for
+  dynamic numeric values (chart width, progress %, dynamic `borderRadius`).
+  2. **Semantic tokens only** — `bg-surface`, `text-foreground-muted`, `border-border`, `bg-primary/10`, `bg-danger`, etc. **No raw hex, no
+  `text-emerald-500`, no `bg-blue-50`.** No `dark:` variants — tokens cover both modes.
+  3. **Named exports only**, React 19 (no `forwardRef`, no `displayName`). Accept `ref` as a regular prop.
+  4. **Strict TS** (`noUncheckedIndexedAccess` is on): array access returns `T | undefined`. Coalesce (`?? fallback`) or
+  destructure-with-default. **Do not** use `!` or `as unknown as` to dodge it.
+  5. **A11y:** `IconButton` requires `aria-label`. Every interactive element needs `focus-visible:ring-2 focus-visible:ring-ring
+  focus-visible:ring-offset-2 focus-visible:ring-offset-background`.
+  6. **i18n:** if a page already uses `t()`, keep going through `t()` and add any new keys to **every** locale JSON in `src/i18n/locales/`.
+  Pages that hardcode English today (matching `/Components` and `/sims`) can stay hardcoded.
+  7. **Don't add tests, stories, or new files unless necessary.** Restyle in place. If you create a small shared component, put it under the
+  feature's `components/` folder, not in `src/components/`.
+
+  ## Patterns to apply (full detail in `docs/sims-style-port.md`)
+
+  For every page in the menu:
+
+  1. **Page header** → replace local header markup with the SIMS pattern:
+     ```tsx
+     <SimsPageHeader title="…" description="…" actions={<>…</>} />
+     ```
+     Import from `@/pages/sims/components/SimsPageHeader`. (Or copy the 12-line component into the feature folder if you'd rather not depend on
+  `/sims`.) Title `text-2xl font-bold tracking-tight`, description `mt-1 text-sm text-foreground-muted`, actions right-aligned, wraps on narrow
+  viewports.
+
+  2. **Stat / KPI rows** → use `<SimsStatCard Icon={…} label value trend trendValue />` from `@/pages/sims/components/SimsStatCard`. 4-col on
+  `lg`, 2-col on `sm`.
+
+  3. **Cards** →
+     ```tsx
+     <Card variant="outlined">
+       <CardHeader className="flex flex-row items-start justify-between gap-2">
+         <div><CardTitle/><CardDescription/></div>
+         <Button variant="link" size="sm" rightIcon={<ArrowRight className="h-3.5 w-3.5"/>}>View all</Button>
+       </CardHeader>
+       <CardContent className="p-0">{/* lists/Components hit the edges */}</CardContent>
+     </Card>
+     ```
+
+  4. **Tables** → wrap with `<div className="rounded-md border border-border bg-surface">`, use `<Table size="default">` (or `"dense"` for
+  log-style screens). Action column right-aligned, `IconButton variant="ghost" size="sm"` with `aria-label`. Pagination footer = `<Select
+  selectSize="sm">` for rows-per-page + range text + `<Pagination />`. Click-through rows: stop propagation on the action `<TableCell>`.
+
+  5. **Edit drawer** → `<Drawer side="right">` with `<DrawerHeader>`/`<DrawerBody className="space-y-4">`/`<DrawerFooter className="flex
+  justify-end gap-2">`. Cancel = `variant="ghost"`, save = `variant="primary"`.
+
+  6. **Confirm-delete dialog** → `<ConfirmDialog variant="danger" />`.
+
+  7. **Filter strip** →
+     ```tsx
+     <div className="mb-4 flex flex-wrap items-center gap-3">
+       <Input leftIcon={<Search className="h-4 w-4"/>} inputSize="sm" className="w-80" />
+       <Button variant="outline" size="sm" leftIcon={<Filter className="h-4 w-4"/>}>Filters</Button>
+       {/* chip buttons: rounded-full px-3 py-1 text-xs font-semibold, active = bg-primary text-primary-foreground, inactive = border bg-surface
+   text-foreground-muted hover:bg-surface-muted */}
+       <div className="ml-auto"><Badge variant="primary">{n} items</Badge></div>
+     </div>
+     ```
+
+  8. **Icon tile** (replaces MUI rounded Avatar-with-icon):
+     ```tsx
+     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+       <Icon className="h-5 w-5" />
+     </div>
+     ```
+     Sizes: `h-7 w-7` small, `h-8 w-8` avatar slot, `h-11 w-11` stat/card avatar.
+
+  9. **Master/detail** → `grid-cols-1 lg:grid-cols-[340px_1fr]`. Left = `<button>` rows that highlight `bg-primary/5` when active. Right =
+  detail card.
+
+  10. **Content wrapper** → if the page isn't already capped, wrap in `<div className="mx-auto max-w-[1400px]">…</div>`.
+
+  ## Component map (must obey)
+
+  Use these admin-template imports anywhere the existing page reaches for an MUI-shaped or ad-hoc Tailwind component:
+
+  - Button → `@/components/primitives/Button` (variants: `primary | secondary | outline | ghost | danger | link`)
+  - IconButton → `@/components/primitives/IconButton` (`aria-label` required)
+  - Badge → `@/components/primitives/Badge` (variants: `primary | success | warning | danger | info | neutral`)
+  - Avatar → `@/components/primitives/Avatar`
+  - Card / CardHeader / CardTitle / CardDescription / CardContent / CardFooter → `@/components/data-display/Card`
+  - Table / TableHeader / TableBody / TableRow / TableHead / TableCell → `@/components/data-display/Table`
+  - DataTable (when you need sort/filter/select state) → `@/components/data-display/DataTable`
+  - Pagination → `@/components/navigation/Pagination`
+  - DropdownMenu (+ Trigger/Content/Item/Label/Separator) → `@/components/navigation/DropdownMenu`
+  - Tabs (+ TabsList/Trigger/Content) → `@/components/navigation/Tabs`
+  - Breadcrumbs → `@/components/navigation/Breadcrumbs`
+  - Drawer (+ Content/Header/Title/Body/Footer/Close) → `@/components/feedback/Drawer`
+  - Dialog (+ Trigger/Content/Header/Title/Body/Footer/Close) → `@/components/feedback/Dialog`
+  - ConfirmDialog → `@/components/feedback/ConfirmDialog`
+  - Alert → `@/components/feedback/Alert`
+  - Tooltip (+ TooltipTrigger/TooltipContent) → `@/components/feedback/Tooltip` (needs `TooltipProvider` at app root — already mounted)
+  - Progress → `@/components/feedback/Progress`
+  - Toast → `useToast()` from `@/context/ToastProvider`
+  - Input / Label / Textarea / Select / Combobox / Checkbox / Switch / Radio + RadioGroup / NumberInput / Calendar / DatePicker / Slider /
+  ColorPicker / Form + FormField → `@/components/Components/*`
+  - Charts → `@/components/data-display/charts/{AreaChart,BarChart,LineChart,ChartContainer}` (colors via
+  `color="primary|success|warning|danger|info|neutral"`, not raw hex)
+  - Sidebar / NavGroup / NavLink → `@/components/layout/Sidebar` (do NOT touch — Path A keeps the shell as-is)
+
+  ## Material Icons → lucide-react
+
+  Where the page references Material icon names (font glyphs like `dashboard`, `delete`, `verified_user`, `more_vert`), swap to the lucide
+  equivalent — full table in `docs/sims-style-port.md` § "Icon mapping". Always size with Tailwind: `h-3.5 w-3.5` inside chips/badges, `h-4 w-4`
+   default, `h-5 w-5` for icon tiles.
+
+  ## Workflow
+
+  1. Read `docs/sims-style-port.md` end-to-end before changing anything.
+  2. List the page files under `src/pages/Components/` with `ls` / `Glob`, then read each before editing — don't guess at the existing structure.
+  3. Plan the visual swap per page (header, cards, tables, filters, dialogs) before editing. Surface any case where the current page does
+  something SIMS didn't (e.g. a kanban board, a tree view, a file explorer) and note how you're handling it — don't invent new patterns
+  silently.
+  4. Edit in place. Preserve existing logic, state, data flow, and routes — this is a **visual restyle**, not a refactor.
+  5. If a page already imports from `@/components/...` correctly but its layout/spacing/colors are off-style, restyle the markup; don't replace
+  the components.
+  6. For shared bits used across multiple pages in the menu, factor into `src/pages/Components/components/`.
+
+  ## Verification (must pass before reporting done)
+
+  1. `pnpm typecheck` — clean, no new errors.
+  2. Add a route-render smoke spec modelled on `e2e/sims-smoke.spec.ts`. Spec must:
+     - Visit every restyled route.
+     - Listen for `console.error` and `pageerror` and assert they're empty.
+     - Assert `main` is visible.
+     Run with `pnpm exec playwright test e2e/Components-smoke.spec.ts --project=chromium --reporter=list`.
+  3. Report what changed per file in a short bulleted summary at the end.
+
+  ## Out of scope (do NOT do)
+
+  - Do not install any package.
+  - Do not modify `App.tsx` routes (the routes already exist; you're just restyling the pages they render).
+  - Do not modify `AppLayout`, `Sidebar`, `Topbar`, `ThemeProvider`, the i18n init, or any file under `src/components/` (the primitives are
+  already built — use them, don't change them).
+  - Do not touch `/sims/*` — that's the reference, don't drift it.
+  - Do not add Storybook stories or new tests beyond the route-render smoke spec.
+  - Do not introduce a new "design system" abstraction. The patterns in `docs/sims-style-port.md` are the design system.

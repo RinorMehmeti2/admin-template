@@ -93,16 +93,16 @@ export function LayoutDemo() {
           }
         >
           <Menu>
-            <MenuItem to="/layout" end icon={<Home />}>Dashboard</MenuItem>
-            <MenuItem
-              to="/layout/users"
-              icon={<Users />}
-              badge={<MenuBadge>14</MenuBadge>}
-            >
+            <MenuItem to="/layout" end icon={<Home />}>
+              Dashboard
+            </MenuItem>
+            <MenuItem to="/layout/users" icon={<Users />} badge={<MenuBadge>14</MenuBadge>}>
               Users
             </MenuItem>
             <MenuGroup label="Configuration" icon={<Sliders />}>
-              <MenuItem to="/layout/settings" icon={<Settings />}>Settings</MenuItem>
+              <MenuItem to="/layout/settings" icon={<Settings />}>
+                Settings
+              </MenuItem>
             </MenuGroup>
           </Menu>
         </Sidebar>
@@ -158,26 +158,17 @@ import {
   Breadcrumbs,
 } from '@/components/navigation/Breadcrumbs';
 
-// Reusable demo Card primitive (we don't have one yet)
-export function DemoCard({
-  title,
-  value,
-  hint,
-}: {
-  title: string;
-  value: string;
-  hint?: string;
-}) {
+import { Card, CardContent } from '@/components/data-display/Card';
+
+export function DemoCard({ title, value, hint }: { title: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-lg border border-border bg-surface p-5">
-      <p className="text-xs font-medium uppercase tracking-wide text-foreground-subtle">
-        {title}
-      </p>
-      <p className="mt-2 text-2xl font-semibold text-foreground">{value}</p>
-      {hint !== undefined ? (
-        <p className="mt-1 text-xs text-foreground-muted">{hint}</p>
-      ) : null}
-    </div>
+    <Card variant="outlined">
+      <CardContent className="p-4">
+        <p className="text-xs font-medium text-foreground-muted">{title}</p>
+        <p className="mt-1 text-3xl font-bold leading-none text-foreground">{value}</p>
+        {hint !== undefined ? <p className="mt-2 text-xs text-foreground-muted">{hint}</p> : null}
+      </CardContent>
+    </Card>
   );
 }
 

@@ -9,21 +9,18 @@ export function KanbanPage() {
   const [items, setItems] = useState<ReadonlyArray<KanbanTask>>(INITIAL);
   const { toast } = useToast();
 
-  const handleMove = useCallback(
-    (itemId: string, _from: string, to: string, toIndex: number) => {
-      setItems((prev) => {
-        const moving = prev.find((p) => p.id === itemId);
-        if (moving === undefined) return prev;
-        const without = prev.filter((p) => p.id !== itemId);
-        const targetList = without.filter((p) => p.col === to);
-        const otherCols = without.filter((p) => p.col !== to);
-        const next = [...targetList];
-        next.splice(toIndex, 0, { ...moving, col: to });
-        return [...otherCols, ...next];
-      });
-    },
-    [],
-  );
+  const handleMove = useCallback((itemId: string, _from: string, to: string, toIndex: number) => {
+    setItems((prev) => {
+      const moving = prev.find((p) => p.id === itemId);
+      if (moving === undefined) return prev;
+      const without = prev.filter((p) => p.id !== itemId);
+      const targetList = without.filter((p) => p.col === to);
+      const otherCols = without.filter((p) => p.col !== to);
+      const next = [...targetList];
+      next.splice(toIndex, 0, { ...moving, col: to });
+      return [...otherCols, ...next];
+    });
+  }, []);
 
   const handleAdd = useCallback(
     (columnId: string) => {
@@ -45,9 +42,8 @@ export function KanbanPage() {
   );
 
   return (
-    <div className="flex h-full flex-col gap-6">
+    <div className="mx-auto flex h-full max-w-[1400px] flex-col">
       <KanbanHeader />
-
       <div className="min-h-0 flex-1">
         <KanbanBoard<KanbanTask>
           columns={COLUMNS}

@@ -9,6 +9,7 @@ import { Badge } from '@/components/primitives/Badge';
 import { Kbd } from '@/components/primitives/Kbd';
 import { useToast } from '@/context/ToastProvider';
 import { cn } from '@/lib/cn';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import { PLAYGROUND_REGISTRY } from '@/playground/registry';
 import { PropControls } from '@/playground/PropControls';
 import { generateCode } from '@/playground/codegen';
@@ -204,26 +205,23 @@ export function PlaygroundPage() {
   const code = useMemo(() => generateCode(selected, values), [selected, values]);
 
   return (
-    <div className="flex h-[calc(100vh-7rem)] min-h-[40rem] flex-col gap-4">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Playground</h1>
-          <p className="text-sm text-foreground-muted">
-            Tweak any component&rsquo;s props live. Verify in light/dark and across locales without
-            rebuilding stories.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="neutral" size="sm">
-            {PLAYGROUND_REGISTRY.length} components
-          </Badge>
-          <Kbd>?</Kbd>
-          <LocaleSwitcher />
-          <ThemeToggle />
-        </div>
-      </header>
+    <div className="mx-auto flex h-[calc(100vh-7rem)] min-h-[40rem] max-w-[1400px] flex-col">
+      <SimsPageHeader
+        title="Playground"
+        description="Tweak any component's props live. Verify in light/dark and across locales without rebuilding stories."
+        actions={
+          <>
+            <Badge variant="neutral" size="sm">
+              {PLAYGROUND_REGISTRY.length} components
+            </Badge>
+            <Kbd>?</Kbd>
+            <LocaleSwitcher />
+            <ThemeToggle />
+          </>
+        }
+      />
 
-      <div className="min-h-0 flex-1 overflow-hidden rounded-lg border border-border bg-surface">
+      <div className="min-h-0 flex-1 overflow-hidden rounded-md border border-border bg-surface">
         <SplitLayout
           defaultLeftWidth={260}
           minLeftWidth={200}

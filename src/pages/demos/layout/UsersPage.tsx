@@ -5,8 +5,8 @@ import { Badge } from '@/components/primitives/Badge';
 import { Button } from '@/components/primitives/Button';
 import { IconButton } from '@/components/primitives/IconButton';
 import { Input } from '@/components/forms/Input';
-import { PageHeader } from '@/components/layout/PageHeader';
 import { Pagination } from '@/components/navigation/Pagination';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -26,9 +26,20 @@ import { DemoBreadcrumbs } from './LayoutDemo';
 const ROLES = ['admin', 'editor', 'viewer'] as const;
 const STATUSES = ['active', 'invited', 'disabled'] as const;
 const NAMES = [
-  'Ada Lovelace', 'Bob Marley', 'Cher', 'Diego Velazquez', 'Eve Babitz',
-  'Felix Mendelssohn', 'Greta Garbo', 'Henri Matisse', 'Iris Murdoch', 'Jorge Borges',
-  'Klimt Gustav', 'Linus Torvalds', 'Maya Angelou', 'Nikola Tesla',
+  'Ada Lovelace',
+  'Bob Marley',
+  'Cher',
+  'Diego Velazquez',
+  'Eve Babitz',
+  'Felix Mendelssohn',
+  'Greta Garbo',
+  'Henri Matisse',
+  'Iris Murdoch',
+  'Jorge Borges',
+  'Klimt Gustav',
+  'Linus Torvalds',
+  'Maya Angelou',
+  'Nikola Tesla',
 ];
 
 const USERS = NAMES.map((name, i) => ({
@@ -43,7 +54,11 @@ const PAGE_SIZE = 8;
 
 function StatusBadge({ status }: { status: (typeof STATUSES)[number] }) {
   const variant = status === 'active' ? 'success' : status === 'invited' ? 'info' : 'neutral';
-  return <Badge variant={variant} dot>{status}</Badge>;
+  return (
+    <Badge variant={variant} dot>
+      {status}
+    </Badge>
+  );
 }
 
 export function UsersPage() {
@@ -54,21 +69,28 @@ export function UsersPage() {
 
   return (
     <div>
-      <PageHeader
+      <div className="mb-3">
+        <DemoBreadcrumbs items={[{ label: 'Dashboard', to: '/layout' }, { label: 'Users' }]} />
+      </div>
+      <SimsPageHeader
         title="Users"
         description="Manage your team members and their permissions."
-        breadcrumbs={
-          <DemoBreadcrumbs items={[{ label: 'Dashboard', to: '/layout' }, { label: 'Users' }]} />
-        }
         actions={
           <>
-            <Input placeholder="Search…" leftIcon={<Search className="h-4 w-4" />} className="w-56" />
-            <Button leftIcon={<Plus className="h-4 w-4" />}>Invite</Button>
+            <Input
+              placeholder="Search…"
+              leftIcon={<Search className="h-4 w-4" />}
+              inputSize="sm"
+              className="w-56"
+            />
+            <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />}>
+              Invite
+            </Button>
           </>
         }
       />
 
-      <div className="overflow-hidden rounded-lg border border-border bg-surface">
+      <div className="overflow-hidden rounded-md border border-border bg-surface">
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-surface-muted text-left text-xs uppercase tracking-wide text-foreground-subtle">
             <tr>
@@ -93,7 +115,9 @@ export function UsersPage() {
                       </div>
                     </ContextMenuTrigger>
                     <ContextMenuContent>
-                      <ContextMenuItem onSelect={() => toast.info(`Edit ${u.name}`)}>Edit</ContextMenuItem>
+                      <ContextMenuItem onSelect={() => toast.info(`Edit ${u.name}`)}>
+                        Edit
+                      </ContextMenuItem>
                       <ContextMenuItem onSelect={() => toast.info(`Reset password for ${u.name}`)}>
                         Reset password
                       </ContextMenuItem>
@@ -105,7 +129,9 @@ export function UsersPage() {
                   </ContextMenu>
                 </td>
                 <td className="px-4 py-3 capitalize text-foreground-muted">{u.role}</td>
-                <td className="px-4 py-3"><StatusBadge status={u.status} /></td>
+                <td className="px-4 py-3">
+                  <StatusBadge status={u.status} />
+                </td>
                 <td className="px-4 py-3 text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger>
@@ -114,7 +140,9 @@ export function UsersPage() {
                       </IconButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent side="bottom-end">
-                      <DropdownMenuItem onSelect={() => toast.info(`Edit ${u.name}`)}>Edit</DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => toast.info(`Edit ${u.name}`)}>
+                        Edit
+                      </DropdownMenuItem>
                       <DropdownMenuItem onSelect={() => toast.info(`Disable ${u.name}`)}>
                         Disable
                       </DropdownMenuItem>
@@ -132,7 +160,8 @@ export function UsersPage() {
 
       <div className="mt-4 flex items-center justify-between">
         <p className="text-sm text-foreground-muted">
-          Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, USERS.length)} of {USERS.length}
+          Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, USERS.length)} of{' '}
+          {USERS.length}
         </p>
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>

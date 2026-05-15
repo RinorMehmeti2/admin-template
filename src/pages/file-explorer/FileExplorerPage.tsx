@@ -1,18 +1,13 @@
 import { useCallback, useState } from 'react';
 import { Download, FolderInput, Pencil, Share2, Trash2 } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/data-display/Card';
+import { Card, CardContent } from '@/components/data-display/Card';
 import {
   FileExplorer,
   type FileExplorerAction,
   type FileNode,
 } from '@/components/data-display/FileExplorer';
 import { useToast } from '@/context/ToastProvider';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import { mockFsRoot, mockLoadChildren, setChildrenAt } from './mockFs';
 
 const ACTIONS: ReadonlyArray<FileExplorerAction> = [
@@ -73,21 +68,23 @@ export function FileExplorerPage() {
   );
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>File explorer</CardTitle>
-          <CardDescription>
-            SplitLayout + TreeView + Breadcrumbs + ContextMenu, composed against an in-memory
-            mock filesystem. Right-click items for actions, toggle list/grid, and try the lazy
+    <div className="mx-auto max-w-[1400px]">
+      <SimsPageHeader
+        title="File explorer"
+        description={
+          <>
+            SplitLayout + TreeView + Breadcrumbs + ContextMenu, composed against an in-memory mock
+            filesystem. Right-click items for actions, toggle list/grid, and try the lazy
             <code className="mx-1 rounded bg-surface-muted px-1 py-0.5 text-xs">public/images</code>
             and
             <code className="mx-1 rounded bg-surface-muted px-1 py-0.5 text-xs">archive</code>
             folders.
-          </CardDescription>
-        </CardHeader>
+          </>
+        }
+      />
+      <Card variant="outlined">
         <CardContent className="p-0">
-          <div className="h-[640px] w-full overflow-hidden border-t border-border">
+          <div className="h-[640px] w-full overflow-hidden">
             <FileExplorer
               root={root}
               actions={ACTIONS}

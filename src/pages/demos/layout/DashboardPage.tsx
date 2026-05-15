@@ -1,17 +1,16 @@
 import { Activity, ArrowDown, ArrowUp } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/navigation/Tabs';
-import { PageHeader } from '@/components/layout/PageHeader';
 import { Progress } from '@/components/feedback/Progress';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import { DemoBreadcrumbs, DemoCard } from './LayoutDemo';
 
 export function DashboardPage() {
   return (
     <div>
-      <PageHeader
-        title="Dashboard"
-        description="Overview of activity in the last 30 days."
-        breadcrumbs={<DemoBreadcrumbs items={[{ label: 'Dashboard' }]} />}
-      />
+      <div className="mb-3">
+        <DemoBreadcrumbs items={[{ label: 'Dashboard' }]} />
+      </div>
+      <SimsPageHeader title="Dashboard" description="Overview of activity in the last 30 days." />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <DemoCard title="Active users" value="2,418" hint="↑ 12% vs last month" />
@@ -20,7 +19,7 @@ export function DashboardPage() {
         <DemoCard title="Errors" value="0.07%" hint="↓ 0.01% vs last month" />
       </div>
 
-      <div className="mt-8">
+      <div className="mt-6">
         <Tabs defaultValue="activity">
           <TabsList>
             <TabsTrigger value="activity">Activity</TabsTrigger>
@@ -28,14 +27,24 @@ export function DashboardPage() {
             <TabsTrigger value="billing">Billing</TabsTrigger>
           </TabsList>
           <TabsContent value="activity">
-            <ul className="divide-y divide-border rounded-lg border border-border bg-surface">
+            <ul className="divide-y divide-border rounded-md border border-border bg-surface">
               {[
-                { who: 'Ada Lovelace', what: 'updated billing settings', when: '2 min ago', up: true },
+                {
+                  who: 'Ada Lovelace',
+                  what: 'updated billing settings',
+                  when: '2 min ago',
+                  up: true,
+                },
                 { who: 'Bob Marley', what: 'invited 3 new users', when: '1 hr ago', up: true },
                 { who: 'Cher', what: 'archived the Q1 report', when: '3 hr ago', up: false },
-                { who: 'Diego Velazquez', what: 'changed plan to Pro', when: 'yesterday', up: true },
+                {
+                  who: 'Diego Velazquez',
+                  what: 'changed plan to Pro',
+                  when: 'yesterday',
+                  up: true,
+                },
               ].map((it, i) => (
-                <li key={i} className="flex items-center gap-3 px-4 py-3 text-sm">
+                <li key={i} className="flex items-center gap-3 px-4 py-2.5 text-sm">
                   <Activity className="h-4 w-4 text-foreground-subtle" />
                   <span className="font-medium">{it.who}</span>
                   <span className="text-foreground-muted">{it.what}</span>
@@ -50,7 +59,7 @@ export function DashboardPage() {
             </ul>
           </TabsContent>
           <TabsContent value="health">
-            <div className="space-y-3 rounded-lg border border-border bg-surface p-4">
+            <div className="space-y-3 rounded-md border border-border bg-surface p-4">
               <div>
                 <div className="mb-1 flex items-center justify-between text-sm">
                   <span className="text-foreground-muted">CPU</span>
@@ -75,7 +84,7 @@ export function DashboardPage() {
             </div>
           </TabsContent>
           <TabsContent value="billing">
-            <div className="rounded-lg border border-border bg-surface p-4 text-sm text-foreground-muted">
+            <div className="rounded-md border border-border bg-surface p-4 text-sm text-foreground-muted">
               Pro plan · renews May 12, 2026 · $49 / month
             </div>
           </TabsContent>

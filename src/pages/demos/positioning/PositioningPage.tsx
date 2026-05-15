@@ -1,4 +1,6 @@
 import { useTranslation } from 'react-i18next';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/data-display/Card';
+import { SimsPageHeader } from '@/pages/sims/components/SimsPageHeader';
 import {
   ContextMenuArea,
   CustomBoundaryDemo,
@@ -9,34 +11,51 @@ import {
 export function PositioningPage() {
   const { t } = useTranslation();
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">{t('demos.positioning.title')}</h1>
-        <p className="mt-1 text-sm text-foreground-subtle">{t('demos.positioning.subtitle')}</p>
-      </header>
+    <div className="mx-auto max-w-[1400px]">
+      <SimsPageHeader
+        title={t('demos.positioning.title')}
+        description={t('demos.positioning.subtitle')}
+      />
+      <div className="space-y-6">
+        <Card variant="outlined" className="overflow-hidden">
+          <CardHeader>
+            <CardTitle className="text-base">Tooltip flip</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <DraggableTooltip initial={{ x: 50, y: 50 }} />
+          </CardContent>
+        </Card>
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold tracking-tight">Tooltip flip</h2>
-        <DraggableTooltip initial={{ x: 50, y: 50 }} />
-      </section>
+        <Card variant="outlined" className="overflow-hidden">
+          <CardHeader>
+            <CardTitle className="text-base">DropdownMenu near edges</CardTitle>
+            <p className="mt-1 text-sm text-foreground-muted">
+              Open each menu and try scrolling the viewport — placements adapt automatically.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <EdgeDropdownGrid />
+          </CardContent>
+        </Card>
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold tracking-tight">DropdownMenu near edges</h2>
-        <p className="text-sm text-foreground-subtle">
-          Open each menu and try scrolling the viewport — placements adapt automatically.
-        </p>
-        <EdgeDropdownGrid />
-      </section>
+        <Card variant="outlined" className="overflow-hidden">
+          <CardHeader>
+            <CardTitle className="text-base">ContextMenu at cursor</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ContextMenuArea />
+          </CardContent>
+        </Card>
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold tracking-tight">ContextMenu at cursor</h2>
-        <ContextMenuArea />
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold tracking-tight">Custom boundary</h2>
-        <CustomBoundaryDemo />
-      </section>
+        <Card variant="outlined" className="overflow-hidden">
+          <CardHeader>
+            <CardTitle className="text-base">Custom boundary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CustomBoundaryDemo />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
